@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Countdown — Locked</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B1F3A;
+    --navy-deep:#071429;
+    --gold:#F4B942;
+    --coral:#FF6F61;
+    --cream:#FDF6E9;
+    --slate:#8B9DC3;
+    --lock-red:#E15554;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  body{
+    background: radial-gradient(ellipse at top, var(--navy) 0%, var(--navy-deep) 70%);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* subtle floating confetti/balloon dots in background */
+  .bg-decor{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .dot{
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.12;
+    animation: float 14s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-40px) rotate(180deg); }
+  }
+
+  /* floating balloons, loop from bottom to top */
+  .balloon{
+    position: absolute;
+    bottom: -140px;
+    opacity: 0.85;
+    animation-name: rise;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  .balloon svg{
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
+  }
+  @keyframes rise{
+    0%{ transform: translateY(0) translateX(0) rotate(-4deg); }
+    25%{ transform: translateY(-30vh) translateX(18px) rotate(4deg); }
+    50%{ transform: translateY(-60vh) translateX(-14px) rotate(-3deg); }
+    75%{ transform: translateY(-90vh) translateX(16px) rotate(3deg); }
+    100%{ transform: translateY(-125vh) translateX(0) rotate(-4deg); }
+  }
+
+  /* ===== TOP MENU BAR ===== */
+  header{
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 5%;
+    border-bottom: 1px solid rgba(244,246,233,0.08);
+    backdrop-filter: blur(6px);
+  }
+
+  .logo{
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+  }
+  .logo span{ color: var(--cream); }
+
+  nav{
+    display: flex;
+    gap: 6px;
+  }
+
+  .nav-item{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--slate);
+    background: rgba(139,157,195,0.08);
+    border: 1px solid rgba(139,157,195,0.18);
+    cursor: not-allowed;
+    user-select: none;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .nav-item:hover{ background: rgba(139,157,195,0.14); }
+  .nav-item svg{ width:12px; height:12px; opacity:0.8; }
+
+  .nav-item .tip{
+    position: absolute;
+    top: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--navy-deep);
+    border: 1px solid rgba(244,185,66,0.3);
+    color: var(--gold);
+    font-size: 0.68rem;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .nav-item:hover .tip{ opacity: 1; }
+
+  /* ===== HERO / COUNTDOWN ===== */
+  main{
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8vh 5% 10vh;
+  }
+
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--coral);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+
+  h1{
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    line-height: 1.15;
+    max-width: 700px;
+    margin-bottom: 10px;
+  }
+  h1 .accent{ color: var(--gold); }
+
+  .subtext{
+    color: var(--slate);
+    font-size: 0.95rem;
+    max-width: 480px;
+    margin-bottom: 48px;
+  }
+
+  /* combination-lock style countdown */
+  .lock-dial{
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .dial-unit{
+    background: linear-gradient(160deg, #10284A, #0A1D38);
+    border: 1px solid rgba(244,185,66,0.25);
+    border-radius: 14px;
+    padding: 18px 20px;
+    min-width: 84px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+    position: relative;
+  }
+
+  .dial-unit::before{
+    content:'';
+    position:absolute;
+    top:0; left:0; right:0;
+    height:1px;
+    background: linear-gradient(90deg, transparent, rgba(244,185,66,0.4), transparent);
+  }
+
+  .dial-number{
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: var(--gold);
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dial-label{
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-top: 6px;
+  }
+
+  .target-date{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--slate);
+    margin-bottom: 50px;
+  }
+  .target-date b{ color: var(--cream); font-weight: 600; }
+
+  /* ===== LOCK BUTTON ===== */
+  .lock-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 38px;
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: not-allowed;
+    background: rgba(139,157,195,0.12);
+    color: var(--slate);
+    border: 1px solid rgba(139,157,195,0.25);
+    transition: all 0.35s ease;
+    position: relative;
+  }
+
+  .lock-btn svg{ width:16px; height:16px; }
+
+  .lock-btn.unlocked{
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--gold), var(--coral));
+    color: var(--navy-deep);
+    border: none;
+    box-shadow: 0 10px 30px rgba(244,185,66,0.35);
+    animation: pulse-glow 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow{
+    0%,100%{ box-shadow: 0 10px 30px rgba(244,185,66,0.35); }
+    50%{ box-shadow: 0 10px 44px rgba(244,185,66,0.6); }
+  }
+
+  .status-note{
+    margin-top: 18px;
+    font-size: 0.75rem;
+    color: var(--slate);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 640px){
+    header{ flex-direction: column; gap: 16px; }
+    nav{ flex-wrap: wrap; justify-content: center; }
+    .dial-unit{ min-width: 68px; padding: 14px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-decor" id="bgDecor"></div>
+
+<header>
+  <div class="logo"><span>'s Birthday</span></div>
+  <nav id="navMenu">
+    <div class="nav-item" data-tip="Locked">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Story
+      <span class="tip">4 Aug ko unlock ho ga</span>
+    </div>
+    <div class="nav-item" data-tip="Locked">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Gallery
+      <span class="tip">4 Aug ko unlock ho ga</span>
+    </div>
+    <div class="nav-item" data-tip="Locked">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Guestbook
+      <span class="tip">4 Aug ko unlock ho ga</span>
+    </div>
+    <div class="nav-item" data-tip="Locked">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Surprise
+      <span class="tip">4 Aug ko unlock ho ga</span>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="eyebrow">Countdown in progress</div>
+  <h1>Sab kuch <span class="accent">lock</span> hai — jab tak ghari<br>us waqt na pohanchay</h1>
+  <p class="subtext">Yeh page us waqt tak locked rahega jab tak countdown khatam nahi hota. Menu aur login button neechay diye gaye waqt par khud ba khud active ho jayenge.</p>
+
+  <div class="lock-dial" id="dial">
+    <div class="dial-unit"><div class="dial-number" id="d-days">00</div><div class="dial-label">Days</div></div>
+    <div class="dial-unit"><div class="dial-number" id="d-hours">00</div><div class="dial-label">Hours</div></div>
+    <div class="dial-unit"><div class="dial-number" id="d-mins">00</div><div class="dial-label">Mins</div></div>
+    <div class="dial-unit"><div class="dial-number" id="d-secs">00</div><div class="dial-label">Secs</div></div>
+  </div>
+
+  <div class="target-date">Unlocks on <b>4 August, 12:00:01 AM</b></div>
+
+  <button class="lock-btn" id="lockBtn" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    <span id="btnLabel">Locked</span>
+  </button>
+
+  <div class="status-note" id="statusNote">Menu aur login us waqt tak inactive rahenge.</div>
+</main>
+
+<script>
+  // ===== target date: adjust year as needed =====
+  const TARGET = new Date(2026, 7, 4, 0, 0, 1); // month is 0-indexed -> 7 = August
+
+  const dEl = document.getElementById('d-days');
+  const hEl = document.getElementById('d-hours');
+  const mEl = document.getElementById('d-mins');
+  const sEl = document.getElementById('d-secs');
+  const lockBtn = document.getElementById('lockBtn');
+  const btnLabel = document.getElementById('btnLabel');
+  const statusNote = document.getElementById('statusNote');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function tick(){
+    const now = new Date();
+    let diff = TARGET - now;
+
+    if(diff <= 0){
+      dEl.textContent = '00'; hEl.textContent = '00'; mEl.textContent = '00'; sEl.textContent = '00';
+      unlockEverything();
+      clearInterval(timer);
+      return;
+    }
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const mins = Math.floor((diff / (1000*60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    dEl.textContent = pad(days);
+    hEl.textContent = pad(hours);
+    mEl.textContent = pad(mins);
+    sEl.textContent = pad(secs);
+  }
+
+  function unlockEverything(){
+    lockBtn.disabled = false;
+    lockBtn.classList.add('unlocked');
+    btnLabel.textContent = 'Enter the Party';
+    lockBtn.querySelector('svg').innerHTML = '<path d="M5 13l4 4L19 7"/>';
+    statusNote.textContent = 'Unlocked! Ab menu aur login active hain.';
+
+    navItems.forEach(item => {
+      item.style.cursor = 'pointer';
+      item.style.color = 'var(--cream)';
+      item.style.background = 'rgba(244,185,66,0.12)';
+      item.style.borderColor = 'rgba(244,185,66,0.35)';
+      const tip = item.querySelector('.tip');
+      if(tip) tip.remove();
+      const lockIcon = item.querySelector('svg');
+      if(lockIcon) lockIcon.style.display = 'none';
+    });
+  }
+
+  lockBtn.addEventListener('click', () => {
+    if(!lockBtn.disabled){
+      window.location.href = 'home.html'; // change to your actual next-page path
+    }
+  });
+
+  const timer = setInterval(tick, 1000);
+  tick();
+
+  // background floating dots
+  const decor = document.getElementById('bgDecor');
+  const colors = ['#F4B942', '#FF6F61', '#8B9DC3'];
+  for(let i=0;i<18;i++){
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const size = 6 + Math.random()*16;
+    dot.style.width = size+'px';
+    dot.style.height = size+'px';
+    dot.style.left = Math.random()*100+'%';
+    dot.style.top = Math.random()*100+'%';
+    dot.style.background = colors[i % colors.length];
+    dot.style.animationDelay = (Math.random()*6)+'s';
+    dot.style.animationDuration = (10 + Math.random()*8)+'s';
+    decor.appendChild(dot);
+  }
+
+  // balloons rising in a continuous loop, bottom to top
+  const balloonColors = ['#F4B942', '#FF6F61', '#8B9DC3', '#F4B942', '#FF6F61'];
+  const pairColors = ['#2E7D4F', '#1A1A1A']; // green + black, launched as close pairs
+  function balloonSVG(color){
+    return `
+      <svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="34" rx="26" ry="32" fill="${color}"/>
+        <ellipse cx="21" cy="22" rx="7" ry="10" fill="rgba(255,255,255,0.18)"/>
+        <path d="M30 66 Q34 70 30 74 Q26 78 30 82" stroke="rgba(253,246,233,0.5)" stroke-width="1.5" fill="none"/>
+        <path d="M27 66 L33 66 L30 74 Z" fill="${color}"/>
+      </svg>
+    `;
+  }
+
+  function makeBalloon(color, leftPct, sizePx, duration, delay){
+    const balloon = document.createElement('div');
+    balloon.className = 'balloon';
+    balloon.style.width = sizePx+'px';
+    balloon.style.height = (sizePx*1.5)+'px';
+    balloon.style.left = leftPct+'%';
+    balloon.style.animationDuration = duration+'s';
+    balloon.style.animationDelay = delay+'s';
+    balloon.innerHTML = balloonSVG(color);
+    decor.appendChild(balloon);
+  }
+
+  const balloonCount = 8;
+  const usedSpots = [];
+  const minGap = 11; // minimum % gap between regular balloons so they don't bunch up
+
+  function pickSpot(){
+    let attempt = 0;
+    let leftPct;
+    do{
+      leftPct = 2 + Math.random()*94;
+      attempt++;
+    } while(usedSpots.some(s => Math.abs(s - leftPct) < minGap) && attempt < 30);
+    usedSpots.push(leftPct);
+    return leftPct;
+  }
+
+  for(let i=0;i<balloonCount;i++){
+    const size = 38 + Math.random()*32;
+    const leftPct = pickSpot();
+    const duration = 16 + Math.random()*10;
+    const delay = -(Math.random()*24); /* stagger so loop feels continuous from the start */
+    makeBalloon(balloonColors[i % balloonColors.length], leftPct, size, duration, delay);
+  }
+
+  // green + black balloons, launched in close pairs with a small up/down offset
+  const pairCount = 4;
+  for(let i=0;i<pairCount;i++){
+    const size = 38 + Math.random()*28;
+    const leftPct = pickSpot();
+    const duration = 16 + Math.random()*10;
+    const baseDelay = -(Math.random()*24);
+
+    // green balloon
+    makeBalloon(pairColors[0], leftPct, size, duration, baseDelay);
+    // black balloon right beside it, tiny horizontal gap + slight vertical (time) offset
+    makeBalloon(pairColors[1], leftPct + 4, size, duration, baseDelay - 1.2);
+  }
+</script>
+
+</body>
+</html>
