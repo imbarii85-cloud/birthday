@@ -9,7 +9,7 @@
   const btnLabel = document.getElementById('btnLabel');
   const statusNote = document.getElementById('statusNote');
   const navItems = document.querySelectorAll('.nav-item');
-  const progressPercentage = 25;
+  const progressPercentage = 1;
   const gaugeValue = document.getElementById('gaugeValue');
   const gaugeFill = document.querySelector('.gauge-fill');
   const gaugeRefresh = document.getElementById('gaugeRefresh');
@@ -114,20 +114,12 @@
   function stopGaugeAnimation(){
     gaugeAnimated = false;
     gaugePanel.classList.remove('visible');
-    cancelAnimationFrame(gaugeAnimationFrame);
-    setGaugeValue(0);
   }
 
   gaugeRefresh.addEventListener('click', () => {
     gaugeRefresh.classList.add('pressed');
     setTimeout(() => gaugeRefresh.classList.remove('pressed'), 360);
     playGaugeSequence();
-  });
-
-  gaugeRefresh.addEventListener('animationend', (event) => {
-    if(event.animationName === 'button-press'){
-      gaugeRefresh.classList.remove('pressed');
-    }
   });
 
   lockBtn.addEventListener('click', () => {
