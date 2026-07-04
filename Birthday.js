@@ -9,6 +9,13 @@
   const btnLabel = document.getElementById('btnLabel');
   const statusNote = document.getElementById('statusNote');
   const navItems = document.querySelectorAll('.nav-item');
+  const progressPercentage = 25;
+  const gaugeValue = document.getElementById('gaugeValue');
+  const gaugeFill = document.querySelector('.gauge-fill');
+  const gaugeRefresh = document.getElementById('gaugeRefresh');
+  const progressText = document.getElementById('progressText');
+  const gaugePanel = document.querySelector('.progress-panel');
+  let gaugeAnimated = false;
 
   function pad(n){ return String(n).padStart(2,'0'); }
 
@@ -53,6 +60,76 @@
     });
   }
 
+  let gaugeAnimationFrame = null;
+  const circleRadius = 96;
+  const circleCircumference = 2 * Math.PI * circleRadius;
+
+  function setGaugeValue(value){
+    gaugeValue.textContent = `${Math.round(value)}%`;
+    const offset = circleCircumference * (1 - value / 100);
+    gaugeFill.style.strokeDashoffset = offset;
+  }
+
+  function animateGauge(target, duration = 1400, callback){
+    cancelAnimationFrame(gaugeAnimationFrame);
+    const startTime = performance.now();
+    const startValue = parseFloat(gaugeValue.textContent) || 0;
+
+    function step(now){
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+      const current = startValue + (target - startValue) * eased;
+      setGaugeValue(current);
+      if(progress < 1){
+        gaugeAnimationFrame = requestAnimationFrame(step);
+      } else if(typeof callback === 'function'){
+        callback();
+      }
+    }
+
+    gaugeAnimationFrame = requestAnimationFrame(step);
+  }
+
+  function initializeGauge(){
+    gaugeFill.style.strokeDasharray = circleCircumference;
+    setGaugeValue(0);
+    progressText.innerHTML = `Yeh page abhi <b>${progressPercentage}% complete</b> hai. Kaam jari hai aur aap niche scroll karte hi progress dial animation dekh sakte hain.`;
+  }
+
+  function playGaugeSequence(){
+    setGaugeValue(0);
+    animateGauge(100, 1200, () => {
+      animateGauge(progressPercentage, 800);
+    });
+  }
+
+  function startGaugeAnimation(){
+    if(gaugeAnimated) return;
+    gaugeAnimated = true;
+    gaugePanel.classList.add('visible');
+    playGaugeSequence();
+  }
+
+  function stopGaugeAnimation(){
+    gaugeAnimated = false;
+    gaugePanel.classList.remove('visible');
+    cancelAnimationFrame(gaugeAnimationFrame);
+    setGaugeValue(0);
+  }
+
+  gaugeRefresh.addEventListener('click', () => {
+    gaugeRefresh.classList.add('pressed');
+    setTimeout(() => gaugeRefresh.classList.remove('pressed'), 360);
+    playGaugeSequence();
+  });
+
+  gaugeRefresh.addEventListener('animationend', (event) => {
+    if(event.animationName === 'button-press'){
+      gaugeRefresh.classList.remove('pressed');
+    }
+  });
+
   lockBtn.addEventListener('click', () => {
     if(!lockBtn.disabled){
       window.location.href = 'home.html'; // change to your actual next-page path
@@ -61,6 +138,22 @@
 
   const timer = setInterval(tick, 1000);
   tick();
+  initializeGauge();
+
+  if('IntersectionObserver' in window && gaugePanel){
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          startGaugeAnimation();
+        } else {
+          stopGaugeAnimation();
+        }
+      });
+    }, { threshold: 0.35 });
+    observer.observe(gaugePanel);
+  } else {
+    startGaugeAnimation();
+  }
 
   // background floating dots
   const decor = document.getElementById('bgDecor');
