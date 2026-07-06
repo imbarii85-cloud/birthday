@@ -9,7 +9,7 @@
   const btnLabel = document.getElementById('btnLabel');
   const statusNote = document.getElementById('statusNote');
   const navItems = document.querySelectorAll('.nav-item');
-  const progressPercentage = 1;
+  const progressPercentage = 2;
   const gaugeValue = document.getElementById('gaugeValue');
   const gaugeFill = document.querySelector('.gauge-fill');
   const gaugeRefresh = document.getElementById('gaugeRefresh');
@@ -226,3 +226,69 @@
     // black balloon right beside it, tiny horizontal gap + slight vertical (time) offset
     makeBalloon(pairColors[1], leftPct + 4, size, duration, baseDelay - 1.2);
   }
+
+// ===== Scroll reveal for points rows (IntersectionObserver) =====
+if('IntersectionObserver' in window){
+  const pointRows = document.querySelectorAll('.point-row');
+  if(pointRows.length){
+    const rowObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+        } else {
+          entry.target.classList.remove('in-view');
+        }
+      });
+    }, { threshold: 0.24 });
+    pointRows.forEach(r => rowObserver.observe(r));
+  }
+}
+
+// ===== Global cursor-follow spotlight =====
+(function(){
+  const spotlight = document.createElement('div');
+  spotlight.id = 'cursorSpot';
+  document.body.appendChild(spotlight);
+
+  const state = { tx: window.innerWidth / 2, ty: window.innerHeight / 2, cx: window.innerWidth / 2, cy: window.innerHeight / 2 };
+  let rafId = null;
+
+  function rafLoop(){
+    state.cx += (state.tx - state.cx) * 0.16;
+    state.cy += (state.ty - state.cy) * 0.16;
+    spotlight.style.left = state.cx + 'px';
+    spotlight.style.top = state.cy + 'px';
+    rafId = requestAnimationFrame(rafLoop);
+  }
+
+  function startLoop(){ if(!rafId) rafLoop(); }
+  function stopLoop(){ if(rafId){ cancelAnimationFrame(rafId); rafId = null; } }
+
+  document.addEventListener('mousemove', (e) => {
+    state.tx = e.clientX;
+    state.ty = e.clientY;
+    startLoop();
+    document.documentElement.classList.add('spotlight-on');
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    document.documentElement.classList.remove('spotlight-on');
+    state.tx = window.innerWidth / 2; state.ty = window.innerHeight / 2;
+    setTimeout(() => { stopLoop(); }, 320);
+  });
+
+  document.addEventListener('touchstart', (ev) => {
+    const t = ev.touches[0];
+    if(!t) return;
+    state.tx = t.clientX;
+    state.ty = t.clientY;
+    document.documentElement.classList.add('spotlight-on');
+    startLoop();
+  }, { passive: true });
+
+  document.addEventListener('touchend', () => {
+    document.documentElement.classList.remove('spotlight-on');
+    state.tx = window.innerWidth / 2; state.ty = window.innerHeight / 2;
+    setTimeout(() => { stopLoop(); }, 320);
+  });
+})();
