@@ -229,30 +229,23 @@
 
 // ===== Picture gallery section =====
 const galleryItems = [
-  {
-    src: 'asest/Sorry%20Pictures/1.jpeg',
-    caption: 'Yeh pehli yaad hai, jab har cheez itni simple aur khushgawar lagti thi.',
-    heading: 'Hamari Kahani',
-    description: 'Is section mein hum apni yaadgar tasveerein aur unke peeche ki khushgawar yaadein share kar rahe hain.'
-  },
-  {
-    src: 'asest/Sorry%20Pictures/5.jpeg',
-    caption: 'College ke dinon ki yeh tasveer hamesha dil ke qareeb rahegi.',
-    heading: 'College Days',
-    description: 'Woh din jab hasi, masti aur mushkilaat sab saath mil kar samjhe jaate thay.'
-  },
-  {
-    src: 'asest/Sorry%20Pictures/10.jpeg',
-    caption: 'Ek chhoti si trip, magar yaadon ka ek bada safar.',
-    heading: 'Woh Yadgar Safar',
-    description: 'Har muskurahat aur har pal ke sath ek nayi yaad ban gayi thi.'
-  },
-  {
-    src: 'asest/Sorry%20Pictures/15.jpeg',
-    caption: 'Jashn ka din, khushiyon ka sab se pyara pal.',
-    heading: 'Jashn Ka Din',
-    description: 'Aaj ki khushiyan kal ki sab se khoobsurat yaadon mein badal jaati hain.'
-  }
+  { src: 'asest/Sorry%20Pictures/1.jpeg', caption: 'Yeh pehli yaad hai, jab har cheez itni simple aur khushgawar lagti thi.', heading: 'Yaad 1', description: 'Har pal apni jagah ek kahani ke saman hai. Yeh tasveer pehli shuruaat ka jashn hai.' },
+  { src: 'asest/Sorry%20Pictures/2.jpeg', caption: 'Doosri tasveer mein woh pyara lamha saaf nazar ata hai.', heading: 'Yaad 2', description: 'Is lamhe se juda har jazba bohot qeemti hai. Usey dil se mehsoos karein.' },
+  { src: 'asest/Sorry%20Pictures/3.jpeg', caption: 'Teesri yaad kuch khas aur mushkil se behtar hai.', heading: 'Yaad 3', description: 'Har muskurahat ka peecha koi khushi hoti hai. Is photo mein woh ghadi hai.' },
+  { src: 'asest/Sorry%20Pictures/4.jpeg', caption: 'Yeh chauthi tasveer ek nayi raah ka ehsaas deti hai.', heading: 'Yaad 4', description: 'Jab naye manzilon par chalna hota hai, yaadein hamaare saath hoti hain.' },
+  { src: 'asest/Sorry%20Pictures/5.jpeg', caption: 'College ke dinon ki yeh tasveer hamesha dil ke qareeb rahegi.', heading: 'Yaad 5', description: 'Woh din jab hasi, masti aur mushkilaat sab saath mil kar samjhe jaate thay.' },
+  { src: 'asest/Sorry%20Pictures/6.jpeg', caption: 'Yeh photo husn-o-khubsurti aur dosti ka mix hai.', heading: 'Yaad 6', description: 'Har tasveer apni kahani bayaan karti hai - yeh us kahani ka ek hissa hai.' },
+  { src: 'asest/Sorry%20Pictures/7.jpeg', caption: 'Saath guzra har lamha bohot pyaara hota hai.', heading: 'Yaad 7', description: 'Yeh tasveer dosti aur pyar bhari wafa ko yaad dilati hai.' },
+  { src: 'asest/Sorry%20Pictures/8.jpeg', caption: 'Aathviya tasveer ek meethi yaad ban kar reh gayi.', heading: 'Yaad 8', description: 'Safar mein chhote pal hi ne humein mazboot banaya hai.' },
+  { src: 'asest/Sorry%20Pictures/9.jpeg', caption: 'Yeh photo kuch khamosh lamhon ko chhupaye hue hai.', heading: 'Yaad 9', description: 'Kabhi kabhi sabse khubsurat tasveer woh hoti hai jisme shakal se zyada ehsaas nazar aaye.' },
+  { src: 'asest/Sorry%20Pictures/10.jpeg', caption: 'Ek chhoti si trip, magar yaadon ka ek bada safar.', heading: 'Yaad 10', description: 'Har muskurahat aur har pal ke sath ek nayi yaad ban gayi thi.' },
+  { src: 'asest/Sorry%20Pictures/11.jpeg', caption: 'Guzre hue waqt ki yaad is tasveer se aur gehri lagti hai.', heading: 'Yaad 11', description: 'Yaadein sirf dekhi nahi jaatiyaan, mehsoos bhi ki jaati hain.' },
+  { src: 'asest/Sorry%20Pictures/12.jpeg', caption: 'Barahvi tasveer mein pyar aur shan hai.', heading: 'Yaad 12', description: 'Is photo ka har rang hamein ek khubsurat pal yaad dilata hai.' },
+  { src: 'asest/Sorry%20Pictures/13.jpeg', caption: 'Tehqiq aur humdardi se bhari yeh yaad.', heading: 'Yaad 13', description: 'Yeh ek aisa pal hai jo dil se kabhi nahi nikalta.' },
+  { src: 'asest/Sorry%20Pictures/14.jpeg', caption: 'Chaudahvi tasveer jazbaat ki gehrayi dikhati hai.', heading: 'Yaad 14', description: 'Iss lamhe mein chhupi khushi har baar dhundhne layak hoti hai.' },
+  { src: 'asest/Sorry%20Pictures/15.jpeg', caption: 'Jashn ka din, khushiyon ka sab se pyara pal.', heading: 'Yaad 15', description: 'Aaj ki khushiyan kal ki sab se khoobsurat yaadon mein badal jaati hain.' },
+  { src: 'asest/Sorry%20Pictures/16.jpeg', caption: 'Solahti tasveer ek nayi umeed ka paigham hai.', heading: 'Yaad 16', description: 'Har chhoti tasveer ke piche ek badi kahani hoti hai.' },
+  { src: 'asest/Sorry%20Pictures/17.jpeg', caption: 'Satrahvi yaad hamare safar ka mazboot kirdar hai.', heading: 'Yaad 17', description: 'Is gallery ka aakhri pal ek haseen nateejah hai jo dil ko sukoon de.' }
 ];
 
 const galleryColors = ['#F4B942', '#FF6F61', '#8B9DC3', '#2E7D4F'];
