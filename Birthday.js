@@ -227,6 +227,124 @@
     makeBalloon(pairColors[1], leftPct + 4, size, duration, baseDelay - 1.2);
   }
 
+// ===== Picture gallery section =====
+const galleryItems = [
+  {
+    src: 'asest/Sorry%20Pictures/1.jpeg',
+    caption: 'Yeh pehli yaad hai, jab har cheez itni simple aur khushgawar lagti thi.',
+    heading: 'Hamari Kahani',
+    description: 'Is section mein hum apni yaadgar tasveerein aur unke peeche ki khushgawar yaadein share kar rahe hain.'
+  },
+  {
+    src: 'asest/Sorry%20Pictures/5.jpeg',
+    caption: 'College ke dinon ki yeh tasveer hamesha dil ke qareeb rahegi.',
+    heading: 'College Days',
+    description: 'Woh din jab hasi, masti aur mushkilaat sab saath mil kar samjhe jaate thay.'
+  },
+  {
+    src: 'asest/Sorry%20Pictures/10.jpeg',
+    caption: 'Ek chhoti si trip, magar yaadon ka ek bada safar.',
+    heading: 'Woh Yadgar Safar',
+    description: 'Har muskurahat aur har pal ke sath ek nayi yaad ban gayi thi.'
+  },
+  {
+    src: 'asest/Sorry%20Pictures/15.jpeg',
+    caption: 'Jashn ka din, khushiyon ka sab se pyara pal.',
+    heading: 'Jashn Ka Din',
+    description: 'Aaj ki khushiyan kal ki sab se khoobsurat yaadon mein badal jaati hain.'
+  }
+];
+
+const galleryColors = ['#F4B942', '#FF6F61', '#8B9DC3', '#2E7D4F'];
+
+function placeholderImage(index){
+  const color = galleryColors[index % galleryColors.length];
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+      <rect width="300" height="300" fill="${color}" opacity="0.25"/>
+      <circle cx="150" cy="130" r="38" fill="none" stroke="${color}" stroke-width="6"/>
+      <rect x="90" y="180" width="120" height="14" rx="7" fill="${color}"/>
+      <rect x="110" y="204" width="80" height="10" rx="5" fill="${color}" opacity="0.6"/>
+    </svg>
+  `;
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+
+let galleryIndex = 0;
+const galleryPhoto = document.getElementById('galleryPhoto');
+const galleryCaption = document.getElementById('galleryCaption');
+const galleryCounter = document.getElementById('galleryCounter');
+const galleryHeading = document.getElementById('galleryHeading');
+const galleryDescription = document.getElementById('galleryDescription');
+const galleryFrame = document.getElementById('galleryFrame');
+const lightbox = document.getElementById('lightbox');
+const lightboxPhoto = document.getElementById('lightboxPhoto');
+const lightboxCaption = document.getElementById('lightboxCaption');
+const galleryLeft = document.getElementById('galleryLeft');
+const galleryRight = document.getElementById('galleryRight');
+
+function renderGallery(direction){
+  const item = galleryItems[galleryIndex];
+  galleryPhoto.src = item?.src || placeholderImage(galleryIndex);
+  galleryPhoto.alt = item?.heading || 'Gallery photo';
+  galleryCaption.textContent = item?.caption || '';
+  galleryCounter.textContent = String(galleryIndex + 1);
+  galleryHeading.textContent = item?.heading || 'Gallery';
+  galleryDescription.textContent = item?.description || '';
+
+  galleryPhoto.classList.remove('slide-in-next', 'slide-in-prev');
+  void galleryPhoto.offsetWidth;
+  galleryPhoto.classList.add(direction === 'prev' ? 'slide-in-prev' : 'slide-in-next');
+}
+
+document.getElementById('galleryNext').addEventListener('click', () => {
+  galleryIndex = (galleryIndex + 1) % galleryItems.length;
+  renderGallery('next');
+});
+
+document.getElementById('galleryPrev').addEventListener('click', () => {
+  galleryIndex = (galleryIndex - 1 + galleryItems.length) % galleryItems.length;
+  renderGallery('prev');
+});
+
+galleryFrame.addEventListener('click', () => {
+  const item = galleryItems[galleryIndex];
+  lightboxPhoto.src = item?.src || placeholderImage(galleryIndex);
+  lightboxPhoto.alt = item?.heading || 'Gallery photo';
+  lightboxCaption.textContent = item?.caption || '';
+  lightbox.classList.add('open');
+});
+
+document.getElementById('lightboxClose').addEventListener('click', () => {
+  lightbox.classList.remove('open');
+});
+
+lightbox.addEventListener('click', (e) => {
+  if(e.target === lightbox){
+    lightbox.classList.remove('open');
+  }
+});
+
+if('IntersectionObserver' in window && galleryLeft && galleryRight){
+  const galleryObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+      } else {
+        entry.target.classList.remove('in-view');
+      }
+    });
+  }, { threshold: 0.2 });
+
+  galleryObserver.observe(galleryLeft);
+  galleryObserver.observe(galleryRight);
+} else {
+  galleryLeft?.classList.add('in-view');
+  galleryRight?.classList.add('in-view');
+}
+
+renderGallery('next');
+
 // ===== Scroll reveal for points rows (IntersectionObserver) =====
 if('IntersectionObserver' in window){
   const pointRows = document.querySelectorAll('.point-row');
