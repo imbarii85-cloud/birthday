@@ -1,174 +1,174 @@
 // ===== target date: adjust year as needed =====
-  const TARGET = new Date(2026, 7, 4, 0, 0, 1); // month is 0-indexed -> 7 = August
+const TARGET = new Date(2026, 7, 4, 0, 0, 1); // month is 0-indexed -> 7 = August
 
-  const dEl = document.getElementById('d-days');
-  const hEl = document.getElementById('d-hours');
-  const mEl = document.getElementById('d-mins');
-  const sEl = document.getElementById('d-secs');
-  const lockBtn = document.getElementById('lockBtn');
-  const btnLabel = document.getElementById('btnLabel');
-  const statusNote = document.getElementById('statusNote');
-  const navItems = document.querySelectorAll('.nav-item');
-  const progressPercentage = 2;
-  const gaugeValue = document.getElementById('gaugeValue');
-  const gaugeFill = document.querySelector('.gauge-fill');
-  const gaugeRefresh = document.getElementById('gaugeRefresh');
-  const progressText = document.getElementById('progressText');
-  const gaugePanel = document.querySelector('.progress-panel');
-  let gaugeAnimated = false;
+const dEl = document.getElementById('d-days');
+const hEl = document.getElementById('d-hours');
+const mEl = document.getElementById('d-mins');
+const sEl = document.getElementById('d-secs');
+const lockBtn = document.getElementById('lockBtn');
+const btnLabel = document.getElementById('btnLabel');
+const statusNote = document.getElementById('statusNote');
+const navItems = document.querySelectorAll('.nav-item');
+const progressPercentage = 2;
+const gaugeValue = document.getElementById('gaugeValue');
+const gaugeFill = document.querySelector('.gauge-fill');
+const gaugeRefresh = document.getElementById('gaugeRefresh');
+const progressText = document.getElementById('progressText');
+const gaugePanel = document.querySelector('.progress-panel');
+let gaugeAnimated = false;
 
-  function pad(n){ return String(n).padStart(2,'0'); }
+function pad(n) { return String(n).padStart(2, '0'); }
 
-  function tick(){
-    const now = new Date();
-    let diff = TARGET - now;
+function tick() {
+  const now = new Date();
+  let diff = TARGET - now;
 
-    if(diff <= 0){
-      dEl.textContent = '00'; hEl.textContent = '00'; mEl.textContent = '00'; sEl.textContent = '00';
-      unlockEverything();
-      clearInterval(timer);
-      return;
+  if (diff <= 0) {
+    dEl.textContent = '00'; hEl.textContent = '00'; mEl.textContent = '00'; sEl.textContent = '00';
+    unlockEverything();
+    clearInterval(timer);
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const mins = Math.floor((diff / (1000 * 60)) % 60);
+  const secs = Math.floor((diff / 1000) % 60);
+
+  dEl.textContent = pad(days);
+  hEl.textContent = pad(hours);
+  mEl.textContent = pad(mins);
+  sEl.textContent = pad(secs);
+}
+
+function unlockEverything() {
+  lockBtn.disabled = false;
+  lockBtn.classList.add('unlocked');
+  btnLabel.textContent = 'Enter the Party';
+  lockBtn.querySelector('svg').innerHTML = '<path d="M5 13l4 4L19 7"/>';
+  statusNote.textContent = 'Unlocked! Ab menu aur login active hain.';
+
+  navItems.forEach(item => {
+    item.style.cursor = 'pointer';
+    item.style.color = 'var(--cream)';
+    item.style.background = 'rgba(244,185,66,0.12)';
+    item.style.borderColor = 'rgba(244,185,66,0.35)';
+    const tip = item.querySelector('.tip');
+    if (tip) tip.remove();
+    const lockIcon = item.querySelector('svg');
+    if (lockIcon) lockIcon.style.display = 'none';
+  });
+}
+
+let gaugeAnimationFrame = null;
+const circleRadius = 96;
+const circleCircumference = 2 * Math.PI * circleRadius;
+
+function setGaugeValue(value) {
+  gaugeValue.textContent = `${Math.round(value)}%`;
+  const offset = circleCircumference * (1 - value / 100);
+  gaugeFill.style.strokeDashoffset = offset;
+}
+
+function animateGauge(target, duration = 1400, callback) {
+  cancelAnimationFrame(gaugeAnimationFrame);
+  const startTime = performance.now();
+  const startValue = parseFloat(gaugeValue.textContent) || 0;
+
+  function step(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+    const current = startValue + (target - startValue) * eased;
+    setGaugeValue(current);
+    if (progress < 1) {
+      gaugeAnimationFrame = requestAnimationFrame(step);
+    } else if (typeof callback === 'function') {
+      callback();
     }
-
-    const days = Math.floor(diff / (1000*60*60*24));
-    const hours = Math.floor((diff / (1000*60*60)) % 24);
-    const mins = Math.floor((diff / (1000*60)) % 60);
-    const secs = Math.floor((diff / 1000) % 60);
-
-    dEl.textContent = pad(days);
-    hEl.textContent = pad(hours);
-    mEl.textContent = pad(mins);
-    sEl.textContent = pad(secs);
   }
 
-  function unlockEverything(){
-    lockBtn.disabled = false;
-    lockBtn.classList.add('unlocked');
-    btnLabel.textContent = 'Enter the Party';
-    lockBtn.querySelector('svg').innerHTML = '<path d="M5 13l4 4L19 7"/>';
-    statusNote.textContent = 'Unlocked! Ab menu aur login active hain.';
+  gaugeAnimationFrame = requestAnimationFrame(step);
+}
 
-    navItems.forEach(item => {
-      item.style.cursor = 'pointer';
-      item.style.color = 'var(--cream)';
-      item.style.background = 'rgba(244,185,66,0.12)';
-      item.style.borderColor = 'rgba(244,185,66,0.35)';
-      const tip = item.querySelector('.tip');
-      if(tip) tip.remove();
-      const lockIcon = item.querySelector('svg');
-      if(lockIcon) lockIcon.style.display = 'none';
-    });
+function initializeGauge() {
+  gaugeFill.style.strokeDasharray = circleCircumference;
+  setGaugeValue(0);
+  progressText.innerHTML = `Yeh page abhi <b>${progressPercentage}% complete</b> hai. Kaam jari hai aur aap niche scroll karte hi progress dial animation dekh sakte hain.`;
+}
+
+function playGaugeSequence() {
+  setGaugeValue(0);
+  animateGauge(100, 1200, () => {
+    animateGauge(progressPercentage, 800);
+  });
+}
+
+function startGaugeAnimation() {
+  if (gaugeAnimated) return;
+  gaugeAnimated = true;
+  gaugePanel.classList.add('visible');
+  playGaugeSequence();
+}
+
+function stopGaugeAnimation() {
+  gaugeAnimated = false;
+  gaugePanel.classList.remove('visible');
+}
+
+gaugeRefresh.addEventListener('click', () => {
+  gaugeRefresh.classList.add('pressed');
+  setTimeout(() => gaugeRefresh.classList.remove('pressed'), 360);
+  playGaugeSequence();
+});
+
+lockBtn.addEventListener('click', () => {
+  if (!lockBtn.disabled) {
+    window.location.href = 'home.html'; // change to your actual next-page path
   }
+});
 
-  let gaugeAnimationFrame = null;
-  const circleRadius = 96;
-  const circleCircumference = 2 * Math.PI * circleRadius;
+const timer = setInterval(tick, 1000);
+tick();
+initializeGauge();
 
-  function setGaugeValue(value){
-    gaugeValue.textContent = `${Math.round(value)}%`;
-    const offset = circleCircumference * (1 - value / 100);
-    gaugeFill.style.strokeDashoffset = offset;
-  }
-
-  function animateGauge(target, duration = 1400, callback){
-    cancelAnimationFrame(gaugeAnimationFrame);
-    const startTime = performance.now();
-    const startValue = parseFloat(gaugeValue.textContent) || 0;
-
-    function step(now){
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
-      const current = startValue + (target - startValue) * eased;
-      setGaugeValue(current);
-      if(progress < 1){
-        gaugeAnimationFrame = requestAnimationFrame(step);
-      } else if(typeof callback === 'function'){
-        callback();
+if ('IntersectionObserver' in window && gaugePanel) {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        startGaugeAnimation();
+      } else {
+        stopGaugeAnimation();
       }
-    }
-
-    gaugeAnimationFrame = requestAnimationFrame(step);
-  }
-
-  function initializeGauge(){
-    gaugeFill.style.strokeDasharray = circleCircumference;
-    setGaugeValue(0);
-    progressText.innerHTML = `Yeh page abhi <b>${progressPercentage}% complete</b> hai. Kaam jari hai aur aap niche scroll karte hi progress dial animation dekh sakte hain.`;
-  }
-
-  function playGaugeSequence(){
-    setGaugeValue(0);
-    animateGauge(100, 1200, () => {
-      animateGauge(progressPercentage, 800);
     });
-  }
+  }, { threshold: 0.35 });
+  observer.observe(gaugePanel);
+} else {
+  startGaugeAnimation();
+}
 
-  function startGaugeAnimation(){
-    if(gaugeAnimated) return;
-    gaugeAnimated = true;
-    gaugePanel.classList.add('visible');
-    playGaugeSequence();
-  }
+// background floating dots
+const decor = document.getElementById('bgDecor');
+const colors = ['#F4B942', '#FF6F61', '#8B9DC3'];
+for (let i = 0; i < 18; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  const size = 6 + Math.random() * 16;
+  dot.style.width = size + 'px';
+  dot.style.height = size + 'px';
+  dot.style.left = Math.random() * 100 + '%';
+  dot.style.top = Math.random() * 100 + '%';
+  dot.style.background = colors[i % colors.length];
+  dot.style.animationDelay = (Math.random() * 6) + 's';
+  dot.style.animationDuration = (10 + Math.random() * 8) + 's';
+  decor.appendChild(dot);
+}
 
-  function stopGaugeAnimation(){
-    gaugeAnimated = false;
-    gaugePanel.classList.remove('visible');
-  }
-
-  gaugeRefresh.addEventListener('click', () => {
-    gaugeRefresh.classList.add('pressed');
-    setTimeout(() => gaugeRefresh.classList.remove('pressed'), 360);
-    playGaugeSequence();
-  });
-
-  lockBtn.addEventListener('click', () => {
-    if(!lockBtn.disabled){
-      window.location.href = 'home.html'; // change to your actual next-page path
-    }
-  });
-
-  const timer = setInterval(tick, 1000);
-  tick();
-  initializeGauge();
-
-  if('IntersectionObserver' in window && gaugePanel){
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if(entry.isIntersecting){
-          startGaugeAnimation();
-        } else {
-          stopGaugeAnimation();
-        }
-      });
-    }, { threshold: 0.35 });
-    observer.observe(gaugePanel);
-  } else {
-    startGaugeAnimation();
-  }
-
-  // background floating dots
-  const decor = document.getElementById('bgDecor');
-  const colors = ['#F4B942', '#FF6F61', '#8B9DC3'];
-  for(let i=0;i<18;i++){
-    const dot = document.createElement('div');
-    dot.className = 'dot';
-    const size = 6 + Math.random()*16;
-    dot.style.width = size+'px';
-    dot.style.height = size+'px';
-    dot.style.left = Math.random()*100+'%';
-    dot.style.top = Math.random()*100+'%';
-    dot.style.background = colors[i % colors.length];
-    dot.style.animationDelay = (Math.random()*6)+'s';
-    dot.style.animationDuration = (10 + Math.random()*8)+'s';
-    decor.appendChild(dot);
-  }
-
-  // balloons rising in a continuous loop, bottom to top
-  const balloonColors = ['#F4B942', '#FF6F61', '#8B9DC3', '#F4B942', '#FF6F61'];
-  const pairColors = ['#2E7D4F', '#1A1A1A']; // green + black, launched as close pairs
-  function balloonSVG(color){
-    return `
+// balloons rising in a continuous loop, bottom to top
+const balloonColors = ['#F4B942', '#FF6F61', '#8B9DC3', '#F4B942', '#FF6F61'];
+const pairColors = ['#2E7D4F', '#1A1A1A']; // green + black, launched as close pairs
+function balloonSVG(color) {
+  return `
       <svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
         <ellipse cx="30" cy="34" rx="26" ry="32" fill="${color}"/>
         <ellipse cx="21" cy="22" rx="7" ry="10" fill="rgba(255,255,255,0.18)"/>
@@ -176,56 +176,56 @@
         <path d="M27 66 L33 66 L30 74 Z" fill="${color}"/>
       </svg>
     `;
-  }
+}
 
-  function makeBalloon(color, leftPct, sizePx, duration, delay){
-    const balloon = document.createElement('div');
-    balloon.className = 'balloon';
-    balloon.style.width = sizePx+'px';
-    balloon.style.height = (sizePx*1.5)+'px';
-    balloon.style.left = leftPct+'%';
-    balloon.style.animationDuration = duration+'s';
-    balloon.style.animationDelay = delay+'s';
-    balloon.innerHTML = balloonSVG(color);
-    decor.appendChild(balloon);
-  }
+function makeBalloon(color, leftPct, sizePx, duration, delay) {
+  const balloon = document.createElement('div');
+  balloon.className = 'balloon';
+  balloon.style.width = sizePx + 'px';
+  balloon.style.height = (sizePx * 1.5) + 'px';
+  balloon.style.left = leftPct + '%';
+  balloon.style.animationDuration = duration + 's';
+  balloon.style.animationDelay = delay + 's';
+  balloon.innerHTML = balloonSVG(color);
+  decor.appendChild(balloon);
+}
 
-  const balloonCount = 8;
-  const usedSpots = [];
-  const minGap = 11; // minimum % gap between regular balloons so they don't bunch up
+const balloonCount = 8;
+const usedSpots = [];
+const minGap = 11; // minimum % gap between regular balloons so they don't bunch up
 
-  function pickSpot(){
-    let attempt = 0;
-    let leftPct;
-    do{
-      leftPct = 2 + Math.random()*94;
-      attempt++;
-    } while(usedSpots.some(s => Math.abs(s - leftPct) < minGap) && attempt < 30);
-    usedSpots.push(leftPct);
-    return leftPct;
-  }
+function pickSpot() {
+  let attempt = 0;
+  let leftPct;
+  do {
+    leftPct = 2 + Math.random() * 94;
+    attempt++;
+  } while (usedSpots.some(s => Math.abs(s - leftPct) < minGap) && attempt < 30);
+  usedSpots.push(leftPct);
+  return leftPct;
+}
 
-  for(let i=0;i<balloonCount;i++){
-    const size = 38 + Math.random()*32;
-    const leftPct = pickSpot();
-    const duration = 16 + Math.random()*10;
-    const delay = -(Math.random()*24); /* stagger so loop feels continuous from the start */
-    makeBalloon(balloonColors[i % balloonColors.length], leftPct, size, duration, delay);
-  }
+for (let i = 0; i < balloonCount; i++) {
+  const size = 38 + Math.random() * 32;
+  const leftPct = pickSpot();
+  const duration = 16 + Math.random() * 10;
+  const delay = -(Math.random() * 24); /* stagger so loop feels continuous from the start */
+  makeBalloon(balloonColors[i % balloonColors.length], leftPct, size, duration, delay);
+}
 
-  // green + black balloons, launched in close pairs with a small up/down offset
-  const pairCount = 4;
-  for(let i=0;i<pairCount;i++){
-    const size = 38 + Math.random()*28;
-    const leftPct = pickSpot();
-    const duration = 16 + Math.random()*10;
-    const baseDelay = -(Math.random()*24);
+// green + black balloons, launched in close pairs with a small up/down offset
+const pairCount = 4;
+for (let i = 0; i < pairCount; i++) {
+  const size = 38 + Math.random() * 28;
+  const leftPct = pickSpot();
+  const duration = 16 + Math.random() * 10;
+  const baseDelay = -(Math.random() * 24);
 
-    // green balloon
-    makeBalloon(pairColors[0], leftPct, size, duration, baseDelay);
-    // black balloon right beside it, tiny horizontal gap + slight vertical (time) offset
-    makeBalloon(pairColors[1], leftPct + 4, size, duration, baseDelay - 1.2);
-  }
+  // green balloon
+  makeBalloon(pairColors[0], leftPct, size, duration, baseDelay);
+  // black balloon right beside it, tiny horizontal gap + slight vertical (time) offset
+  makeBalloon(pairColors[1], leftPct + 4, size, duration, baseDelay - 1.2);
+}
 
 // ===== Picture gallery section =====
 const galleryItems = [
@@ -250,7 +250,7 @@ const galleryItems = [
 
 const galleryColors = ['#F4B942', '#FF6F61', '#8B9DC3', '#2E7D4F'];
 
-function placeholderImage(index){
+function placeholderImage(index) {
   const color = galleryColors[index % galleryColors.length];
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
@@ -276,7 +276,7 @@ const lightboxCaption = document.getElementById('lightboxCaption');
 const galleryLeft = document.getElementById('galleryLeft');
 const galleryRight = document.getElementById('galleryRight');
 
-function renderGallery(direction){
+function renderGallery(direction) {
   const item = galleryItems[galleryIndex];
   galleryPhoto.src = item?.src || placeholderImage(galleryIndex);
   galleryPhoto.alt = item?.heading || 'Gallery photo';
@@ -311,15 +311,15 @@ document.getElementById('lightboxClose').addEventListener('click', () => {
 });
 
 lightbox.addEventListener('click', (e) => {
-  if(e.target === lightbox){
+  if (e.target === lightbox) {
     lightbox.classList.remove('open');
   }
 });
 
-if('IntersectionObserver' in window && galleryLeft && galleryRight){
+if ('IntersectionObserver' in window && galleryLeft && galleryRight) {
   const galleryObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if(entry.isIntersecting){
+      if (entry.isIntersecting) {
         entry.target.classList.add('in-view');
       } else {
         entry.target.classList.remove('in-view');
@@ -341,7 +341,7 @@ const worklogData = [
   {
     date: '5-Jul-26',
     hours: '5',
-    title: 'Aaj is website mein aap ke liye kya naya add hua? 💛',
+    title: 'Aaj is website mein aap ke liye kya naya add hua? 💚',
     subtitle: 'Aaj poore 5 ghanton ki mehnat, taake aap ki website behtar bane...',
     points: [
       { title: 'Ek haseen countdown aur intezar ⏳', detail: 'Website ka main page bilkul taiyar hai jahan ek bohot hi pyara countdown chal raha hai, jo 4th August ke ek ek second ka hisab rakh raha hai.' },
@@ -353,7 +353,7 @@ const worklogData = [
   {
     date: '6-Jul-26',
     hours: '4',
-    title: 'Aaj is website mein aap ke liye kya naya add hua? 💙',
+    title: 'Aaj is website mein aap ke liye kya naya add hua? 💚',
     subtitle: 'Aaj poore 4 ghanton ki mehnat, chize aur behtar banane ke liye...',
     points: [
       { title: 'Har ek corner ko aasan banaya 💚', detail: 'Hum ne is baat ka poora khayal rakha hai ke aap ko is website ko chalane mein koi mushkil na ho; har ek button aur click ko bilkul flawless kar diya hai.' },
@@ -385,7 +385,7 @@ const worklogData = [
 ];
 
 const worklogBody = document.getElementById('worklogBody');
-if(worklogBody){
+if (worklogBody) {
   worklogData.forEach((day, i) => {
     const row = document.createElement('tr');
     row.innerHTML = `
@@ -402,11 +402,11 @@ const daylogTitle = document.getElementById('daylogTitle');
 const daylogSubtitle = document.getElementById('daylogSubtitle');
 const daylogPoints = document.getElementById('daylogPoints');
 
-if(worklogBody){
+if (worklogBody) {
   worklogBody.addEventListener('click', (e) => {
-    if(!e.target.classList.contains('worklog-view-btn')) return;
+    if (!e.target.classList.contains('worklog-view-btn')) return;
     const day = worklogData[e.target.dataset.index];
-    if(!day) return;
+    if (!day) return;
 
     daylogTitle.textContent = day.title;
     daylogSubtitle.textContent = day.subtitle;
@@ -434,16 +434,16 @@ document.getElementById('daylogClose')?.addEventListener('click', () => {
   daylogModal?.classList.remove('open');
 });
 daylogModal?.addEventListener('click', (e) => {
-  if(e.target === daylogModal){
+  if (e.target === daylogModal) {
     daylogModal.classList.remove('open');
   }
 });
 
 const worklogPanel = document.getElementById('worklogPanel');
-if(worklogPanel && 'IntersectionObserver' in window){
+if (worklogPanel && 'IntersectionObserver' in window) {
   const worklogObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if(entry.isIntersecting){
+      if (entry.isIntersecting) {
         entry.target.classList.add('in-view');
       } else {
         entry.target.classList.remove('in-view');
@@ -451,17 +451,17 @@ if(worklogPanel && 'IntersectionObserver' in window){
     });
   }, { threshold: 0.15 });
   worklogObserver.observe(worklogPanel);
-} else if(worklogPanel){
+} else if (worklogPanel) {
   worklogPanel.classList.add('in-view');
 }
 
 // ===== Scroll reveal for points rows (IntersectionObserver) =====
-if('IntersectionObserver' in window){
+if ('IntersectionObserver' in window) {
   const pointRows = document.querySelectorAll('.point-row');
-  if(pointRows.length){
+  if (pointRows.length) {
     const rowObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if(entry.isIntersecting){
+        if (entry.isIntersecting) {
           entry.target.classList.add('in-view');
         } else {
           entry.target.classList.remove('in-view');
@@ -473,7 +473,7 @@ if('IntersectionObserver' in window){
 }
 
 // ===== Global cursor-follow spotlight =====
-(function(){
+(function () {
   const spotlight = document.createElement('div');
   spotlight.id = 'cursorSpot';
   document.body.appendChild(spotlight);
@@ -481,7 +481,7 @@ if('IntersectionObserver' in window){
   const state = { tx: window.innerWidth / 2, ty: window.innerHeight / 2, cx: window.innerWidth / 2, cy: window.innerHeight / 2 };
   let rafId = null;
 
-  function rafLoop(){
+  function rafLoop() {
     state.cx += (state.tx - state.cx) * 0.16;
     state.cy += (state.ty - state.cy) * 0.16;
     spotlight.style.left = state.cx + 'px';
@@ -489,8 +489,8 @@ if('IntersectionObserver' in window){
     rafId = requestAnimationFrame(rafLoop);
   }
 
-  function startLoop(){ if(!rafId) rafLoop(); }
-  function stopLoop(){ if(rafId){ cancelAnimationFrame(rafId); rafId = null; } }
+  function startLoop() { if (!rafId) rafLoop(); }
+  function stopLoop() { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }
 
   document.addEventListener('mousemove', (e) => {
     state.tx = e.clientX;
@@ -507,7 +507,7 @@ if('IntersectionObserver' in window){
 
   document.addEventListener('touchstart', (ev) => {
     const t = ev.touches[0];
-    if(!t) return;
+    if (!t) return;
     state.tx = t.clientX;
     state.ty = t.clientY;
     document.documentElement.classList.add('spotlight-on');
