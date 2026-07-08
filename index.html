@@ -129,93 +129,45 @@
   </div>
 </div>
 
-<!-- Points / progress section -->
-<section class="points-section" aria-labelledby="pointsHeading">
-  <div class="container">
-    <h2 id="pointsHeading">Aaj is website mein aap ke liye kya naya rang bhara? 💚</h2>
-    <p class="time-spent-note" style="font-style: italic; color: #ffb703; margin-top: -5px; margin-bottom: 25px; font-size: 1.1rem;">
-      Aaj poore 6 ghanton se zyada ki mehnat, sirf aap ki ek smile ke liye... 🥰
-    </p>
-    
-    <div class="points-list">
-      
-      <!-- Kal ke Points -->
-      <div class="point-row">
-        <div class="bullet"></div>
-        <div class="point-content">
-          <h3>Ek haseen countdown aur intezar ⏳</h3>
-          <p>Website ka main page bilkul taiyar hai jahan ek bohot hi pyara countdown chal raha hai, jo 4th August ke ek ek second ka hisab rakh raha hai.</p>
-        </div>
-      </div>
+<!-- Points section removed -->
+</div>
 
-      <div class="point-row">
-        <div class="bullet"></div>
-        <div class="point-content">
-          <h3>Surprise menu aur secure locks 🔒</h3>
-          <p>Story, Gallery, Guestbook, aur Surprise ke buttons add kar diye hain. Yeh sab abhi locked hain taake suspense aakhri waqt tak barkarar rahe.</p>
-        </div>
-      </div>
+<!-- ===== WORK LOG — MONTHLY TABLE SECTION ===== -->
+<section class="worklog" id="worklogSection">
+  <div class="worklog-head">
+    <div class="eyebrow">Ek mahine ka record</div>
+    <h2>Har din <span class="accent">kitna</span> kaam hua</h2>
+    <p class="subtext">Neechay table mein har din ke kaam ke ghante hain — "view" par click karo poora detail dekhne ke liye.</p>
+  </div>
 
-      <div class="point-row">
-        <div class="bullet"></div>
-        <div class="point-content">
-          <h3>Chalti hui ghari ka dial (Progress Tracker) 🔄</h3>
-          <p>Ek haseen progress dial banaya hai jo scroll karne par bohot hi smooth chalta hai aur yeh show karta hai ke website ka kaam kitne percent complete ho chuka hai.</p>
-        </div>
-      </div>
-
-      <div class="point-row">
-        <div class="bullet"></div>
-        <div class="point-content">
-          <h3>Khushiyon bhare udte balloons aur confetti 🎈✨</h3>
-          <p>Background mein har taraf rang-birange gubbare aur confetti add kiye hain jo screen par bohot hi naram aur silky motion ke sath float karte hain, jo jashn ka mahaul banate hain.</p>
-        </div>
-      </div>
-
-      <div class="point-row">
-        <div class="bullet"></div>
-        <div class="point-content">
-          <h3>Har ek corner ko aasan banaya 🤝</h3>
-          <p>Hum ne is baat ka poora khayal rakha hai ke aap ko is website ko chalane mein koi mushkil na ho; har ek button aur click ko bilkul flawless kar diya hai.</p>
-        </div>
-      </div>
-
-      <div class="point-row">
-        <div class="bullet"></div>
-        <div class="point-content">
-          <h3>Super-fast speed aur performance ⚡</h3>
-          <p>Piche ka sara code aur images ko itna optimize kar diya hai ke page bina kisi rukawoat ke, palkon ke jhapakte hi bohot fast load ho jata hai.</p>
-        </div>
-      </div>
-
-      <!-- Aaj ke Naye Points (Added Here) -->
-      <div class="point-row">
-        <div class="bullet" style="background-color: #00b4d8;"></div> <!-- New color for today's tasks -->
-        <div class="point-content">
-          <h3>1000 Martaba Sorry Lekhi (Handwritten Gallery) 📝📜</h3>
-          <p>Website ke sabse khas hisse par kaam kiya—jahan maine apne haath se poore 1000 dafa 'Sorry' likha tha. Us poore 2 ghante, 33 minute ki mehnat lagi or sliding gallery may dekh sakhtay hai.</p>
-        </div>
-      </div>
-
-      <div class="point-row">
-        <div class="bullet" style="background-color: #00b4d8;"></div>
-        <div class="point-content">
-          <h3>Alag Alag Pages Ka Structure Aur Smart Unlock 🔐🔢</h3>
-          <p>Har ek section ke liye alag se page numbers ka poora structure design kar diya hai. Yeh saare pages abhi poori tarah secure aur locked hain; sahi waqt aane par countdown khatam hote hi yeh khud-ba-khud unlock ho jayenge aur aap inhein dekh sakeingi!</p>
-        </div>
-      </div>
-
-      <div class="point-row">
-        <div class="bullet" style="background-color: #00b4d8;"></div>
-        <div class="point-content">
-          <h3>Mobile Ke Liye Ekdam Perfect Alignment 📱✨</h3>
-          <p>Website ke layout aur body structure ko is tarah behtar aur responsive banaya hai ke yeh sirf PC par nahi, balki aapke mobile phone par bhi bilkul center mein aur behad haseen aur balanced nazar aaye.</p>
-        </div>
-      </div>
-
+  <div class="worklog-panel" id="worklogPanel">
+    <div class="worklog-panel-title">📅 Work Log</div>
+    <div class="worklog-table-wrap">
+      <table class="worklog-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Working Hours</th>
+            <th>Today's Points</th>
+          </tr>
+        </thead>
+        <tbody id="worklogBody">
+          <!-- rows generated by JS from worklogData array below -->
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
+
+<!-- day-detail modal: shows that day's points, styled like the update card -->
+<div class="daylog-modal" id="daylogModal">
+  <div class="daylog-inner">
+    <button class="daylog-close" id="daylogClose">✕</button>
+    <div class="daylog-title" id="daylogTitle"></div>
+    <div class="daylog-subtitle" id="daylogSubtitle"></div>
+    <div id="daylogPoints"></div>
+  </div>
 </div>
+
 </body>
 </html>

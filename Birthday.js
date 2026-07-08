@@ -336,6 +336,114 @@ if('IntersectionObserver' in window && galleryLeft && galleryRight){
 
 renderGallery('next');
 
+// ===== Work log table section =====
+const worklogData = [
+  {
+    date: '5-Jul-26',
+    hours: '5',
+    title: 'Aaj is website mein aap ke liye kya naya add hua? 💛',
+    subtitle: 'Aaj poore 5 ghanton ki mehnat, taake aap ki website behtar bane...',
+    points: [
+      { title: 'Ek haseen countdown aur intezar ⏳', detail: 'Website ka main page bilkul taiyar hai jahan ek bohot hi pyara countdown chal raha hai, jo 4th August ke ek ek second ka hisab rakh raha hai.' },
+      { title: 'Surprise menu aur secure locks 🔒', detail: 'Story, Gallery, Guestbook, aur Surprise ke buttons add kar diye hain. Yeh sab abhi locked hain taake suspense aakhri waqt tak barkarar rahe.' },
+      { title: 'Chalti hui ghari ka dial (Progress Tracker) 🔄', detail: 'Ek haseen progress dial banaya hai jo scroll karne par bohot hi smooth chalta hai aur yeh show karta hai ke website ka kaam kitna percent complete ho chuka hai.' },
+      { title: 'Khushiyon bhare udte balloons aur confetti 🎈✨', detail: 'Background mein har taraf rang-birange gubbare aur confetti add kiye hain jo screen par bohot hi naram aur silky motion ke sath float karte hain, jo jashn ka mahol banate hain.' }
+    ]
+  },
+  {
+    date: '6-Jul-26',
+    hours: '4',
+    title: 'Aaj is website mein aap ke liye kya naya add hua? 💙',
+    subtitle: 'Aaj poore 4 ghanton ki mehnat, chize aur behtar banane ke liye...',
+    points: [
+      { title: 'Har ek corner ko aasan banaya 💚', detail: 'Hum ne is baat ka poora khayal rakha hai ke aap ko is website ko chalane mein koi mushkil na ho; har ek button aur click ko bilkul flawless kar diya hai.' },
+      { title: 'Super-fast speed aur performance ⚡', detail: 'Piche ka sara code aur images ko itna optimize kar diya hai ke page bina kisi rukawoat ke, palkon ke jhapakte hi bohot fast load ho jata hai.' }
+    ]
+  },
+  {
+    date: '7-Jul-26',
+    hours: '6',
+    title: 'Aaj is website mein aap ke liye kya naya rang bhara? 💚',
+    subtitle: 'Aaj poore 6 ghanton se zyada ki mehnat, sirf aap ki ek smile ke liye...',
+    points: [
+      { title: '1000 Martaba Sorry Lekhi (Handwritten Gallery) 📝📜', detail: 'Website ke sabse khas hisse par kaam kiya—jahan maine apne haath se poore 1000 dafa "Sorry" likha tha. Us poore 2 ghante, 33 minute ki mehnat lagi or sliding gallery may dekh sakhtay hai.' },
+      { title: 'Alag Alag Pages Ka Structure Aur Smart Unlock 🔐🔢', detail: 'Har ek section ke liye alag se page numbers ka poora structure design kar diya hai. Yeh saare pages abhi poori tarah secure aur locked hain; sahi waqt aane par countdown khatam hote hi yeh khud-ba-khud unlock ho jayenge aur aap inhein dekh sakeingi!' },
+      { title: 'Mobile Ke Liye Ekdam Perfect Alignment 📱✨', detail: 'Website ke layout aur body structure ko is tarah behtar aur responsive banaya hai ke yeh sirf PC par nahi, balki aapke mobile phone par bhi bilkul center mein aur behad haseen aur balanced nazar aaye.' }
+    ]
+  }
+];
+
+const worklogBody = document.getElementById('worklogBody');
+if(worklogBody){
+  worklogData.forEach((day, i) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${day.date}</td>
+      <td class="worklog-hours">${day.hours}</td>
+      <td><button class="worklog-view-btn" data-index="${i}">view</button></td>
+    `;
+    worklogBody.appendChild(row);
+  });
+}
+
+const daylogModal = document.getElementById('daylogModal');
+const daylogTitle = document.getElementById('daylogTitle');
+const daylogSubtitle = document.getElementById('daylogSubtitle');
+const daylogPoints = document.getElementById('daylogPoints');
+
+if(worklogBody){
+  worklogBody.addEventListener('click', (e) => {
+    if(!e.target.classList.contains('worklog-view-btn')) return;
+    const day = worklogData[e.target.dataset.index];
+    if(!day) return;
+
+    daylogTitle.textContent = day.title;
+    daylogSubtitle.textContent = day.subtitle;
+    daylogPoints.innerHTML = '';
+
+    day.points.forEach((p, i) => {
+      const el = document.createElement('div');
+      el.className = 'daylog-point';
+      el.style.animationDelay = (i * 0.1) + 's';
+      el.innerHTML = `
+        <div class="daylog-dot"></div>
+        <div>
+          <div class="daylog-point-title">${p.title}</div>
+          <div class="daylog-point-detail">${p.detail}</div>
+        </div>
+      `;
+      daylogPoints.appendChild(el);
+    });
+
+    daylogModal?.classList.add('open');
+  });
+}
+
+document.getElementById('daylogClose')?.addEventListener('click', () => {
+  daylogModal?.classList.remove('open');
+});
+daylogModal?.addEventListener('click', (e) => {
+  if(e.target === daylogModal){
+    daylogModal.classList.remove('open');
+  }
+});
+
+const worklogPanel = document.getElementById('worklogPanel');
+if(worklogPanel && 'IntersectionObserver' in window){
+  const worklogObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+      } else {
+        entry.target.classList.remove('in-view');
+      }
+    });
+  }, { threshold: 0.15 });
+  worklogObserver.observe(worklogPanel);
+} else if(worklogPanel){
+  worklogPanel.classList.add('in-view');
+}
+
 // ===== Scroll reveal for points rows (IntersectionObserver) =====
 if('IntersectionObserver' in window){
   const pointRows = document.querySelectorAll('.point-row');
