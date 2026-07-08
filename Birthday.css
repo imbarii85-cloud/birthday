@@ -794,12 +794,18 @@ table.worklog-table{
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: 10px 8px;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid rgba(139,157,195,0.25);
+}
+/* center the "Today's Points" column (3rd column) */
+.worklog-table th:nth-child(3),
+.worklog-table td:nth-child(3) {
+  text-align: center;
+  vertical-align: middle;
 }
 .worklog-table td{
   padding: 11px 8px;
-  text-align: left;
+  text-align: center;
   color: var(--cream);
   border-bottom: 1px solid rgba(139,157,195,0.1);
 }
