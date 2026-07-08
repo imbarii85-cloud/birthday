@@ -1,173 +1,227 @@
 <!DOCTYPE html>
 <html lang="ur">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday Countdown — Locked</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Birthday.css">
-<script src="Birthday.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Countdown — Locked</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="Birthday.css">
+  <script src="Birthday.js" defer></script>
 </head>
+
 <body>
 
-<div class="bg-decor" id="bgDecor"></div>
-<div class="page-wrapper">
+  <div class="bg-decor" id="bgDecor"></div>
+  <div class="page-wrapper">
 
-<header>
-  <div class="logo">Sehar<span>'s Birthday</span></div>
-  <nav id="navMenu">
-    <div class="nav-item" data-tip="Locked">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-      Story
-      <span class="tip">4 Aug ko unlock ho ga</span>
-    </div>
-    <div class="nav-item" data-tip="Locked">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-      Gallery
-      <span class="tip">4 Aug ko unlock ho ga</span>
-    </div>
-    <div class="nav-item" data-tip="Locked">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-      Guestbook
-      <span class="tip">4 Aug ko unlock ho ga</span>
-    </div>
-    <div class="nav-item" data-tip="Locked">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-      Surprise
-      <span class="tip">4 Aug ko unlock ho ga</span>
-    </div>
-  </nav>
-</header>
+    <header>
+      <div class="logo">Sehar<span>'s Birthday</span></div>
+      <nav id="navMenu">
+        <div class="nav-item" data-tip="Locked">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="11" width="14" height="9" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          Story
+          <span class="tip">4 Aug ko unlock ho ga</span>
+        </div>
+        <div class="nav-item" data-tip="Locked">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="11" width="14" height="9" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          Gallery
+          <span class="tip">4 Aug ko unlock ho ga</span>
+        </div>
+        <div class="nav-item" data-tip="Locked">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="11" width="14" height="9" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          Guestbook
+          <span class="tip">4 Aug ko unlock ho ga</span>
+        </div>
+        <div class="nav-item" data-tip="Locked">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="11" width="14" height="9" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          Surprise
+          <span class="tip">4 Aug ko unlock ho ga</span>
+        </div>
+      </nav>
+    </header>
 
-<main>
-  <div class="eyebrow">Sabar ka phool meetha hota hai... ⏳</div>
-  <h1>Jab tak ghari ka kaanta sahi waqt par nahi pohanchta, tab tak sab kuch lock rahega.</h1>
-  <p class="subtext">Countdown khatam hote hi menu aur buttons active ho jayenge. Dekhte hain aap kitna intezar kar sakte hain!</p>
+    <main>
+      <div class="eyebrow">Sabar ka phool meetha hota hai... ⏳</div>
+      <h1>Jab tak ghari ka kaanta sahi waqt par nahi pohanchta, tab tak sab kuch lock rahega.</h1>
+      <p class="subtext">Countdown khatam hote hi menu aur buttons active ho jayenge. Dekhte hain aap kitna intezar kar
+        sakte hain!</p>
 
-  <div class="lock-dial" id="dial">
-    <div class="dial-unit"><div class="dial-number" id="d-days">00</div><div class="dial-label">Days</div></div>
-    <div class="dial-unit"><div class="dial-number" id="d-hours">00</div><div class="dial-label">Hours</div></div>
-    <div class="dial-unit"><div class="dial-number" id="d-mins">00</div><div class="dial-label">Mins</div></div>
-    <div class="dial-unit"><div class="dial-number" id="d-secs">00</div><div class="dial-label">Secs</div></div>
-  </div>
-
-  <div class="target-date">Unlocks on <b>4 August, 12:00:01 AM</b></div>
-
-  <button class="lock-btn" id="lockBtn" disabled>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-    <span id="btnLabel">Locked</span>
-  </button>
-
-  <div class="status-note" id="statusNote">Menu aur login us waqt tak inactive rahenge.</div>
-</main>
-
-<div class="progress-panel">
-  <div class="progress-copy">
-    <strong>Choti si jhalak, bara surprise! ✨</strong>
-    <span id="progressText">Yeh page abhi <b>2%</b> complete hai aur kaam tezi se jari hai. Neeche scroll karein aur dial animation mein dekhein ke aapka birthday surprise kitna ready ho chuka hai!</span>
-  </div>
-  <div class="gauge-container">
-    <div class="gauge-shell">
-      <svg class="gauge-ring" viewBox="0 0 220 220" aria-hidden="true">
-        <defs>
-          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#A855F7"/>
-            <stop offset="100%" stop-color="#3B82F6"/>
-          </linearGradient>
-        </defs>
-        <circle class="gauge-track" cx="110" cy="110" r="96"/>
-        <circle class="gauge-fill" cx="110" cy="110" r="96"/>
-      </svg>
-      <div class="gauge-center">
-        <div class="gauge-value" id="gaugeValue">0%</div>
+      <div class="lock-dial" id="dial">
+        <div class="dial-unit">
+          <div class="dial-number" id="d-days">00</div>
+          <div class="dial-label">Days</div>
+        </div>
+        <div class="dial-unit">
+          <div class="dial-number" id="d-hours">00</div>
+          <div class="dial-label">Hours</div>
+        </div>
+        <div class="dial-unit">
+          <div class="dial-number" id="d-mins">00</div>
+          <div class="dial-label">Mins</div>
+        </div>
+        <div class="dial-unit">
+          <div class="dial-number" id="d-secs">00</div>
+          <div class="dial-label">Secs</div>
+        </div>
       </div>
-      <div class="gauge-ticks">
-        <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
-        <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
-        <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+
+      <div class="target-date">Unlocks on <b>4 August, 12:00:01 AM</b></div>
+
+      <button class="lock-btn" id="lockBtn" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="11" width="14" height="9" rx="2" />
+          <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+        <span id="btnLabel">Locked</span>
+      </button>
+
+      <div class="status-note" id="statusNote">Menu aur login us waqt tak inactive rahenge.</div>
+    </main>
+
+    <div class="progress-panel">
+      <div class="progress-copy">
+        <strong>Choti si jhalak, bara surprise! ✨</strong>
+        <span id="progressText">Yeh page abhi <b>2%</b> complete hai aur kaam tezi se jari hai. Neeche scroll karein aur
+          dial animation mein dekhein ke aapka birthday surprise kitna ready ho chuka hai!</span>
+      </div>
+      <div class="gauge-container">
+        <div class="gauge-shell">
+          <svg class="gauge-ring" viewBox="0 0 220 220" aria-hidden="true">
+            <defs>
+              <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#A855F7" />
+                <stop offset="100%" stop-color="#3B82F6" />
+              </linearGradient>
+            </defs>
+            <circle class="gauge-track" cx="110" cy="110" r="96" />
+            <circle class="gauge-fill" cx="110" cy="110" r="96" />
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-value" id="gaugeValue">0%</div>
+          </div>
+          <div class="gauge-ticks">
+            <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+            <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+            <span class="tick"></span><span class="tick"></span><span class="tick"></span><span class="tick"></span>
+          </div>
+        </div>
+        <button class="gauge-refresh" id="gaugeRefresh" type="button">
+          <span class="refresh-icon">↻</span>
+          Refresh
+        </button>
       </div>
     </div>
-    <button class="gauge-refresh" id="gaugeRefresh" type="button">
-      <span class="refresh-icon">↻</span>
-      Refresh
-    </button>
-  </div>
-</div>
 
-<!-- ===== PICTURE GALLERY — 3D SECTION ===== -->
-<section class="gallery" id="gallerySection">
-  <div class="gallery-wrap">
-    <div class="gallery-left" id="galleryLeft">
-      <div class="gallery-caption" id="galleryCaption"></div>
+    <!-- ===== PICTURE GALLERY — 3D SECTION ===== -->
+    <section class="gallery" id="gallerySection">
+      <div class="gallery-wrap">
+        <div class="gallery-left" id="galleryLeft">
+          <div class="gallery-caption" id="galleryCaption"></div>
 
-      <div class="gallery-stage">
-        <button class="gallery-arrow" id="galleryPrev" aria-label="Previous picture">⬅</button>
+          <div class="gallery-stage">
+            <button class="gallery-arrow" id="galleryPrev" aria-label="Previous picture">⬅</button>
 
-        <div class="gallery-frame" id="galleryFrame">
-          <img class="gallery-photo" id="galleryPhoto" src="" alt="">
+            <div class="gallery-frame" id="galleryFrame">
+              <img class="gallery-photo" id="galleryPhoto" src="" alt="">
+            </div>
+
+            <button class="gallery-arrow" id="galleryNext" aria-label="Next picture">➡</button>
+          </div>
+
+          <div class="gallery-counter" id="galleryCounter">1</div>
         </div>
 
-        <button class="gallery-arrow" id="galleryNext" aria-label="Next picture">➡</button>
+        <div class="gallery-right" id="galleryRight">
+          <div class="gallery-heading" id="galleryHeading">1000 Bar Sorry</div>
+          <div class="gallery-description" id="galleryDescription">1000 bar b kro toh woh b kaam ap kay ais totay huway
+            dil kay ahgay likin mjh yh meri saza smj kay ma lekha hai ki ma bht boura ho bht boura kiyh likin ma jaan
+            kay nai kiyh yara meri jan m sorry plz mjh maaf kr doh ma yh saza smj kay 2:30 gantay lagatar lekha ki yh
+            karna kitna galt tha or manay yh lekhtay wqt har oss chees koh socha joh ap koh heart ki ho gi so mjh sab
+            patah hai ki ma kia galti ki i know meri ais glti ki saza yh choti hai likin jana plz mjh maaf kro meri pari
+            si jan hona ma kai kaho mjh apni glti ka ahss hai likin ma kitna kis kis baat pay sorry kro smj nai kuo
+            aitna boura hoi apni shoni si jan koh bht rolata ho plz meri kahny koh bht kucha hai likin mjh smj nai ah
+            rih kai kro kia nai akhsy maafi mango kahsy nai mjh jhn laga ki yh 1000 dafa lekhna shayd mjh meri galti ka
+            ahss or mjh ap say mafi mangnay may help karay ga ais liyh lekha tha yha 1000 time sorry plz i m sorry plz
+            mjh maaf krna patah hai aj sara din kahi or nai kahi b nai busy tha bas yh 1000 bar lekhnay may or or yh
+            sara din coding krnay may patah hai aj may nay 2 din ka joh kaam tha na woh aaj ak din may kiyh mean 2 din
+            ka code aj ak din may lekha hai or b kuch cheesy han joh hidden hai but woha ap abi nai dakh sakhtay han
+            sorry but i love u yara jana patah meray hath bht dard kr rhy hn bs or ma bs subs say none stop bs lagaa ho
+            or mera sir bht dard kr rah hai kia btao or khana b nai khaya ganday bs mjh ap mano yh na mano bht dara ho
+            ap ki narazgi say ap kay elfazo say yara ma kia kaho bs m sorry m sorrry m sorry ma jaan kay nai krta mjh
+            patah ki kb kahsay ho jhti hai galti mera dil kar rah khass ma pichy wapis wqt koh lay ja kay apni galti
+            sohdar sakho likin afsoos ahsa nai ho skahta hai so yara ma bht ganda janu ho bht ganada ho so sorry meri
+            kia feeling ma ap koh kia btao bs plz mjh maaf kr doh plz mjh say narza na huwa kro meri jan jhti hai ab ap
+            kay naraz honay say jana.</div>
+        </div>
       </div>
+    </section>
 
-      <div class="gallery-counter" id="galleryCounter">1</div>
+    <div class="lightbox" id="lightbox">
+      <div class="lightbox-inner">
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close gallery">✕</button>
+        <img class="lightbox-photo" id="lightboxPhoto" src="" alt="">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+      </div>
     </div>
 
-    <div class="gallery-right" id="galleryRight">
-      <div class="gallery-heading" id="galleryHeading">1000 Bar Sorry</div>
-      <div class="gallery-description" id="galleryDescription">1000 bar b kro toh woh b kaam ap kay ais totay huway dil kay ahgay likin mjh yh meri saza smj kay ma lekha hai ki ma bht boura ho bht boura kiyh likin ma jaan kay nai kiyh yara meri jan m sorry plz mjh maaf kr doh ma yh saza smj kay 2:30 gantay lagatar lekha ki yh karna kitna galt tha or manay yh lekhtay wqt har oss chees koh socha joh ap koh heart ki ho gi so mjh sab patah hai ki ma kia galti ki i know meri ais glti ki saza yh choti hai likin jana plz mjh maaf kro meri pari si jan hona ma kai kaho mjh apni glti ka ahss hai likin ma kitna kis kis baat pay sorry kro smj nai kuo aitna boura hoi apni shoni si jan koh bht rolata ho plz meri kahny koh bht kucha hai likin mjh smj nai ah rih kai kro kia nai akhsy maafi mango kahsy nai mjh jhn laga ki yh 1000 dafa lekhna shayd mjh meri galti ka ahss or mjh ap say mafi mangnay may help karay ga ais liyh lekha tha yha 1000 time sorry plz i m sorry plz mjh maaf krna patah hai aj sara din kahi or nai kahi b nai busy tha bas yh 1000 bar lekhnay may or or yh sara din coding krnay may patah hai aj may nay 2 din ka joh kaam tha na woh aaj ak din may kiyh mean 2 din ka code aj ak din may lekha hai or b kuch cheesy han joh hidden hai but woha ap abi nai dakh sakhtay han sorry but i love u yara jana patah meray hath bht dard kr rhy hn bs or ma bs subs say none stop bs lagaa ho or mera sir bht dard kr rah hai kia btao or khana b nai khaya ganday bs mjh ap mano yh na mano bht dara ho ap ki narazgi say ap kay elfazo say yara ma kia kaho bs m sorry m sorrry m sorry ma jaan kay nai krta mjh patah ki kb kahsay ho jhti hai galti mera dil kar rah khass ma pichy wapis wqt koh lay ja kay apni galti sohdar sakho likin afsoos ahsa nai ho skahta hai so yara ma bht ganda janu ho bht ganada ho so sorry meri kia feeling ma ap koh kia btao bs plz mjh maaf kr doh plz mjh say narza na huwa kro meri jan jhti hai ab ap kay naraz honay say jana.</div>
+    <!-- Points section removed -->
+  </div>
+
+  <!-- ===== WORK LOG — MONTHLY TABLE SECTION ===== -->
+  <section class="worklog" id="worklogSection">
+    <div class="worklog-head">
+      <div class="eyebrow">Daily Updates Ka Record</div>
+      <h2>Har din <span class="accent">kitna</span> kaam hua</h2>
+      <p class="subtext">Is platform ko scratch se build karne aur har ek feature ko deploy karne mein rozana ka jo time
+        invest hua hai, yeh table usi ka live status hai. Kis date ko kitne hours kaam hua aur kya milestones achieve
+        kiye gaye, unki complete technical details dekhne ke liye 'view' par click karein.</p>
+    </div>
+
+    <div class="worklog-panel" id="worklogPanel">
+      <div class="worklog-panel-title">📅 Work Log</div>
+      <div class="worklog-table-wrap">
+        <table class="worklog-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Working Hours</th>
+              <th>Today's Points</th>
+            </tr>
+          </thead>
+          <tbody id="worklogBody">
+            <!-- rows generated by JS from worklogData array below -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- day-detail modal: shows that day's points, styled like the update card -->
+  <div class="daylog-modal" id="daylogModal">
+    <div class="daylog-inner">
+      <button class="daylog-close" id="daylogClose">✕</button>
+      <div class="daylog-title" id="daylogTitle"></div>
+      <div class="daylog-subtitle" id="daylogSubtitle"></div>
+      <div id="daylogPoints"></div>
     </div>
   </div>
-</section>
-
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-inner">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Close gallery">✕</button>
-    <img class="lightbox-photo" id="lightboxPhoto" src="" alt="">
-    <div class="lightbox-caption" id="lightboxCaption"></div>
-  </div>
-</div>
-
-<!-- Points section removed -->
-</div>
-
-<!-- ===== WORK LOG — MONTHLY TABLE SECTION ===== -->
-<section class="worklog" id="worklogSection">
-  <div class="worklog-head">
-    <div class="eyebrow">Ek mahine ka record</div>
-    <h2>Har din <span class="accent">kitna</span> kaam hua</h2>
-    <p class="subtext">Neechay table mein har din ke kaam ke ghante hain — "view" par click karo poora detail dekhne ke liye.</p>
-  </div>
-
-  <div class="worklog-panel" id="worklogPanel">
-    <div class="worklog-panel-title">📅 Work Log</div>
-    <div class="worklog-table-wrap">
-      <table class="worklog-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Working Hours</th>
-            <th>Today's Points</th>
-          </tr>
-        </thead>
-        <tbody id="worklogBody">
-          <!-- rows generated by JS from worklogData array below -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- day-detail modal: shows that day's points, styled like the update card -->
-<div class="daylog-modal" id="daylogModal">
-  <div class="daylog-inner">
-    <button class="daylog-close" id="daylogClose">✕</button>
-    <div class="daylog-title" id="daylogTitle"></div>
-    <div class="daylog-subtitle" id="daylogSubtitle"></div>
-    <div id="daylogPoints"></div>
-  </div>
-</div>
 
 </body>
+
 </html>
