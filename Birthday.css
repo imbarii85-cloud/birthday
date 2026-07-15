@@ -696,7 +696,7 @@ h1 .accent {
 
 @media (max-width: 640px) {
   header {
-    padding: 18px 16px 0;
+    padding: 14px 16px;
   }
 
   .dial-unit {
@@ -710,6 +710,55 @@ h1 .accent {
 
   .point-row:hover {
     transform: translateY(-10px) translateZ(28px) rotateX(5deg) scale(1.03);
+  }
+}
+
+/* ── 480px: Tight mobile — shrink dials, gallery frame, and worklog ── */
+@media (max-width: 480px) {
+  header {
+    padding: 12px 14px;
+  }
+
+  .logo {
+    font-size: 1.15rem;
+  }
+
+  h1 {
+    font-size: clamp(1.6rem, 8vw, 2.2rem);
+  }
+
+  /* Countdown dials — keep all 4 in a row even at 320px */
+  .clocks {
+    gap: 8px;
+  }
+
+  .dial-unit {
+    min-width: 54px;
+    padding: 10px 6px;
+  }
+
+  .dial-num {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+  }
+
+  .dial-label {
+    font-size: 0.58rem;
+  }
+
+  /* Gallery frame shrinks to fit screen width */
+  .gallery-frame {
+    width: min(calc(100vw - 100px), 240px);
+    height: min(calc(100vw - 100px), 240px);
+  }
+
+  .gallery-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  main {
+    padding: 4rem 14px 4rem;
   }
 }
 
@@ -1052,11 +1101,80 @@ table.worklog-table {
   font-size: 0.85rem;
 }
 
+/* Worklog — horizontal scrollable on mid-mobile */
 @media (max-width: 768px) {
+  .worklog-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .worklog-table {
-    min-width: 500px;
+    min-width: 420px;
   }
 }
+
+/* Worklog — card-view stacked on small mobile */
+@media (max-width: 500px) {
+  .worklog-table-wrap {
+    overflow-x: visible;
+  }
+
+  /* Hide the header row */
+  .worklog-table thead {
+    display: none;
+  }
+
+  .worklog-table,
+  .worklog-table tbody,
+  .worklog-table tr,
+  .worklog-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .worklog-table tbody tr {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(139, 157, 195, 0.18);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .worklog-table tbody tr:hover {
+    background: rgba(244, 185, 66, 0.07);
+  }
+
+  .worklog-table td {
+    padding: 0;
+    border: none;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+  }
+
+  /* Show data-label as bold prefix */
+  .worklog-table td::before {
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+
+  .worklog-view-btn {
+    min-height: 44px;
+    padding: 10px 20px;
+  }
+}
+
 
 .worklog-table thead th {
   position: sticky;
@@ -1339,4 +1457,216 @@ html.spotlight-on #cursorSpot {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+/* ===== FLOATING AESTHETIC QUIZ BUTTON ===== */
+.quiz-floating-container {
+  position: absolute;
+  bottom: 30px;
+  left: 44%;
+  z-index: 1000;
+  animation: quiz-float 5s ease-in-out infinite;
+}
+
+.quiz-floating-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(16, 40, 74, 0.85) 0%, rgba(7, 20, 41, 0.95) 100%);
+  border: 1.5px solid rgba(244, 185, 66, 0.4);
+  color: var(--cream);
+  text-decoration: none;
+  font-family: 'Baloo 2', sans-serif;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+}
+
+.quiz-floating-btn:hover {
+  transform: scale(1.06);
+  border-color: rgba(255, 111, 97, 0.8);
+  /* coral accent */
+  background: linear-gradient(135deg, rgba(22, 52, 94, 0.9) 0%, rgba(11, 31, 58, 0.98) 100%);
+}
+
+/* Pulsing outer glow */
+.quiz-btn-glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold), var(--coral));
+  z-index: -2;
+  opacity: 0.35;
+  filter: blur(8px);
+  animation: quiz-glow 3s ease-in-out infinite;
+}
+
+/* Shine Sweep Effect */
+.quiz-btn-shine {
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0.25) 60%,
+      transparent);
+  transform: skewX(-25deg);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.quiz-floating-btn:hover .quiz-btn-shine {
+  animation: quiz-shine 0.85s ease-out forwards;
+}
+
+/* Wiggling Icon */
+.quiz-btn-icon {
+  font-size: 1.6rem;
+  display: inline-block;
+  transform-origin: center bottom;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s ease;
+}
+
+.quiz-floating-btn:hover .quiz-btn-icon {
+  animation: quiz-wiggle 0.6s ease-in-out infinite alternate;
+}
+
+/* Button Content */
+.quiz-btn-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.quiz-btn-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+.quiz-floating-btn:hover .quiz-btn-subtitle {
+  color: var(--coral);
+}
+
+.quiz-btn-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--cream);
+  letter-spacing: 0.3px;
+}
+
+/* Active Badge */
+.quiz-btn-badge {
+  background: rgba(46, 125, 79, 0.2);
+  border: 1.5px solid rgba(46, 125, 79, 0.5);
+  color: #55E18A;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(85, 225, 138, 0.2);
+  transition: all 0.3s ease;
+}
+
+.quiz-floating-btn:hover .quiz-btn-badge {
+  background: rgba(255, 111, 97, 0.25);
+  border-color: rgba(255, 111, 97, 0.6);
+  color: var(--coral);
+  box-shadow: 0 0 10px rgba(255, 111, 97, 0.35);
+}
+
+/* Animations */
+@keyframes quiz-float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes quiz-glow {
+
+  0%,
+  100% {
+    opacity: 0.25;
+    filter: blur(8px);
+  }
+
+  50% {
+    opacity: 0.45;
+    filter: blur(12px);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes quiz-wiggle {
+  0% {
+    transform: rotate(-10deg) scale(1.1);
+  }
+
+  100% {
+    transform: rotate(10deg) scale(1.1);
+  }
+}
+
+@keyframes quiz-shine {
+  0% {
+    left: -150%;
+  }
+
+  100% {
+    left: 150%;
+  }
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+  .quiz-floating-container {
+    bottom: 20px;
+    left: 20px;
+  }
+
+  .quiz-floating-btn {
+    padding: 10px 18px;
+    gap: 10px;
+  }
+
+  .quiz-btn-icon {
+    font-size: 1.35rem;
+  }
+
+  .quiz-btn-title {
+    font-size: 0.95rem;
+  }
+
+  .quiz-btn-subtitle {
+    font-size: 0.6rem;
+  }
+
+  .quiz-btn-badge {
+    display: none;
+    /* Hide badge on small screens to keep layout clean */
+  }
 }
