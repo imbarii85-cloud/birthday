@@ -1101,7 +1101,7 @@ table.worklog-table {
   font-size: 0.85rem;
 }
 
-/* Worklog — horizontal scrollable on mid-mobile */
+/* Worklog — horizontal scrollable on mobile/tablet if overflow occurs */
 @media (max-width: 768px) {
   .worklog-table-wrap {
     overflow-x: auto;
@@ -1109,71 +1109,10 @@ table.worklog-table {
   }
 
   .worklog-table {
-    min-width: 420px;
+    min-width: 320px;
   }
 }
 
-/* Worklog — card-view stacked on small mobile */
-@media (max-width: 500px) {
-  .worklog-table-wrap {
-    overflow-x: visible;
-  }
-
-  /* Hide the header row */
-  .worklog-table thead {
-    display: none;
-  }
-
-  .worklog-table,
-  .worklog-table tbody,
-  .worklog-table tr,
-  .worklog-table td {
-    display: block;
-    width: 100%;
-  }
-
-  .worklog-table tbody tr {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(139, 157, 195, 0.18);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .worklog-table tbody tr:hover {
-    background: rgba(244, 185, 66, 0.07);
-  }
-
-  .worklog-table td {
-    padding: 0;
-    border: none;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.88rem;
-  }
-
-  /* Show data-label as bold prefix */
-  .worklog-table td::before {
-    content: attr(data-label);
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--slate);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    min-width: 90px;
-    flex-shrink: 0;
-  }
-
-  .worklog-view-btn {
-    min-height: 44px;
-    padding: 10px 20px;
-  }
-}
 
 
 .worklog-table thead th {
@@ -1461,10 +1400,12 @@ html.spotlight-on #cursorSpot {
 
 /* ===== FLOATING AESTHETIC QUIZ BUTTON ===== */
 .quiz-floating-container {
-  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   bottom: 30px;
-  left: 44%;
   z-index: 1000;
+
   animation: quiz-float 5s ease-in-out infinite;
 }
 
