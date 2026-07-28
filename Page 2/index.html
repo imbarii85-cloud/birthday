@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday</title>
+    <!-- Google Fonts: serif headings + script/cursive -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Great+Vibes&family=Playfair+Display:wght@700;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <!-- GSAP animation library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+
+<body>
+    <!-- Sound toggle — muted by default -->
+    <button id="sound-toggle" class="sound-toggle" aria-label="Toggle sound" aria-pressed="false">
+        <svg class="icon-speaker-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M11 5L6 9H2v6h4l5 4V5z" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+        </svg>
+        <svg class="icon-speaker-on hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M11 5L6 9H2v6h4l5 4V5z" />
+            <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
+        </svg>
+    </button>
+    <main id="experience">
+        <!-- ═══ STAGE 1 — Intro + Archery Game ═══ -->
+        <section id="stage-1" class="stage stage-active" data-stage="1">
+            <p class="intro-tagline">a little something, for you</p>
+            <div class="heart-zone">
+                <svg class="heart-svg" id="target-heart" viewBox="0 0 200 180" aria-hidden="true">
+                    <defs>
+                        <radialGradient id="heartGrad" cx="40%" cy="35%" r="65%">
+                            <stop offset="0%" stop-color="#ffb8d0" />
+                            <stop offset="45%" stop-color="#ff6b9d" />
+                            <stop offset="100%" stop-color="#c9184a" />
+                        </radialGradient>
+                        <filter id="heartGlow">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <path class="heart-shape" filter="url(#heartGlow)"
+                        d="M100 160 C100 160 10 100 10 55 C10 25 40 10 65 30 C80 10 110 10 130 30 C155 10 190 25 190 55 C190 100 100 160 100 160 Z"
+                        fill="url(#heartGrad)" />
+                    <ellipse cx="72" cy="52" rx="18" ry="12" fill="rgba(255,255,255,0.35)"
+                        transform="rotate(-25 72 52)" />
+                </svg>
+            </div>
+            <div class="bow-wrapper" id="bow-wrapper">
+                <svg class="bow-svg" id="bow-svg" viewBox="0 0 220 320" aria-label="Bow — pull and release">
+                    <defs>
+                        <linearGradient id="bowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#5c3d2e" />
+                            <stop offset="50%" stop-color="#8b5e3c" />
+                            <stop offset="100%" stop-color="#5c3d2e" />
+                        </linearGradient>
+                        <linearGradient id="arrowShaft" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#c9a227" />
+                            <stop offset="100%" stop-color="#f5d76e" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Recurve bow limbs -->
+                    <path class="bow-limb bow-limb-left" d="M110 280 C60 260 30 200 40 130 C45 95 55 60 70 30"
+                        fill="none" stroke="url(#bowGrad)" stroke-width="7" stroke-linecap="round" />
+                    <path class="bow-limb bow-limb-right" d="M110 280 C160 260 190 200 180 130 C175 95 165 60 150 30"
+                        fill="none" stroke="url(#bowGrad)" stroke-width="7" stroke-linecap="round" />
+                    <!-- Grip -->
+                    <rect x="103" y="265" width="14" height="40" rx="4" fill="#4a3020" />
+                    <!-- String (two segments meeting at pull point — rest at y=30) -->
+                    <line id="string-top" class="bow-string" x1="70" y1="30" x2="110" y2="30" stroke="#ddd"
+                        stroke-width="2" />
+                    <line id="string-bottom" class="bow-string" x1="150" y1="30" x2="110" y2="30" stroke="#ddd"
+                        stroke-width="2" />
+                    <!-- Invisible drag hit area -->
+                    <circle id="string-pull-point" cx="110" cy="30" r="28" fill="transparent" class="string-handle" />
+                </svg>
+            </div>
+            <!-- Flying arrow (hidden until release) -->
+            <svg class="flying-arrow hidden" id="flying-arrow" viewBox="0 0 120 24" aria-hidden="true">
+                <line x1="0" y1="12" x2="90" y2="12" stroke="url(#arrowShaft)" stroke-width="3"
+                    stroke-linecap="round" />
+                <polygon points="90,12 108,12 100,6" fill="#f5d76e" />
+                <!-- Heart-shaped fletching -->
+                <path d="M8 12 C8 12 0 6 0 2 C0 -2 4 -4 8 0 C12 -4 16 -2 16 2 C16 6 8 12 8 12 Z" fill="#e8a0b4"
+                    transform="translate(0,0) scale(0.9)" />
+            </svg>
+            <div class="instruction-block">
+                <p class="pull-label">PULL &amp; RELEASE</p>
+                <p class="aim-label">Aim for the heart</p>
+            </div>
+        </section>
+        <!-- ═══ STAGE 2 — Arrow Hits Heart ═══ -->
+        <section id="stage-2" class="stage" data-stage="2">
+            <div class="heart-zone">
+                <svg class="heart-svg heart-pierced" viewBox="0 0 200 180" aria-hidden="true">
+                    <defs>
+                        <radialGradient id="heartGrad2" cx="40%" cy="35%" r="65%">
+                            <stop offset="0%" stop-color="#ffb8d0" />
+                            <stop offset="45%" stop-color="#ff6b9d" />
+                            <stop offset="100%" stop-color="#c9184a" />
+                        </radialGradient>
+                        <filter id="heartGlow2">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <path class="heart-shape"
+                        d="M100 160 C100 160 10 100 10 55 C10 25 40 10 65 30 C80 10 110 10 130 30 C155 10 190 25 190 55 C190 100 100 160 100 160 Z"
+                        fill="url(#heartGrad2)" filter="url(#heartGlow2)" />
+                    <ellipse cx="72" cy="52" rx="18" ry="12" fill="rgba(255,255,255,0.35)"
+                        transform="rotate(-25 72 52)" />
+                    <!-- Embedded golden arrow -->
+                    <g class="embedded-arrow" transform="translate(100,90) rotate(-55)">
+                        <line x1="-60" y1="0" x2="60" y2="0" stroke="url(#arrowShaft)" stroke-width="3.5"
+                            stroke-linecap="round" />
+                        <polygon points="60,0 78,0 69,-6" fill="#f5d76e" />
+                        <path
+                            d="M-52 0 C-52 0 -60 -6 -60 -10 C-60 -14 -56 -16 -52 -12 C-48 -16 -44 -14 -44 -10 C-44 -6 -52 0 -52 0 Z"
+                            fill="#e8a0b4" />
+                    </g>
+                </svg>
+            </div>
+            <div class="bow-wrapper bow-relaxed">
+                <svg class="bow-svg" viewBox="0 0 220 320" aria-hidden="true">
+                    <path d="M110 280 C60 260 30 200 40 130 C45 95 55 60 70 30" fill="none" stroke="url(#bowGrad)"
+                        stroke-width="7" stroke-linecap="round" />
+                    <path d="M110 280 C160 260 190 200 180 130 C175 95 165 60 150 30" fill="none" stroke="url(#bowGrad)"
+                        stroke-width="7" stroke-linecap="round" />
+                    <rect x="103" y="265" width="14" height="40" rx="4" fill="#4a3020" />
+                    <line class="bow-string-relaxed" x1="70" y1="30" x2="110" y2="30" stroke="#ddd" stroke-width="2" />
+                    <line class="bow-string-relaxed" x1="150" y1="30" x2="110" y2="30" stroke="#ddd" stroke-width="2" />
+                </svg>
+            </div>
+            <div class="instruction-block">
+                <p class="aim-label">Aim for the heart</p>
+            </div>
+        </section>
+        <!-- ═══ STAGE 3 — Happy Birthday Reveal ═══ -->
+        <section id="stage-3" class="stage stage-magenta" data-stage="3">
+            <p class="wish-text">make a wish&hellip;</p>
+            <h1 class="birthday-heading">
+                <span class="heading-line">Happy</span>
+                <span class="heading-line">Birthday</span>
+            </h1>
+            <svg class="gold-squiggle" viewBox="0 0 300 20" aria-hidden="true">
+                <path d="M5 12 Q40 2 80 14 T160 10 T240 14 T295 8" fill="none" stroke="#d4af37" stroke-width="2.5"
+                    stroke-linecap="round" />
+            </svg>
+            <p class="celebrating-text">to someone celebrating</p>
+        </section>
+        <!-- ═══ STAGE 4 — Tree Grows (Heart Shape) ═══ -->
+        <section id="stage-4" class="stage stage-tree" data-stage="4">
+            <div class="sunburst" aria-hidden="true"></div>
+            <div class="tree-scene">
+                <svg class="tree-svg" id="tree-svg" viewBox="0 0 400 420" aria-hidden="true">
+                    <!-- Trunk -->
+                    <path id="tree-trunk" class="tree-part" d="M188 420 L188 280 Q200 270 212 280 L212 420 Z"
+                        fill="#5c3d2e" stroke="none" />
+                    <!-- Branches forming heart silhouette -->
+                    <path id="branch-left-main" class="tree-part tree-branch"
+                        d="M200 280 C120 260 60 200 70 140 C75 110 90 80 110 60" fill="none" stroke="#6b4226"
+                        stroke-width="6" stroke-linecap="round" />
+                    <path id="branch-right-main" class="tree-part tree-branch"
+                        d="M200 280 C280 260 340 200 330 140 C325 110 310 80 290 60" fill="none" stroke="#6b4226"
+                        stroke-width="6" stroke-linecap="round" />
