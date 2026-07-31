@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanilla JS Dome Gallery</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #120F17;
+        }
+
+        #dome-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sphere-root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            --radius: 520px;
+            --viewer-pad: 72px;
+            --circ: calc(var(--radius) * 3.14);
+            --rot-y: calc((360deg / var(--segments-x)) / 2);
+            --rot-x: calc((360deg / var(--segments-y)) / 2);
+            --item-width: calc(var(--circ) / var(--segments-x));
+            --item-height: calc(var(--circ) / var(--segments-y));
+        }
+
+        .sphere-root * {
+            box-sizing: border-box;
+        }
+
+        .sphere,
+        .item,
+        .item__image {
+            transform-style: preserve-3d;
+        }
+
+        main.sphere-main {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            background: transparent;
+        }
+
+        .stage {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            perspective: calc(var(--radius) * 2);
+            perspective-origin: 50% 50%;
+            contain: layout paint size;
+        }
+
+        .sphere {
+            transform: translateZ(calc(var(--radius) * -1));
+            will-change: transform;
+        }
+
+        .overlay,
+        .overlay--blur {
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .overlay {
+            background-image: radial-gradient(rgba(235, 235, 235, 0) 65%, var(--overlay-blur-color, #120F17) 100%);
+        }
+
+        .overlay--blur {
+            -webkit-mask-image: radial-gradient(rgba(235, 235, 235, 0) 70%, var(--overlay-blur-color, #120F17) 90%);
+            mask-image: radial-gradient(rgba(235, 235, 235, 0) 70%, var(--overlay-blur-color, #120F17) 90%);
+            backdrop-filter: blur(3px);
+        }
+
+        .item {
+            width: calc(var(--item-width) * var(--item-size-x));
+            height: calc(var(--item-height) * var(--item-size-y));
+            position: absolute;
+            top: -999px;
+            bottom: -999px;
+            left: -999px;
+            right: -999px;
+            margin: auto;
+            transform-origin: 50% 50%;
+            backface-visibility: hidden;
+            transition: transform 300ms;
+            transform: rotateY(calc(var(--rot-y) * (var(--offset-x) + ((var(--item-size-x) - 1) / 2)) + var(--rot-y-delta, 0deg))) rotateX(calc(var(--rot-x) * (var(--offset-y) - ((var(--item-size-y) - 1) / 2)) + var(--rot-x-delta, 0deg))) translateZ(var(--radius));
+        }
+
+        .item__image {
+            position: absolute;
+            display: block;
+            inset: 10px;
+            border-radius: var(--tile-radius, 12px);
+            background: transparent;
+            overflow: hidden;
+            backface-visibility: hidden;
+            transition: transform 300ms;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            pointer-events: auto;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        .item__image:focus {
+            outline: none;
+        }
+
+        .item__image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            backface-visibility: hidden;
+            filter: var(--image-filter, none);
+        }
+
+        .viewer {
+            position: absolute;
+            inset: 0;
+            z-index: 20;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--viewer-pad);
+        }
+
+        .viewer .frame {
+            height: 100%;
+            aspect-ratio: 1;
+            border-radius: var(--enlarge-radius, 32px);
+            display: flex;
+        }
+
+        @media (max-aspect-ratio: 1/1) {
+            .viewer .frame {
+                height: auto;
+                width: 100%;
+            }
+        }
+
+        .viewer .scrim {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 500ms ease;
+            backdrop-filter: blur(3px);
+        }
+
+        .sphere-root[data-enlarging='true'] .viewer .scrim {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .viewer .enlarge {
+            position: absolute;
+            z-index: 30;
+            border-radius: var(--enlarge-radius, 32px);
+            overflow: hidden;
+            transition:
+                transform 500ms ease,
+                opacity 500ms ease;
+            transform-origin: top left;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .viewer .enlarge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: var(--image-filter, none);
+        }
+
+        .sphere-root .enlarge-closing img {
+            filter: var(--image-filter, none);
+        }
+
+        .edge-fade {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 120px;
+            z-index: 5;
+            pointer-events: none;
+            background: linear-gradient(to bottom, transparent, var(--overlay-blur-color, #120F17));
+        }
+
+        .edge-fade--top {
+            top: 0;
+            transform: rotate(180deg);
+        }
+
+        .edge-fade--bottom {
+            bottom: 0;
+        }
+
+        body.dg-scroll-lock {
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="dome-container"></div>
+
+    <script>
+        const DEFAULT_IMAGES = [
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.16.43 PM (1).jpeg', alt: 'Birthday Image 1' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.16.43 PM.jpeg', alt: 'Birthday Image 2' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.16.44 PM (1).jpeg', alt: 'Birthday Image 3' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.16.44 PM.jpeg', alt: 'Birthday Image 4' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.57 PM.jpeg', alt: 'Birthday Image 6' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 3.44.59 PM 1.jpeg', alt: 'Birthday Image 7' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 3.44.59 PM.jpeg', alt: 'Birthday Image 8' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 3.51.00 PM.jpeg', alt: 'Download Image' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' },
+            { src: 'imgs/WhatsApp Image 2026-07-28 at 1.21.36 PM.jpeg', alt: 'Birthday Image 5' }
+        ];
+
+        const DEFAULTS = {
+            images: DEFAULT_IMAGES,
+            fit: 0.5,
+            fitBasis: 'auto',
+            minRadius: 600,
+            maxRadius: Infinity,
+            padFactor: 0.25,
+            overlayBlurColor: '#120F17',
+            maxVerticalRotationDeg: 5,
+            dragSensitivity: 20,
+            enlargeTransitionMs: 300,
+            segments: 30,
+            dragDampening: 2,
+            openedImageWidth: '250px',
+            openedImageHeight: '350px',
+            imageBorderRadius: '30px',
+            openedImageBorderRadius: '30px',
+            grayscale: false
+        };
+
+        // Math utils
+        const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+        const normalizeAngle = d => ((d % 360) + 360) % 360;
+        const wrapAngleSigned = deg => {
+            const a = (((deg + 180) % 360) + 360) % 360;
+            return a - 180;
+        };
+        const getDataNumber = (el, name, fallback) => {
+            const attr = el.dataset[name] ?? el.getAttribute(`data-${name}`);
+            const n = attr == null ? NaN : parseFloat(attr);
+            return Number.isFinite(n) ? n : fallback;
+        };
+
+        function buildItems(pool, seg) {
+            const xCols = Array.from({ length: seg }, (_, i) => -(seg + 2) + i * 2);
+            const evenYs = [-4, -2, 0, 2, 4];
+            const oddYs = [-3, -1, 1, 3, 5];
+
+            const coords = xCols.flatMap((x, c) => {
+                const ys = c % 2 === 0 ? evenYs : oddYs;
+                return ys.map(y => ({ x, y, sizeX: 2, sizeY: 2 }));
+            });
+
+            const totalSlots = coords.length;
+            if (pool.length === 0) return coords.map(c => ({ ...c, src: '', alt: '' }));
+
+            const normalizedImages = pool.map(image => {
+                if (typeof image === 'string') return { src: image, alt: '' };
+                return { src: image.src || '', alt: image.alt || '' };
+            });
+
+            const usedImages = Array.from({ length: totalSlots }, (_, i) => normalizedImages[i % normalizedImages.length]);
+
+            for (let i = 1; i < usedImages.length; i++) {
+                if (usedImages[i].src === usedImages[i - 1].src) {
+                    for (let j = i + 1; j < usedImages.length; j++) {
+                        if (usedImages[j].src !== usedImages[i].src) {
+                            const tmp = usedImages[i];
+                            usedImages[i] = usedImages[j];
+                            usedImages[j] = tmp;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return coords.map((c, i) => ({
+                ...c,
+                src: usedImages[i].src,
+                alt: usedImages[i].alt
+            }));
+        }
+
+        function computeItemBaseRotation(offsetX, offsetY, sizeX, sizeY, segments) {
+            const unit = 360 / segments / 2;
+            const rotateY = unit * (offsetX + (sizeX - 1) / 2);
+            const rotateX = unit * (offsetY - (sizeY - 1) / 2);
+            return { rotateX, rotateY };
+        }
+
+        class DomeGallery {
+            constructor(container, options = {}) {
+                this.opts = { ...DEFAULTS, ...options };
+                this.container = typeof container === 'string' ? document.querySelector(container) : container;
+
+                // State
+                this.rotation = { x: 0, y: 0 };
+                this.startRot = { x: 0, y: 0 };
+                this.startPos = { x: 0, y: 0 };
+                this.lastPos = { x: 0, y: 0 };
+                this.lastTime = 0;
+                this.velocity = { x: 0, y: 0 };
+                this.dragging = false;
+                this.moved = false;
+                this.inertiaRAF = null;
+                this.opening = false;
+                this.openStartedAt = 0;
+                this.lastDragEndAt = 0;
+                this.scrollLocked = false;
+                this.focusedEl = null;
+                this.originalTilePosition = null;
+                this.lockedRadius = null;
+
+                this.initDOM();
+                this.initEvents();
+                this.initResizeObserver();
+                this.applyTransform(0, 0);
+            }
+
+            initDOM() {
+                this.items = buildItems(this.opts.images, this.opts.segments);
+
+                this.root = document.createElement('div');
+                this.root.className = 'sphere-root';
+                this.root.style.setProperty('--segments-x', this.opts.segments);
+                this.root.style.setProperty('--segments-y', this.opts.segments);
+                this.root.style.setProperty('--overlay-blur-color', this.opts.overlayBlurColor);
+                this.root.style.setProperty('--tile-radius', this.opts.imageBorderRadius);
+                this.root.style.setProperty('--enlarge-radius', this.opts.openedImageBorderRadius);
+                this.root.style.setProperty('--image-filter', this.opts.grayscale ? 'grayscale(1)' : 'none');
+
+                this.main = document.createElement('main');
+                this.main.className = 'sphere-main';
+
+                const stage = document.createElement('div');
+                stage.className = 'stage';
+
+                this.sphere = document.createElement('div');
+                this.sphere.className = 'sphere';
+
+                // Render Items
+                this.items.forEach(it => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'item';
+                    itemDiv.dataset.src = it.src;
+                    itemDiv.dataset.offsetX = it.x;
+                    itemDiv.dataset.offsetY = it.y;
+                    itemDiv.dataset.sizeX = it.sizeX;
+                    itemDiv.dataset.sizeY = it.sizeY;
+                    itemDiv.style.setProperty('--offset-x', it.x);
+                    itemDiv.style.setProperty('--offset-y', it.y);
+                    itemDiv.style.setProperty('--item-size-x', it.sizeX);
+                    itemDiv.style.setProperty('--item-size-y', it.sizeY);
+
+                    const imgWrap = document.createElement('div');
+                    imgWrap.className = 'item__image';
+                    imgWrap.setAttribute('role', 'button');
+                    imgWrap.setAttribute('tabindex', '0');
+                    imgWrap.setAttribute('aria-label', it.alt || 'Open image');
+
+                    imgWrap.addEventListener('click', (e) => this.onTileClick(e));
+
+                    const img = document.createElement('img');
+                    img.src = it.src;
+                    img.alt = it.alt;
+                    img.draggable = false;
+
+                    imgWrap.appendChild(img);
+                    itemDiv.appendChild(imgWrap);
+                    this.sphere.appendChild(itemDiv);
+                });
+
+                stage.appendChild(this.sphere);
+
+                // Fades and Viewers
+                this.main.innerHTML += `
+          <div class="overlay"></div>
+          <div class="overlay overlay--blur"></div>
+          <div class="edge-fade edge-fade--top"></div>
+          <div class="edge-fade edge-fade--bottom"></div>
+        `;
+
+                this.main.insertBefore(stage, this.main.firstChild);
+
+                this.viewer = document.createElement('div');
+                this.viewer.className = 'viewer';
+
+                this.scrim = document.createElement('div');
+                this.scrim.className = 'scrim';
+                this.scrim.addEventListener('click', () => this.closeItem());
+
+                this.frame = document.createElement('div');
+                this.frame.className = 'frame';
+
+                this.viewer.appendChild(this.scrim);
+                this.viewer.appendChild(this.frame);
+                this.main.appendChild(this.viewer);
+                this.root.appendChild(this.main);
+                this.container.appendChild(this.root);
+            }
+
+            applyTransform(xDeg, yDeg) {
+                if (this.sphere) {
+                    this.sphere.style.transform = `translateZ(calc(var(--radius) * -1)) rotateX(${xDeg}deg) rotateY(${yDeg}deg)`;
+                }
+            }
+
+            lockScroll() {
+                if (this.scrollLocked) return;
+                this.scrollLocked = true;
+                document.body.classList.add('dg-scroll-lock');
+            }
+
+            unlockScroll() {
+                if (!this.scrollLocked) return;
+                if (this.root.getAttribute('data-enlarging') === 'true') return;
+                this.scrollLocked = false;
+                document.body.classList.remove('dg-scroll-lock');
+            }
+
+            initResizeObserver() {
+                const ro = new ResizeObserver(entries => {
+                    const cr = entries[0].contentRect;
+                    const w = Math.max(1, cr.width), h = Math.max(1, cr.height);
+                    const minDim = Math.min(w, h), maxDim = Math.max(w, h), aspect = w / h;
+                    let basis;
+                    switch (this.opts.fitBasis) {
+                        case 'min': basis = minDim; break;
+                        case 'max': basis = maxDim; break;
+                        case 'width': basis = w; break;
+                        case 'height': basis = h; break;
+                        default: basis = aspect >= 1.3 ? w : minDim;
+                    }
+
+                    let radius = basis * this.opts.fit;
+                    radius = Math.min(radius, h * 1.35);
+                    radius = clamp(radius, this.opts.minRadius, this.opts.maxRadius);
+                    this.lockedRadius = Math.round(radius);
+
+                    const viewerPad = Math.max(8, Math.round(minDim * this.opts.padFactor));
+                    this.root.style.setProperty('--radius', `${this.lockedRadius}px`);
+                    this.root.style.setProperty('--viewer-pad', `${viewerPad}px`);
+                    this.applyTransform(this.rotation.x, this.rotation.y);
+
+                    const enlargedOverlay = this.viewer.querySelector('.enlarge');
+                    if (enlargedOverlay && this.frame && this.main) {
+                        const frameR = this.frame.getBoundingClientRect();
+                        const mainR = this.main.getBoundingClientRect();
+
+                        if (this.opts.openedImageWidth && this.opts.openedImageHeight) {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.cssText = `position: absolute; width: ${this.opts.openedImageWidth}; height: ${this.opts.openedImageHeight}; visibility: hidden;`;
+                            document.body.appendChild(tempDiv);
+                            const tempRect = tempDiv.getBoundingClientRect();
+                            document.body.removeChild(tempDiv);
+
+                            const centeredLeft = frameR.left - mainR.left + (frameR.width - tempRect.width) / 2;
+                            const centeredTop = frameR.top - mainR.top + (frameR.height - tempRect.height) / 2;
+
+                            enlargedOverlay.style.left = `${centeredLeft}px`;
+                            enlargedOverlay.style.top = `${centeredTop}px`;
+                        } else {
+                            enlargedOverlay.style.left = `${frameR.left - mainR.left}px`;
+                            enlargedOverlay.style.top = `${frameR.top - mainR.top}px`;
+                            enlargedOverlay.style.width = `${frameR.width}px`;
+                            enlargedOverlay.style.height = `${frameR.height}px`;
+                        }
+                    }
+                });
+                ro.observe(this.root);
+            }
+
+            stopInertia() {
+                if (this.inertiaRAF) {
+                    cancelAnimationFrame(this.inertiaRAF);
+                    this.inertiaRAF = null;
+                }
+            }
+
+            startInertia(vx, vy) {
+                const MAX_V = 1.4;
+                let vX = clamp(vx, -MAX_V, MAX_V) * 80;
+                let vY = clamp(vy, -MAX_V, MAX_V) * 80;
+                let frames = 0;
+                const d = clamp(this.opts.dragDampening, 0, 1);
+                const frictionMul = 0.94 + 0.055 * d;
+                const stopThreshold = 0.015 - 0.01 * d;
+                const maxFrames = Math.round(90 + 270 * d);
+
+                const step = () => {
+                    vX *= frictionMul;
+                    vY *= frictionMul;
+                    if (Math.abs(vX) < stopThreshold && Math.abs(vY) < stopThreshold) {
+                        this.inertiaRAF = null;
+                        return;
+                    }
+                    if (++frames > maxFrames) {
+                        this.inertiaRAF = null;
+                        return;
+                    }
+                    const nextX = clamp(this.rotation.x - vY / 200, -this.opts.maxVerticalRotationDeg, this.opts.maxVerticalRotationDeg);
+                    const nextY = wrapAngleSigned(this.rotation.y + vX / 200);
+                    this.rotation = { x: nextX, y: nextY };
+                    this.applyTransform(nextX, nextY);
+                    this.inertiaRAF = requestAnimationFrame(step);
+                };
+
+                this.stopInertia();
+                this.inertiaRAF = requestAnimationFrame(step);
+            }
+
+            initEvents() {
+                this.main.addEventListener('pointerdown', (e) => {
+                    if (this.focusedEl) return;
+                    this.stopInertia();
+                    this.dragging = true;
+                    this.moved = false;
+                    this.startRot = { ...this.rotation };
+                    this.startPos = { x: e.clientX, y: e.clientY };
+                    this.lastPos = { x: e.clientX, y: e.clientY };
+                    this.lastTime = performance.now();
+                });
+
+                window.addEventListener('pointermove', (e) => {
+                    if (!this.dragging || this.focusedEl) return;
+                    const dxTotal = e.clientX - this.startPos.x;
+                    const dyTotal = e.clientY - this.startPos.y;
+
+                    if (!this.moved) {
+                        const dist2 = dxTotal * dxTotal + dyTotal * dyTotal;
+                        if (dist2 > 16) this.moved = true;
+                    }
+
+                    const now = performance.now();
+                    const dt = Math.max(1, now - this.lastTime);
+                    this.velocity = {
+                        x: (e.clientX - this.lastPos.x) / dt,
+                        y: (e.clientY - this.lastPos.y) / dt
+                    };
+                    this.lastPos = { x: e.clientX, y: e.clientY };
+                    this.lastTime = now;
+
+                    const nextX = clamp(
+                        this.startRot.x - dyTotal / this.opts.dragSensitivity,
+                        -this.opts.maxVerticalRotationDeg,
+                        this.opts.maxVerticalRotationDeg
+                    );
+                    const nextY = wrapAngleSigned(this.startRot.y + dxTotal / this.opts.dragSensitivity);
+
+                    if (this.rotation.x !== nextX || this.rotation.y !== nextY) {
+                        this.rotation = { x: nextX, y: nextY };
+                        this.applyTransform(nextX, nextY);
+                    }
+                });
+
+                window.addEventListener('pointerup', () => {
+                    if (!this.dragging) return;
+                    this.dragging = false;
+
+                    let vx = this.velocity.x * 20;
+                    let vy = this.velocity.y * 20;
+
+                    if (Math.abs(vx) > 0.005 || Math.abs(vy) > 0.005) {
+                        this.startInertia(vx, vy);
+                    }
+
+                    if (this.moved) this.lastDragEndAt = performance.now();
+                    this.moved = false;
+                    this.velocity = { x: 0, y: 0 };
+                });
+
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.closeItem();
+                });
+            }
+
+            onTileClick(e) {
+                if (this.dragging || this.moved || performance.now() - this.lastDragEndAt < 80 || this.opening) return;
+                this.openItemFromElement(e.currentTarget);
+            }
+
+            openItemFromElement(el) {
+                if (this.opening) return;
+                this.opening = true;
+                this.openStartedAt = performance.now();
+                this.lockScroll();
+
+                const parent = el.parentElement;
+                this.focusedEl = el;
+                el.setAttribute('data-focused', 'true');
+
+                const offsetX = getDataNumber(parent, 'offsetX', 0);
+                const offsetY = getDataNumber(parent, 'offsetY', 0);
+                const sizeX = getDataNumber(parent, 'sizeX', 2);
+                const sizeY = getDataNumber(parent, 'sizeY', 2);
+
+                const parentRot = computeItemBaseRotation(offsetX, offsetY, sizeX, sizeY, this.opts.segments);
+                const parentY = normalizeAngle(parentRot.rotateY);
+                const globalY = normalizeAngle(this.rotation.y);
+
+                let rotY = -(parentY + globalY) % 360;
+                if (rotY < -180) rotY += 360;
+                const rotX = -parentRot.rotateX - this.rotation.x;
+
+                parent.style.setProperty('--rot-y-delta', `${rotY}deg`);
+                parent.style.setProperty('--rot-x-delta', `${rotX}deg`);
+
+                const refDiv = document.createElement('div');
+                refDiv.className = 'item__image item__image--reference';
+                refDiv.style.opacity = '0';
+                refDiv.style.transform = `rotateX(${-parentRot.rotateX}deg) rotateY(${-parentRot.rotateY}deg)`;
+                parent.appendChild(refDiv);
+
+                void refDiv.offsetHeight;
+
+                const tileR = refDiv.getBoundingClientRect();
+                const mainR = this.main.getBoundingClientRect();
+                const frameR = this.frame.getBoundingClientRect();
+
+                if (!mainR || !frameR || tileR.width <= 0 || tileR.height <= 0) {
+                    this.opening = false;
+                    this.focusedEl = null;
+                    parent.removeChild(refDiv);
+                    this.unlockScroll();
+                    return;
+                }
+
+                this.originalTilePosition = { left: tileR.left, top: tileR.top, width: tileR.width, height: tileR.height };
+                el.style.visibility = 'hidden';
+                el.style.zIndex = 0;
+
+                const overlay = document.createElement('div');
+                overlay.className = 'enlarge';
+                overlay.style.position = 'absolute';
+                overlay.style.left = (frameR.left - mainR.left) + 'px';
+                overlay.style.top = (frameR.top - mainR.top) + 'px';
+                overlay.style.width = frameR.width + 'px';
+                overlay.style.height = frameR.height + 'px';
+                overlay.style.opacity = '0';
+                overlay.style.zIndex = '30';
+                overlay.style.willChange = 'transform, opacity';
+                overlay.style.transformOrigin = 'top left';
+                overlay.style.transition = `transform ${this.opts.enlargeTransitionMs}ms ease, opacity ${this.opts.enlargeTransitionMs}ms ease`;
+
+                const rawSrc = parent.dataset.src || el.querySelector('img')?.src || '';
+                const img = document.createElement('img');
+                img.src = rawSrc;
+                overlay.appendChild(img);
+                this.viewer.appendChild(overlay);
+
+                const tx0 = tileR.left - frameR.left;
+                const ty0 = tileR.top - frameR.top;
+                const sx0 = tileR.width / frameR.width;
+                const sy0 = tileR.height / frameR.height;
+
+                const validSx0 = isFinite(sx0) && sx0 > 0 ? sx0 : 1;
+                const validSy0 = isFinite(sy0) && sy0 > 0 ? sy0 : 1;
+
+                overlay.style.transform = `translate(${tx0}px, ${ty0}px) scale(${validSx0}, ${validSy0})`;
+
+                setTimeout(() => {
+                    if (!overlay.parentElement) return;
+                    overlay.style.opacity = '1';
+                    overlay.style.transform = 'translate(0px, 0px) scale(1, 1)';
+                    this.root.setAttribute('data-enlarging', 'true');
+                }, 16);
+
+                if (this.opts.openedImageWidth || this.opts.openedImageHeight) {
+                    const onFirstEnd = (ev) => {
+                        if (ev.propertyName !== 'transform') return;
+                        overlay.removeEventListener('transitionend', onFirstEnd);
+                        const prevTransition = overlay.style.transition;
+                        overlay.style.transition = 'none';
+
+                        const tempWidth = this.opts.openedImageWidth || `${frameR.width}px`;
+                        const tempHeight = this.opts.openedImageHeight || `${frameR.height}px`;
+                        overlay.style.width = tempWidth;
+                        overlay.style.height = tempHeight;
+
+                        const newRect = overlay.getBoundingClientRect();
+                        overlay.style.width = frameR.width + 'px';
+                        overlay.style.height = frameR.height + 'px';
+                        void overlay.offsetWidth;
+
+                        overlay.style.transition = `left ${this.opts.enlargeTransitionMs}ms ease, top ${this.opts.enlargeTransitionMs}ms ease, width ${this.opts.enlargeTransitionMs}ms ease, height ${this.opts.enlargeTransitionMs}ms ease`;
+
+                        const centeredLeft = frameR.left - mainR.left + (frameR.width - newRect.width) / 2;
+                        const centeredTop = frameR.top - mainR.top + (frameR.height - newRect.height) / 2;
+
+                        requestAnimationFrame(() => {
+                            overlay.style.left = `${centeredLeft}px`;
+                            overlay.style.top = `${centeredTop}px`;
+                            overlay.style.width = tempWidth;
+                            overlay.style.height = tempHeight;
+                        });
+
+                        const cleanupSecond = () => {
+                            overlay.removeEventListener('transitionend', cleanupSecond);
+                            overlay.style.transition = prevTransition;
+                        };
+                        overlay.addEventListener('transitionend', cleanupSecond, { once: true });
+                    };
+                    overlay.addEventListener('transitionend', onFirstEnd);
+                }
+            }
+
+            closeItem() {
+                if (performance.now() - this.openStartedAt < 250) return;
+                const el = this.focusedEl;
+                if (!el) return;
+
+                const parent = el.parentElement;
+                const overlay = this.viewer.querySelector('.enlarge');
+                if (!overlay) return;
+
+                const refDiv = parent.querySelector('.item__image--reference');
+                const originalPos = this.originalTilePosition;
+
+                if (!originalPos) {
+                    overlay.remove();
+                    if (refDiv) refDiv.remove();
+                    parent.style.setProperty('--rot-y-delta', '0deg');
+                    parent.style.setProperty('--rot-x-delta', '0deg');
+                    el.style.visibility = '';
+                    el.style.zIndex = 0;
+                    this.focusedEl = null;
+                    this.root.removeAttribute('data-enlarging');
+                    this.opening = false;
+                    this.unlockScroll();
+                    return;
+                }
+
+                const currentRect = overlay.getBoundingClientRect();
+                const rootRect = this.root.getBoundingClientRect();
+
+                const originalPosRelativeToRoot = {
+                    left: originalPos.left - rootRect.left,
+                    top: originalPos.top - rootRect.top,
+                    width: originalPos.width,
+                    height: originalPos.height
+                };
+
+                const overlayRelativeToRoot = {
+                    left: currentRect.left - rootRect.left,
+                    top: currentRect.top - rootRect.top,
+                    width: currentRect.width,
+                    height: currentRect.height
+                };
+
+                const animatingOverlay = document.createElement('div');
+                animatingOverlay.className = 'enlarge-closing';
+                animatingOverlay.style.cssText = `position:absolute;left:${overlayRelativeToRoot.left}px;top:${overlayRelativeToRoot.top}px;width:${overlayRelativeToRoot.width}px;height:${overlayRelativeToRoot.height}px;z-index:9999;border-radius: var(--enlarge-radius, 32px);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:all ${this.opts.enlargeTransitionMs}ms ease-out;pointer-events:none;margin:0;transform:none;`;
+
+                const originalImg = overlay.querySelector('img');
+                if (originalImg) {
+                    const img = originalImg.cloneNode();
+                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+                    animatingOverlay.appendChild(img);
+                }
+
+                overlay.remove();
+                this.root.appendChild(animatingOverlay);
+                void animatingOverlay.getBoundingClientRect();
+
+                requestAnimationFrame(() => {
+                    animatingOverlay.style.left = originalPosRelativeToRoot.left + 'px';
+                    animatingOverlay.style.top = originalPosRelativeToRoot.top + 'px';
+                    animatingOverlay.style.width = originalPosRelativeToRoot.width + 'px';
+                    animatingOverlay.style.height = originalPosRelativeToRoot.height + 'px';
+                    animatingOverlay.style.opacity = '0';
+                });
+
+                const cleanup = () => {
+                    animatingOverlay.remove();
+                    this.originalTilePosition = null;
+                    if (refDiv) refDiv.remove();
+                    parent.style.transition = 'none';
+                    el.style.transition = 'none';
+                    parent.style.setProperty('--rot-y-delta', '0deg');
+                    parent.style.setProperty('--rot-x-delta', '0deg');
+
+                    requestAnimationFrame(() => {
+                        el.style.visibility = '';
+                        el.style.opacity = '0';
+                        el.style.zIndex = 0;
+                        this.focusedEl = null;
+                        this.root.removeAttribute('data-enlarging');
+
+                        requestAnimationFrame(() => {
+                            parent.style.transition = '';
+                            el.style.transition = 'opacity 300ms ease-out';
+
+                            requestAnimationFrame(() => {
+                                el.style.opacity = '1';
+                                setTimeout(() => {
+                                    el.style.transition = '';
+                                    el.style.opacity = '';
+                                    this.opening = false;
+                                    if (!this.dragging && this.root.getAttribute('data-enlarging') !== 'true') {
+                                        document.body.classList.remove('dg-scroll-lock');
+                                    }
+                                }, 300);
+                            });
+                        });
+                    });
+                };
+
+                animatingOverlay.addEventListener('transitionend', cleanup, { once: true });
+            }
+        }
+
+        // Initialize the gallery
+        document.addEventListener('DOMContentLoaded', () => {
+            new DomeGallery('#dome-container', {
+                // You can override default options here:
+                // grayscale: false,
+                // openedImageWidth: '400px',
+                // openedImageHeight: '400px'
+            });
+        });
+    </script>
+</body>
+
+</html>

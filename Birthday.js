@@ -9,7 +9,7 @@ const lockBtn = document.getElementById('lockBtn');
 const btnLabel = document.getElementById('btnLabel');
 const statusNote = document.getElementById('statusNote');
 const navItems = document.querySelectorAll('.nav-item');
-const progressPercentage = 55;
+const progressPercentage = 65;
 const gaugeValue = document.getElementById('gaugeValue');
 const gaugeFill = document.querySelector('.gauge-fill');
 const gaugeRefresh = document.getElementById('gaugeRefresh');
@@ -340,7 +340,7 @@ renderGallery('next');
 const worklogData = [
   {
     date: '5-Jul-26',
-    hours: '5',
+    hours: '05:00',
     title: 'Aaj is website mein aap ke liye kya naya add hua? 💚',
     subtitle: 'Aaj poore 5 ghanton ki mehnat, taake aap ki website behtar bane...',
     points: [
@@ -352,7 +352,7 @@ const worklogData = [
   },
   {
     date: '6-Jul-26',
-    hours: '4',
+    hours: '04:00',
     title: 'Aaj is website mein aap ke liye kya naya add hua? 💚',
     subtitle: 'Aaj poore 4 ghanton ki mehnat, chize aur behtar banane ke liye...',
     points: [
@@ -362,7 +362,7 @@ const worklogData = [
   },
   {
     date: '7-Jul-26',
-    hours: '6',
+    hours: '06:00',
     title: 'Aaj is website mein aap ke liye kya naya rang bhara? 💚',
     subtitle: 'Aaj poore 6 ghanton se zyada ki mehnat, sirf aap ki ek smile ke liye...',
     points: [
@@ -373,7 +373,7 @@ const worklogData = [
   },
   {
     date: '8-Jul-26',
-    hours: '4',
+    hours: '04:00',
     title: 'Aaj is website mein aap ke liye kya naya banaya? 🌟',
     subtitle: 'Aaj poore 4 ghanton ki lagan se kaam kiya, taake yeh website aur bhi khaas bane...',
     points: [
@@ -384,7 +384,7 @@ const worklogData = [
   },
   {
     date: '9-Jul-26',
-    hours: '2',
+    hours: '02:00',
     title: 'Aaj is website mein aap ke liye kya aur naya bana? 🧩',
     subtitle: 'Aaj 2 ghante lagaye — chhota lekin khaas kaam, aap ke liye...',
     points: [
@@ -394,7 +394,7 @@ const worklogData = [
   },
   {
     date: '10-Jul-26',
-    hours: '3:30',
+    hours: '03:30',
     title: 'Aaj Quiz Ka Starting Page Design Hua! 🧩🎨',
     subtitle: 'Aaj 3:30 ghante lagaye — quiz page ka design aur starting page banaya...',
     points: [
@@ -584,6 +584,50 @@ const worklogData = [
       { title: 'Naye Page Templates Aur Designs Dekhe 🖼️✨', detail: 'Aaj pictures lagane ke liye kuch naye page templates aur alag-alag designs dekhe, taake best option choose kiya ja sake.' },
       { title: 'Creative Ideas Pe Socha 💡🎯', detail: 'Is page ko aur behtar banane ke liye kuch creative ideas par socha, jo pictures ko aur bhi acha aur attractive tareeqe se show karwane mein madad karenge.' },
       { title: 'Jald Hi Sab Kuch Dekhne Ko Milega 🚀😊', detail: 'In naye ideas aur designs par kaam jaari hai, aur bahut jald aap ko ye sab website par dekhne ko milega. 😊' }
+    ]
+  },
+  {
+    date: '28-Jul-26',
+    hours: '6:00',
+    title: 'Aaj Pictures Ka Kaam Mukammal Ho Gaya! 🎉📸',
+    subtitle: 'Aaj pictures ki selection aur upload dono kaam mukammal kar diye...',
+    points: [
+      { title: 'Pictures Ki Selection Mukammal Hui ✅🖼️', detail: 'Aaj pictures ki selection ka kaam mukammal kar diya gaya hai. Sabhi zaroori pictures ko finalize kar liya gaya hai.' },
+      { title: 'Pictures Ka Upload Bhi Mukammal Hua ⬆️✅', detail: 'Selected pictures ka upload karne ka kaam bhi mukammal ho gaya hai. Ab sab pictures website par lag chuki hain.' },
+      { title: 'Khaas Khaas Yaadon Wali Pictures Lagayi 💭❤️', detail: 'Kuch bohot khaas pictures lagayi gayi hain jo aap ki aur humari yaadon se bhari hui hain — ye pictures dekh kar ek pyara sa past yaad aa jayega. 😊' }
+    ]
+  },
+  {
+    date: '29-Jul-26',
+    hours: '5:30',
+    title: 'Aaj Birthday Celebration Page Pe Kaam Kiya! 🎂🎉',
+    subtitle: 'Aaj ek naya attractive page banaya jo Birthday Celebration page kehlayega...',
+    points: [
+      { title: 'Naya Attractive Page Banaya 🎨✨', detail: 'Aaj ek naya page banaya jo dekhne mein kaafi attractive hai. Is page ko Birthday Celebration Page ka naam diya gaya hai.' },
+      { title: 'Ghar Jaisi Decoration Ka Feel Add Kiya 🏠🎈', detail: 'Page mein ek ghar ki tarah decoration ka ahsaas add kiya gaya hai — chhoti chhoti details is tarah se rakhi hain jo ek pyara sa ghar-jaisa mahol create karti hain.' },
+      { title: 'Celebration Ka Ahsaas Delane Wala Design 🎊❤️', detail: 'Poore page ko is tarah design kiya gaya hai ke wo ek celebration ka pura ahsaas dilaye — jaise koi khaas mauqa manaya ja raha ho. 😊' }
+    ]
+  },
+  {
+    date: '30-Jul-26',
+    hours: '0:00',
+    title: 'Aaj Office Ki Wajah Se Kaam Nahi Ho Saka 🏢😔',
+    subtitle: 'Aaj poora din office ke kaam mein lag gaya, kaafi thakaan bhi ho gayi...',
+    points: [
+      { title: 'Poora Din Office Mein Lag Gaya 🏢⏰', detail: 'Aaj office ke kaam ki wajah se poora din busy raha, is liye website par time nahi mil saka.' },
+      { title: 'Kaafi Zyada Thakaan Ho Gayi 😴💤', detail: 'Din khatam hote hote kaafi zyada thak gaya tha, is wajah se koi naya kaam continue nahi ho saka. Kaam kal se dobara shuru hoga. 😊' }
+    ]
+  },
+  {
+    date: '31-Jul-26',
+    hours: '6:30',
+    title: 'Aaj Pages Link Hue Aur Naya Pictures Section Bana! 🔗📸',
+    subtitle: 'Aaj kuch pages ek dusre se link kiye, text animation par kaam kiya aur naya pictures section add kiya...',
+    points: [
+      { title: 'Pages Ko Ek Dusre Se Link Kiya 🔗📄', detail: 'Aaj kuch pages ko aapas mein link kiya taake user ek page se dusre page tak asani se navigate kar sake. Naye creative ideas bhi is dauran soche gaye.' },
+      { title: 'Text Animation Par Kaam Kiya ✨🔤', detail: 'Page ko aur behtar banane ke liye text animation par kaam kiya, jis se content dekhne mein aur bhi attractive aur lively lagega.' },
+      { title: 'Naya Pictures Section Add Kiya 🖼️➕', detail: 'Ek naya pictures section bana kar website mein add kiya gaya hai, jahan pictures ko behtar tareeqe se show kiya ja sakega.' },
+      { title: 'Video Section Ka Aghaz Hua 🎥⏳', detail: 'Ek video section bhi banana shuru kiya hai, abhi is par zyada kaam nahi hua lekin bahut jald is par kaam shuru ho jayega aur ye bhi jald mukammal ho jayega. 😊' }
     ]
   }
 ];
