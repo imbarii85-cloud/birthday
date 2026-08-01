@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TextType — React Bits (Vanilla JS Conversion)</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #0b0b0f;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #eaeaea;
+  }
+
+  #page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 2rem;
+    font-size: 2rem;
+  }
+
+  /* ===== Component CSS (from TextType.css) ===== */
+  .text-type {
+    display: inline-block;
+    white-space: pre-wrap;
+  }
+
+  .text-type__cursor {
+    margin-left: 0.25rem;
+    display: inline-block;
+    opacity: 1;
+  }
+
+  .text-type__cursor--hidden {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div id="page">
+  <!-- ===== TextType component markup (mirrors the React render output) ===== -->
+  <div id="text-type-root" class="text-type">
+    <span id="text-type-content" class="text-type__content" style="color: inherit;"></span>
+    <span id="text-type-cursor" class="text-type__cursor"></span>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* =========================================================================
+     Props (mirrors the <TextType ... /> usage example in the source doc)
+     Change these values to configure the component, just like React props.
+     ========================================================================= */
+  const props = {
+    text: ["Text typing effect", "for your websites", "Happy coding!"],
+    as: 'div',
+    typingSpeed: 75,
+    initialDelay: 0,
+    pauseDuration: 1500,
+    deletingSpeed: 30,
+    loop: true,
+    className: '',
+    showCursor: true,
+    hideCursorWhileTyping: false,
+    cursorCharacter: '|',
+    cursorClassName: '',
+    cursorBlinkDuration: 0.5,
+    textColors: [],
+    variableSpeed: undefined,       // e.g. { min: 30, max: 120 }
+    onSentenceComplete: undefined,  // (sentence, index) => {}
+    startOnVisible: false,
+    reverseMode: false
+  };
+
+  /* =========================================================================
+     Refs (DOM equivalents of the React useRef hooks)
+     ========================================================================= */
+  const containerRef = document.getElementById('text-type-root');
+  const contentRef = document.getElementById('text-type-content');
+  const cursorRef = document.getElementById('text-type-cursor');
+
+  /* =========================================================================
+     "State" (mirrors the React useState hooks)
+     ========================================================================= */
+  let displayedText = '';
+  let currentCharIndex = 0;
+  let isDeleting = false;
+  let currentTextIndex = 0;
+  let isVisible = !props.startOnVisible;
+
+  const textArray = Array.isArray(props.text) ? props.text : [props.text];
+
+  // Apply className + tag (mirrors createElement(Component, { className: `text-type ${className}` }))
+  containerRef.className = `text-type ${props.className}`.trim();
+  if (props.cursorClassName) {
+    cursorRef.classList.add(...props.cursorClassName.split(' ').filter(Boolean));
+  }
+
+  let typingTimeout = null;
+  let cursorTween = null;
+  let visibilityObserver = null;
+
+  function getRandomSpeed() {
+    if (!props.variableSpeed) return props.typingSpeed;
+    const { min, max } = props.variableSpeed;
+    return Math.random() * (max - min) + min;
+  }
+
+  function getCurrentTextColor() {
+    if (props.textColors.length === 0) return 'inherit';
+    return props.textColors[currentTextIndex % props.textColors.length];
+  }
+
+  /* =========================================================================
+     render() — mirrors React re-rendering displayedText / cursor visibility
+     whenever state changes.
+     ========================================================================= */
+  function render() {
+    contentRef.textContent = displayedText;
+    contentRef.style.color = getCurrentTextColor() || 'inherit';
+
+    if (!props.showCursor) {
+      cursorRef.style.display = 'none';
+      return;
+    }
+
+    cursorRef.textContent = props.cursorCharacter;
+
+    const shouldHideCursor =
+      props.hideCursorWhileTyping &&
+      (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
+
+    cursorRef.classList.toggle('text-type__cursor--hidden', shouldHideCursor);
+  }
+
+  /* =========================================================================
+     Effect (useEffect [startOnVisible]):
+     IntersectionObserver to flip isVisible when startOnVisible is true.
+     ========================================================================= */
+  function setupVisibilityObserver() {
+    if (!props.startOnVisible || !containerRef) return;
+
+    visibilityObserver = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            isVisible = true;
+            scheduleTypingAnimation();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    visibilityObserver.observe(containerRef);
+  }
+
+  /* =========================================================================
+     Effect (useEffect [showCursor, cursorBlinkDuration]):
+     GSAP cursor blink animation.
+     ========================================================================= */
+  function setupCursorBlink() {
+    if (props.showCursor && cursorRef) {
+      gsap.set(cursorRef, { opacity: 1 });
+      cursorTween = gsap.to(cursorRef, {
+        opacity: 0,
+        duration: props.cursorBlinkDuration,
+        repeat: -1,
+        yoyo: true,
+        ease: 'power2.inOut'
+      });
+    }
+  }
+
+  /* =========================================================================
+     Main typing/deleting effect (mirrors the big useEffect with the typing
+     state machine). Each "tick" schedules the next tick via setTimeout,
+     exactly like the React version re-running the effect on state change.
+     ========================================================================= */
+  function scheduleTypingAnimation() {
+    if (!isVisible) return;
+    clearTimeout(typingTimeout);
+
+    if (currentCharIndex === 0 && !isDeleting && displayedText === '') {
+      typingTimeout = setTimeout(executeTypingAnimation, props.initialDelay);
+    } else {
+      executeTypingAnimation();
+    }
+  }
+
+  function executeTypingAnimation() {
+    const currentText = textArray[currentTextIndex];
+    const processedText = props.reverseMode
+      ? currentText.split('').reverse().join('')
+      : currentText;
+
+    if (isDeleting) {
+      if (displayedText === '') {
+        isDeleting = false;
+
+        if (currentTextIndex === textArray.length - 1 && !props.loop) {
+          render();
+          return;
+        }
+
+        if (props.onSentenceComplete) {
+          props.onSentenceComplete(textArray[currentTextIndex], currentTextIndex);
+        }
+
+        currentTextIndex = (currentTextIndex + 1) % textArray.length;
+        currentCharIndex = 0;
+        render();
+        typingTimeout = setTimeout(scheduleTypingAnimation, props.pauseDuration);
+      } else {
+        typingTimeout = setTimeout(() => {
+          displayedText = displayedText.slice(0, -1);
+          render();
+          scheduleTypingAnimation();
+        }, props.deletingSpeed);
+      }
+    } else {
+      if (currentCharIndex < processedText.length) {
+        typingTimeout = setTimeout(
+          () => {
+            displayedText += processedText[currentCharIndex];
+            currentCharIndex += 1;
+            render();
+            scheduleTypingAnimation();
+          },
+          props.variableSpeed ? getRandomSpeed() : props.typingSpeed
+        );
+      } else if (textArray.length >= 1) {
+        if (!props.loop && currentTextIndex === textArray.length - 1) {
+          render();
+          return;
+        }
+        typingTimeout = setTimeout(() => {
+          isDeleting = true;
+          render();
+          scheduleTypingAnimation();
+        }, props.pauseDuration);
+      }
+    }
+  }
+
+  /* =========================================================================
+     Kick things off (mirrors component mount)
+     ========================================================================= */
+  render();
+  setupCursorBlink();
+  setupVisibilityObserver();
+  if (isVisible) {
+    scheduleTypingAnimation();
+  }
+
+  // Optional: cleanup on page unload (mirrors React unmount cleanup)
+  window.addEventListener('beforeunload', () => {
+    clearTimeout(typingTimeout);
+    if (cursorTween) cursorTween.kill();
+    if (visibilityObserver) visibilityObserver.disconnect();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React ScrollReveal Component</title>
+  
+  <!-- CSS Styles -->
+  <style>
+    /* Basic reset and page styling for demonstration */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f4f5;
+      color: #18181b;
+    }
+
+    /* Spacers to force scrolling so we can see the animation */
+    .spacer {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #71717a;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Component CSS */
+    .scroll-reveal {
+      margin: 20px 0;
+    }
+
+    .scroll-reveal-text {
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      line-height: 1.5;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .word {
+      display: inline-block;
+    }
+  </style>
+
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel for in-browser JSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+  <!-- React Mount Point -->
+  <div id="root"></div>
+
+  <!-- React Code -->
+  <script type="text/babel">
+    const { useEffect, useRef, useMemo } = React;
+
+    // Register GSAP Plugin
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ScrollReveal = ({
+      children,
+      scrollContainerRef,
+      enableBlur = true,
+      baseOpacity = 0.1,
+      baseRotation = 3,
+      blurStrength = 4,
+      containerClassName = '',
+      textClassName = '',
+      rotationEnd = 'bottom bottom',
+      wordAnimationEnd = 'bottom bottom'
+    }) => {
+      const containerRef = useRef(null);
+
+      const splitText = useMemo(() => {
+        const text = typeof children === 'string' ? children : '';
+        return text.split(/(\s+)/).map((word, index) => {
+          if (word.match(/^\s+$/)) return word;
+          return (
+            <span className="word" key={index}>
+              {word}
+            </span>
+          );
+        });
+      }, [children]);
+
+      useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        const scroller = scrollContainerRef && scrollContainerRef.current ? scrollContainerRef.current : window;
+
+        // Rotation Animation
+        gsap.fromTo(
+          el,
+          { transformOrigin: '0% 50%', rotate: baseRotation },
+          {
+            ease: 'none',
+            rotate: 0,
+            scrollTrigger: {
+              trigger: el,
+              scroller,
+              start: 'top bottom',
+              end: rotationEnd,
+              scrub: true
+            }
+          }
+        );
+
+        const wordElements = el.querySelectorAll('.word');
+
+        // Opacity Animation
+        gsap.fromTo(
+          wordElements,
+          { opacity: baseOpacity, willChange: 'opacity' },
+          {
+            ease: 'none',
+            opacity: 1,
+            stagger: 0.05,
+            scrollTrigger: {
+              trigger: el,
+              scroller,
+              start: 'top bottom-=20%',
+              end: wordAnimationEnd,
+              scrub: true
+            }
+          }
+        );
+
+        // Blur Animation
+        if (enableBlur) {
+          gsap.fromTo(
+            wordElements,
+            { filter: `blur(${blurStrength}px)` },
+            {
+              ease: 'none',
+              filter: 'blur(0px)',
+              stagger: 0.05,
+              scrollTrigger: {
+                trigger: el,
+                scroller,
+                start: 'top bottom-=20%',
+                end: wordAnimationEnd,
+                scrub: true
+              }
+            }
+          );
+        }
+
+        return () => {
+          // Cleanup
+          ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+        };
+      }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength]);
+
+      return (
+        <h2 ref={containerRef} className={`scroll-reveal ${containerClassName}`}>
+          <p className={`scroll-reveal-text ${textClassName}`}>{splitText}</p>
+        </h2>
+      );
+    };
+
+    // Main App Component
+    const App = () => {
+      return (
+        <div>
+          <div className="spacer">
+            <p>Scroll down to reveal text ↓</p>
+          </div>
+          
+          <div className="container">
+            <ScrollReveal
+              baseOpacity={0}
+              enableBlur={true}
+              baseRotation={5}
+              blurStrength={10}
+            >
+              When does a man die? When he is hit by a bullet? No! When he suffers a disease?
+              No! When he ate a soup made out of a poisonous mushroom?
+              No! A man dies when he is forgotten!
+            </ScrollReveal>
+          </div>
+
+          <div className="spacer">
+            <p>Keep scrolling up or down to scrub the animation.</p>
+          </div>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

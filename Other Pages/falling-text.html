@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FallingText — React Bits (Vanilla JS Conversion)</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #0b0b0f;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #eaeaea;
+  }
+
+  #page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 2rem;
+  }
+
+  /* ===== Component CSS (from FallingText.css) ===== */
+  .falling-text-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 800px;
+    height: 300px;
+    cursor: pointer;
+    text-align: center;
+    padding-top: 2em;
+    box-sizing: border-box;
+  }
+
+  .falling-text-target {
+    display: inline-block;
+  }
+
+  .word {
+    display: inline-block;
+    margin: 0 2px;
+    user-select: none;
+  }
+
+  .highlighted {
+    color: cyan;
+    font-weight: bold;
+  }
+
+  .falling-text-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+</style>
+</head>
+<body>
+
+<div id="page">
+  <!-- ===== FallingText component markup (mirrors the React render output) ===== -->
+  <div id="falling-text-root" class="falling-text-container">
+    <div id="falling-text-target" class="falling-text-target"></div>
+    <div id="falling-text-canvas" class="falling-text-canvas"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* =========================================================================
+     Props (mirrors the <FallingText ... /> usage example in the source doc)
+     Change these values to configure the component, just like React props.
+     ========================================================================= */
+  const props = {
+    className: '',
+    text: `React Bits is a library of animated and interactive React components designed to streamline UI development and simplify your workflow.`,
+    highlightWords: ["React", "Bits", "animated", "components", "simplify"],
+    highlightClass: "highlighted",
+    trigger: "hover",           // 'click' | 'hover' | 'auto' | 'scroll'
+    backgroundColor: "transparent",
+    wireframes: false,
+    gravity: 0.56,
+    mouseConstraintStiffness: 0.9,
+    fontSize: "2rem"
+  };
+
+  /* =========================================================================
+     Refs (DOM equivalents of the React useRef hooks)
+     ========================================================================= */
+  const containerRef = document.getElementById('falling-text-root');
+  const textRef = document.getElementById('falling-text-target');
+  const canvasContainerRef = document.getElementById('falling-text-canvas');
+
+  let effectStarted = false;
+  let cleanupFn = null;
+
+  // Apply className prop (React: `falling-text-container ${className}`)
+  if (props.className) {
+    containerRef.className = `falling-text-container ${props.className}`;
+  }
+
+  // Apply fontSize / lineHeight style props to the text ref
+  textRef.style.fontSize = props.fontSize;
+  textRef.style.lineHeight = '1.4';
+
+  /* =========================================================================
+     Effect #1 (useEffect [text, highlightWords, highlightClass]):
+     Split text into words, wrap each in a span, apply highlight class.
+     ========================================================================= */
+  function renderWords() {
+    const words = props.text.split(' ');
+    const newHTML = words
+      .map(word => {
+        const isHighlighted = props.highlightWords.some(hw => word.startsWith(hw));
+        return `<span class="word ${isHighlighted ? props.highlightClass : ''}">${word}</span>`;
+      })
+      .join(' ');
+    textRef.innerHTML = newHTML;
+  }
+  renderWords();
+
+  /* =========================================================================
+     Effect #2 (useEffect [trigger]):
+     Handle 'auto' (start immediately) and 'scroll' (IntersectionObserver) triggers.
+     ========================================================================= */
+  let scrollObserver = null;
+  function setupTrigger() {
+    if (props.trigger === 'auto') {
+      startEffect();
+      return;
+    }
+    if (props.trigger === 'scroll') {
+      scrollObserver = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            startEffect();
+            scrollObserver.disconnect();
+          }
+        },
+        { threshold: 0.1 }
+      );
+      scrollObserver.observe(containerRef);
+    }
+  }
+
+  /* =========================================================================
+     Effect #3 (useEffect [effectStarted, gravity, wireframes, backgroundColor,
+     mouseConstraintStiffness]):
+     Sets up the Matter.js physics world once effectStarted becomes true.
+     ========================================================================= */
+  function runPhysicsEffect() {
+    const { Engine, Render, World, Bodies, Runner, Mouse, MouseConstraint } = Matter;
+
+    const containerRect = containerRef.getBoundingClientRect();
+    const width = containerRect.width;
+    const height = containerRect.height;
+
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+
+    const engine = Engine.create();
+    engine.world.gravity.y = props.gravity;
+
+    const render = Render.create({
+      element: canvasContainerRef,
+      engine,
+      options: {
+        width,
+        height,
+        background: props.backgroundColor,
+        wireframes: props.wireframes
+      }
+    });
+
+    const boundaryOptions = {
+      isStatic: true,
+      render: { fillStyle: 'transparent' }
+    };
+    const floor = Bodies.rectangle(width / 2, height + 25, width, 50, boundaryOptions);
+    const leftWall = Bodies.rectangle(-25, height / 2, 50, height, boundaryOptions);
+    const rightWall = Bodies.rectangle(width + 25, height / 2, 50, height, boundaryOptions);
+    const ceiling = Bodies.rectangle(width / 2, -25, width, 50, boundaryOptions);
+
+    const wordSpans = textRef.querySelectorAll('.word');
+    const wordBodies = [...wordSpans].map(elem => {
+      const rect = elem.getBoundingClientRect();
+
+      const x = rect.left - containerRect.left + rect.width / 2;
+      const y = rect.top - containerRect.top + rect.height / 2;
+
+      const body = Bodies.rectangle(x, y, rect.width, rect.height, {
+        render: { fillStyle: 'transparent' },
+        restitution: 0.8,
+        frictionAir: 0.01,
+        friction: 0.2
+      });
+
+      Matter.Body.setVelocity(body, {
+        x: (Math.random() - 0.5) * 5,
+        y: 0
+      });
+      Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.05);
+      return { elem, body };
+    });
+
+    wordBodies.forEach(({ elem, body }) => {
+      elem.style.position = 'absolute';
+      elem.style.left = `${body.position.x - body.bounds.max.x + body.bounds.min.x / 2}px`;
+      elem.style.top = `${body.position.y - body.bounds.max.y + body.bounds.min.y / 2}px`;
+      elem.style.transform = 'none';
+    });
+
+    const mouse = Mouse.create(containerRef);
+    const mouseConstraint = MouseConstraint.create(engine, {
+      mouse,
+      constraint: {
+        stiffness: props.mouseConstraintStiffness,
+        render: { visible: false }
+      }
+    });
+    render.mouse = mouse;
+
+    World.add(engine.world, [floor, leftWall, rightWall, ceiling, mouseConstraint, ...wordBodies.map(wb => wb.body)]);
+
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+    Render.run(render);
+
+    let rafId;
+    const updateLoop = () => {
+      wordBodies.forEach(({ body, elem }) => {
+        const { x, y } = body.position;
+        elem.style.left = `${x}px`;
+        elem.style.top = `${y}px`;
+        elem.style.transform = `translate(-50%, -50%) rotate(${body.angle}rad)`;
+      });
+      Matter.Engine.update(engine);
+      rafId = requestAnimationFrame(updateLoop);
+    };
+    updateLoop();
+
+    // Return cleanup function (mirrors the React useEffect cleanup)
+    return () => {
+      cancelAnimationFrame(rafId);
+      Render.stop(render);
+      Runner.stop(runner);
+      if (render.canvas && canvasContainerRef) {
+        canvasContainerRef.removeChild(render.canvas);
+      }
+      World.clear(engine.world);
+      Engine.clear(engine);
+    };
+  }
+
+  function startEffect() {
+    if (effectStarted) return;
+    effectStarted = true;
+    cleanupFn = runPhysicsEffect();
+  }
+
+  /* =========================================================================
+     Click / hover handlers (mirrors handleTrigger + onClick/onMouseEnter)
+     ========================================================================= */
+  function handleTrigger() {
+    if (!effectStarted && (props.trigger === 'click' || props.trigger === 'hover')) {
+      startEffect();
+    }
+  }
+
+  if (props.trigger === 'click') {
+    containerRef.addEventListener('click', handleTrigger);
+  } else if (props.trigger === 'hover') {
+    containerRef.addEventListener('mouseenter', handleTrigger);
+  }
+
+  // Kick things off (mirrors component mount)
+  setupTrigger();
+
+  // Optional: cleanup on page unload (mirrors React unmount)
+  window.addEventListener('beforeunload', () => {
+    if (cleanupFn) cleanupFn();
+    if (scrollObserver) scrollObserver.disconnect();
+  });
+})();
+</script>
+</body>
+</html>
