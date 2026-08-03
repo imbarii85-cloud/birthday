@@ -60,31 +60,31 @@ window.QUIZ_DATA = {
         },
         {
             "id": 9,
-            "question": "What is a 'quinceañera'?",
-            "options": ["A Spanish birthday song", "A celebration of a girl's 15th birthday", "A type of birthday cake", "A Latin birthday dance"],
-            "correct": 1,
-            "explanation": "Quinceañera is a Latin American celebration marking a girl's 15th birthday — a major cultural milestone!"
+            "question": "Jo hair rubber band aapne mere haath mein di thi (jo aapki ek nishani hai), wo maine kis date ko daali thi? Aur 4 August tak kitne din ho gaye hain?",
+            "options": ["20 June - 45 din", "15 June - 50 din", "25 June - 40 din", "1 July - 34 din"],
+            "correct": 0,
+            "explanation": "Maine ye rubber band 20 June ko daali thi, aur 4 August tak isko 45 din ho chuke hain — ek pyari si nishani!"
         },
         {
             "id": 10,
-            "question": "Which planet takes the longest to complete one orbit around the Sun (one 'birthday')?",
-            "options": ["Saturn", "Uranus", "Jupiter", "Neptune"],
-            "correct": 3,
-            "explanation": "Neptune takes about 165 Earth years to orbit the Sun — so it's had very few 'birthdays'!"
+            "question": "Ye webpage banane mein mujhe total kitna time laga (5 July se 3 August tak)?",
+            "options": ["120 ghante", "148 ghante", "134 ghante", "110 ghante"],
+            "correct": 2,
+            "explanation": "5 July se 3 August tak, is website ko banane mein total 134 ghante (30 din) lage!"
         },
         {
             "id": 11,
-            "question": "In Japan, what color is associated with birthdays and celebrations?",
-            "options": ["White", "Black", "Red", "Purple"],
-            "correct": 2,
-            "explanation": "Red is the color of celebration in Japan, often used in birthday decorations and traditional attire."
+            "question": "Maine kaunsa course study kiya hai?",
+            "options": ["ADIT", "DAIT", "CIT", "DIT"],
+            "correct": 3,
+            "explanation": "Sahi jawab hai DIT (Diploma in Information Technology) — yehi course maine study kiya hai, baaki sab milte julte naam hain jo confuse karne ke liye rakhe gaye!"
         },
         {
             "id": 12,
-            "question": "What is the traditional gift for a 50th birthday celebration?",
-            "options": ["Silver", "Gold", "Ruby", "Diamond"],
-            "correct": 1,
-            "explanation": "Gold is the traditional gift for a 50th birthday — often called the 'Golden Anniversary'!"
+            "question": "Mera last blood test report mein HB (Hemoglobin) point kya tha?",
+            "options": ["12.1", "12.3", "12.4", "12.6"],
+            "correct": 2,
+            "explanation": "Sahi jawab hai 12.4 — yehi mera last report mein HB point tha!"
         }
     ]
 };
@@ -687,23 +687,23 @@ function retakeQuiz() {
     // TODO: Retake Quiz temporarily disabled — reactivate this logic when ready
 
     // Clear persisted state so next attempt starts fresh
-    clearState();
-    try { localStorage.removeItem('birthdayQuizCompletedState'); } catch (e) { }
+    // clearState();
+    // try { localStorage.removeItem('birthdayQuizCompletedState'); } catch (e) { }
 
-    answers = {};
-    submitted = {};
-    score = 0;
-    current = 0;
-    timeLeft = 60;
-    quizStarted = false;
+    // answers = {};
+    // submitted = {};
+    // score = 0;
+    // current = 0;
+    // timeLeft = 60;
+    // quizStarted = false;
 
-    document.getElementById('resultsScreen').classList.remove('show');
-    document.getElementById('quizContainer').style.display = '';
-    document.getElementById('progressWrap').style.display = 'none';
-    document.getElementById('timerDisplay').style.display = 'none';
+    // document.getElementById('resultsScreen').classList.remove('show');
+    // document.getElementById('quizContainer').style.display = '';
+    // document.getElementById('progressWrap').style.display = 'none';
+    // document.getElementById('timerDisplay').style.display = 'none';
 
-    updateScorePill();
-    showStartScreen();
+    // updateScorePill();
+    // showStartScreen();
 
 }
 

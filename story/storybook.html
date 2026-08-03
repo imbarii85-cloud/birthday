@@ -1,11 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Magical Birthday Story</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        /* --- Global Styles & Setup --- */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Nunito+Sans:wght@400;600&display=swap');
+
+        :root {
+            --bg-color-1: #e0c3fc;
+            --bg-color-2: #8ec5fc;
+            --bg-color-3: #f0c3fc;
+            --bg-color-4: #c3e8fc;
+            --text-dark: #333;
+            --text-light: #fff;
+            --accent-gold: #FFD700;
+            --accent-deep-purple: #5a189a;
+            --book-cover-color: #7b2cbf;
+            --book-page-color: #f8f7f2;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: var(--text-dark);
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--bg-color-1), var(--bg-color-2), var(--bg-color-3), var(--bg-color-4));
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .step {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .step.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .instruction-text {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-shadow: 1px 1px 3px var(--shadow-color);
+            animation: fadeIn 1s 0.5s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* --- Step 1: Gift Box --- */
+        .gift-container {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .gift-box {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background-color: var(--accent-deep-purple);
+            border-radius: 12px;
+            margin: 0 auto;
+        }
+
+        .gift-lid {
+            position: absolute;
+            width: 170px;
+            height: 40px;
+            background-color: #9d4edd;
+            top: -20px;
+            left: -10px;
+            border-radius: 8px;
+            transition: transform 0.5s ease-out;
+        }
+
+        .gift-bow::before,
+        .gift-bow::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 60px;
+            background-color: var(--accent-gold);
+            border-radius: 50%;
+            top: -45px;
+            z-index: 10;
+        }
+
+        .gift-bow::before {
+            left: 55px;
+            transform: rotate(-45deg);
+        }
+
+        .gift-bow::after {
+            left: 80px;
+            transform: rotate(45deg);
+        }
+
+        .gift-container.open .gift-lid {
+            transform: translateY(-80px) rotate(15deg);
+        }
+
+        /* --- Step 2: Key --- */
+        .key-container {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .key-svg {
+            width: 150px;
+            height: 150px;
+            stroke: var(--accent-gold);
+            filter: drop-shadow(0 0 10px gold);
+        }
+
+        #animatedKey {
+            stroke-dasharray: 500;
+            stroke-dashoffset: 500;
+            animation: drawKey 2s ease-out forwards;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        @keyframes drawKey {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .key-container.unlocking #animatedKey {
+            transform: translateY(100px) scale(0.2) rotate(-90deg);
+            opacity: 0;
+        }
+
+        /* --- Step 3 & 4: Storybook --- */
+        .storybook-container {
+            perspective: 1500px;
+        }
+
+        .book {
+            width: 400px;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease-in-out;
+            opacity: 0;
+            transform: rotateY(-30deg) scale(0.5);
+        }
+
+        .storybook-container.visible .book {
+            opacity: 1;
+            transform: rotateY(-30deg) scale(1);
+        }
+
+        .storybook-container.opening .book {
+            transform: rotateY(0deg) scale(1.2);
+        }
+
+        .book-cover,
+        .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-style: preserve-3d;
+        }
+
+        .book-cover {
+            transform-origin: left;
+            transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+            z-index: 10;
+        }
+
+        .cover-front,
+        .cover-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: var(--book-cover-color);
+            border-radius: 5px;
+            backface-visibility: hidden;
+        }
+
+        .cover-front {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 20px var(--shadow-color);
+        }
+
+        .book-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent-gold);
+            font-size: 2.2rem;
+            border: 2px solid var(--accent-gold);
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .cover-back {
+            transform: rotateY(180deg);
+        }
+
+        .book-cover.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        .page {
+            transform-origin: left;
+            transition: transform 1.2s ease-in-out;
+            background-color: var(--book-page-color);
+            border-radius: 0 5px 5px 0;
+            box-shadow: inset -1px 0 2px rgba(0, 0, 0, 0.1);
+        }
+
+        #page1 {
+            z-index: 8;
+        }
+
+        #page2 {
+            z-index: 7;
+        }
+
+        .page-front,
+        .page-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--book-page-color);
+            border-radius: 0 5px 5px 0;
+            backface-visibility: hidden;
+        }
+
+        .page-back {
+            transform: rotateY(180deg);
+        }
+
+        .page-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            text-align: center;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* --- Step 5: Finale --- */
+        .finale-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .finale-card {
+            position: relative;
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            /* Scroller Border intact */
+            opacity: 0;
+            animation: fadeIn 1s 1s forwards;
+        }
+
+        /* Custom Scrollbar for Finale Card */
+        .finale-card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .finale-card::-webkit-scrollbar-thumb {
+            background: rgba(90, 24, 154, 0.4);
+            border-radius: 10px;
+        }
+
+        .finale-greeting {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--accent-deep-purple);
+        }
+
+        .finale-name {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 3.8rem;
+            color: var(--accent-deep-purple);
+            margin: 10px 0;
+        }
+
+        /* Aesthetic Text Fade/Slide Animation for Finale Wish */
+        .finale-wish {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #2b2b2b;
+            text-align: center;
+        }
+
+        .animated-word {
+            display: inline-block;
+            margin-right: 4px;
+            opacity: 0;
+            transform: translateY(12px);
+            will-change: opacity, transform;
+        }
+
+        /* Floral SVG Animation */
+        .floral-svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: visible;
+        }
+
+        .floral-svg path {
+            fill: none;
+            stroke: var(--accent-deep-purple);
+            stroke-width: 2;
+            stroke-linecap: round;
+            opacity: 0.3;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawVines 3s ease-out 1.5s forwards;
+        }
+
+        @keyframes drawVines {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* ===== TextType Component CSS Integration ===== */
+        .text-type {
+            display: inline-block;
+            white-space: pre-wrap;
+        }
+
+        .text-type__cursor {
+            margin-left: 0.15rem;
+            display: inline-block;
+            opacity: 1;
+            font-weight: bold;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .book {
+                transform: scale(0.8) rotateY(-30deg);
+            }
+
+            .storybook-container.opening .book {
+                transform: rotateY(0deg) scale(0.9);
+            }
+
+            .finale-greeting {
+                font-size: 2rem;
+            }
+
+            .finale-name {
+                font-size: 3rem;
+            }
+
+            .finale-wish {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .book {
+                width: 300px;
+                height: 225px;
+            }
+
+            .book-title {
+                font-size: 1.6rem;
+            }
+
+            .page-text {
+                font-size: 1.05rem;
+            }
+
+            .finale-greeting {
+                font-size: 1.8rem;
+            }
+
+            .finale-name {
+                font-size: 2.5rem;
+            }
+
+            .finale-wish {
+                font-size: 0.9rem;
+            }
+
+            .finale-card {
+                padding: 25px;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <div class="background-container"></div>
     <audio id="backgroundMusic" loop src="magical_music.mp3"></audio>
@@ -16,16 +485,18 @@
                 <div class="gift-lid"></div>
                 <div class="gift-bow"></div>
             </div>
-            <p class="instruction-text">A surprise is waiting...</p>
+            <p class="instruction-text text-type-target" data-text="A surprise is waiting..."></p>
         </div>
     </div>
 
     <div class="step" id="step2">
         <div class="key-container" id="keyContainer">
             <svg id="animatedKey" class="key-svg" viewBox="0 0 100 100">
-                <path d="M60,20 Q50,10 40,20 T20,20 Q10,25 20,30 T40,30 Q50,35 40,40 L40,70 L35,75 L35,80 L40,85 L45,80 L45,75 L40,70" stroke-width="5" stroke-linecap="round" fill="none"/>
+                <path
+                    d="M60,20 Q50,10 40,20 T20,20 Q10,25 20,30 T40,30 Q50,35 40,40 L40,70 L35,75 L35,80 L40,85 L45,80 L45,75 L40,70"
+                    stroke-width="5" stroke-linecap="round" fill="none" />
             </svg>
-            <p class="instruction-text">A key to unlock the magic...</p>
+            <p class="instruction-text text-type-target" data-text="A key to unlock the magic..."></p>
         </div>
     </div>
 
@@ -34,44 +505,473 @@
             <div class="book">
                 <div class="book-cover" id="bookCover">
                     <div class="cover-front">
-                        <h2 class="book-title">Your Story</h2>
+                        <h2 class="book-title text-type-target" data-text="Your Story"></h2>
                     </div>
                     <div class="cover-back"></div>
                 </div>
+
                 <div class="page" id="page1">
                     <div class="page-front">
-                        <p class="page-text">A new chapter begins today...</p>
+                        <p class="page-text text-type-target" data-text="A new chapter begins today..."></p>
                     </div>
                     <div class="page-back">
-                        <p class="page-text">Filled with promise and new adventures...</p>
+                        <p class="page-text text-type-target" data-text="Filled with promise and new adventures..."></p>
                     </div>
                 </div>
+
                 <div class="page" id="page2">
                     <div class="page-front">
-                        <p class="page-text">May it be your best one yet...</p>
+                        <p class="page-text text-type-target" data-text="May it be your best one yet..."></p>
                     </div>
                     <div class="page-back">
-                        <p class="page-text">Full of laughter, joy, and light...</p>
+                        <p class="page-text text-type-target" data-text="Full of laughter, joy, and light..."></p>
                     </div>
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 
     <div class="step" id="step5">
         <div class="finale-container">
-            <div class="finale-card">
+            <div class="finale-card" id="finaleCard">
                 <svg class="floral-svg" viewBox="0 0 400 400">
                     <path id="vine1" d="M10,200 C40,100 150,100 200,200 S360,300 390,200" />
                     <path id="vine2" d="M10,210 C40,310 150,310 200,210 S360,110 390,210" />
                 </svg>
-                <h1 class="finale-greeting">Happy Birthday</h1>
-                <h2 class="finale-name">Sapthesh!</h2>
-                <p class="finale-wish">Wishing you a day as magical as this story, and a year filled with wonderful new beginnings. May all your dreams blossom.</p>
+                <h1 class="finale-greeting text-type-target" data-text="Happy Birthday"></h1>
+                <h2 class="finale-name text-type-target" data-text="Sapthesh!"></h2>
+
+                <!-- Smooth Animated Text Wish -->
+                <p class="finale-wish" id="animatedWish">
+                    Wishing you a day as magical as this story, and a year filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.Wishing you a day as magical as this story, and a year
+                    filled with wonderful new beginnings. May all
+                    your dreams blossom. Wishing you a day as magical as this story, and a year filled with wonderful
+                    new
+                    beginnings. May all your dreams blossom. Wishing you a day as magical as this story, and a year
+                    filled with wonderful new
+                    beginnings. May all your dreams blossom.
+                </p>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        /* =========================================================================
+           Reusable TextType Typing Animation Class
+           ========================================================================= */
+        class TextType {
+            constructor(element, options = {}) {
+                this.element = element;
+                this.text = options.text || element.getAttribute('data-text') || element.textContent.trim();
+                this.typingSpeed = options.typingSpeed || 60;
+                this.initialDelay = options.initialDelay || 100;
+                this.showCursor = options.showCursor !== undefined ? options.showCursor : true;
+                this.cursorCharacter = options.cursorCharacter || '|';
+
+                this.textArray = Array.isArray(this.text) ? this.text : [this.text];
+                this.displayedText = '';
+                this.currentCharIndex = 0;
+                this.currentTextIndex = 0;
+                this.typingTimeout = null;
+
+                this.initDOM();
+            }
+
+            initDOM() {
+                this.element.innerHTML = '';
+                this.element.classList.add('text-type');
+
+                this.contentSpan = document.createElement('span');
+                this.contentSpan.className = 'text-type__content';
+                this.element.appendChild(this.contentSpan);
+
+                if (this.showCursor) {
+                    this.cursorSpan = document.createElement('span');
+                    this.cursorSpan.className = 'text-type__cursor';
+                    this.cursorSpan.textContent = this.cursorCharacter;
+                    this.element.appendChild(this.cursorSpan);
+                    this.setupCursorBlink();
+                }
+            }
+
+            setupCursorBlink() {
+                if (this.cursorSpan && window.gsap) {
+                    gsap.to(this.cursorSpan, {
+                        opacity: 0,
+                        duration: 0.5,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: 'power2.inOut'
+                    });
+                }
+            }
+
+            render() {
+                this.contentSpan.textContent = this.displayedText;
+            }
+
+            start() {
+                this.stop();
+                this.displayedText = '';
+                this.currentCharIndex = 0;
+                this.render();
+
+                this.typingTimeout = setTimeout(() => {
+                    this.executeTypingAnimation();
+                }, this.initialDelay);
+            }
+
+            stop() {
+                if (this.typingTimeout) clearTimeout(this.typingTimeout);
+            }
+
+            executeTypingAnimation() {
+                const currentText = this.textArray[this.currentTextIndex];
+                if (this.currentCharIndex < currentText.length) {
+                    this.typingTimeout = setTimeout(() => {
+                        this.displayedText += currentText[this.currentCharIndex];
+                        this.currentCharIndex += 1;
+                        this.render();
+                        this.executeTypingAnimation();
+                    }, this.typingSpeed);
+                }
+            }
+        }
+
+        function triggerTypingInElement(parentContainer) {
+            const targets = parentContainer.querySelectorAll('.text-type-target');
+            targets.forEach((el, index) => {
+                if (!el._textTypeInstance) {
+                    el._textTypeInstance = new TextType(el, {
+                        initialDelay: index * 300,
+                        typingSpeed: 50
+                    });
+                }
+                el._textTypeInstance.start();
+            });
+        }
+
+        /* Beautiful Staggered Text Reveal for Finale Paragraph */
+        function triggerWordRevealAnimation() {
+            const wishEl = document.getElementById('animatedWish');
+            if (!wishEl || wishEl.getAttribute('data-animated')) return;
+
+            wishEl.setAttribute('data-animated', 'true');
+            const fullText = wishEl.textContent.trim();
+            wishEl.innerHTML = '';
+
+            const words = fullText.split(/\s+/);
+            const wordElements = words.map(word => {
+                const span = document.createElement('span');
+                span.className = 'animated-word';
+                span.textContent = word + ' ';
+                wishEl.appendChild(span);
+                return span;
+            });
+
+            gsap.to(wordElements, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.03,
+                ease: 'power2.out',
+                delay: 1.2
+            });
+        }
+
+        /* Main Story Logic */
+        document.addEventListener('DOMContentLoaded', () => {
+            const giftContainer = document.getElementById('giftContainer');
+            const keyContainer = document.getElementById('keyContainer');
+            const storybookContainer = document.getElementById('storybookContainer');
+            const bookCover = document.getElementById('bookCover');
+            const pages = document.querySelectorAll('.page');
+
+            const steps = {
+                step1: document.getElementById('step1'),
+                step2: document.getElementById('step2'),
+                step3: document.getElementById('step3'),
+                step5: document.getElementById('step5'),
+            };
+
+            function transitionToStep(targetStepId) {
+                const currentActive = document.querySelector('.step.active');
+                if (currentActive) {
+                    currentActive.classList.remove('active');
+                }
+                const nextStep = steps[targetStepId];
+                nextStep.classList.add('active');
+
+                triggerTypingInElement(nextStep);
+
+                if (targetStepId === 'step5') {
+                    triggerWordRevealAnimation();
+                }
+            }
+
+            triggerTypingInElement(steps.step1);
+
+            // Event Handlers
+            giftContainer.addEventListener('click', () => {
+                giftContainer.classList.add('open');
+                setTimeout(() => transitionToStep('step2'), 1000);
+            });
+
+            keyContainer.addEventListener('click', () => {
+                keyContainer.classList.add('unlocking');
+                setTimeout(() => {
+                    transitionToStep('step3');
+                    storybookContainer.classList.add('visible');
+                }, 1000);
+            });
+
+            storybookContainer.addEventListener('click', () => {
+                if (!storybookContainer.classList.contains('opening')) {
+                    storybookContainer.classList.add('opening');
+                    setTimeout(() => bookCover.classList.add('flipped'), 500);
+                } else if (!pages[0].classList.contains('flipped')) {
+                    pages[0].classList.add('flipped');
+                } else if (!pages[1].classList.contains('flipped')) {
+                    pages[1].classList.add('flipped');
+                } else {
+                    transitionToStep('step5');
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>

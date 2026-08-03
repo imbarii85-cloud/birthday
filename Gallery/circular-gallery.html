@@ -12,6 +12,7 @@
       padding: 0;
       height: 100%;
       background: #0b0b0b;
+      overflow: hidden;
     }
 
     #gallery-wrapper {
@@ -25,6 +26,9 @@
       height: 100%;
       overflow: hidden;
       cursor: grab;
+      position: relative;
+      /* gives the curved items a sense of depth without WebGL */
+      perspective: 1400px;
     }
 
     .circular-gallery:active {
@@ -35,6 +39,60 @@
       outline: 2px solid #fff;
       outline-offset: 4px;
     }
+
+    .gallery-track {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+
+    .gallery-item {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      will-change: transform;
+      /* transform-origin stays centered so rotation/arc math lines up
+         with the translate values computed in JS */
+      transform-origin: center center;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .gallery-item-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: var(--gallery-border-radius, 12px);
+      background: #1a1a1a;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .gallery-item img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      /* prevents native drag-ghost image on desktop browsers */
+      -webkit-user-drag: none;
+    }
+
+    .gallery-title {
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 18px);
+      transform: translateX(-50%);
+      white-space: nowrap;
+      color: var(--gallery-text-color, #ffffff);
+      font: var(--gallery-font, bold 20px Figtree, sans-serif);
+      letter-spacing: 0.02em;
+      text-align: center;
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -42,381 +100,177 @@
 
   <div id="gallery-wrapper">
     <div id="gallery-container" class="circular-gallery" tabindex="0" role="region"
-      aria-label="Circular image gallery. Use left and right arrow keys to navigate."></div>
+      aria-label="Circular image gallery. Use left and right arrow keys to navigate.">
+      <div class="gallery-track" id="gallery-track"></div>
+    </div>
   </div>
 
-  <script type="module">
-    import { Camera, Mesh, Plane, Program, Renderer, Texture, Transform } from "https://esm.sh/ogl@1.0.6";
-
-    /* ---------------------------------------------------------------------- */
-    /* Config — edit these to change gallery content / behaviour             */
-    /* ---------------------------------------------------------------------- */
+  <script>
+    /* ------------------------------------------------------------------ */
+    /* Config — edit these to change gallery content / behaviour          */
+    /* ------------------------------------------------------------------ */
     const CONFIG = {
-      items: undefined, // Array<{ image: string, text: string }> — leave undefined to use defaults
-      bend: 3,
+      // Local images only. Point these at files sitting next to this HTML
+      // file (e.g. an "images" folder you copy alongside it), or any
+      // relative/local path. Remote URLs are intentionally not used.
+      items: [
+        { image: "circular-gallery-images/2023.jpg", text: "2021" },
+        { image: "circular-gallery-images/02021.png", text: "2021" },
+        { image: "circular-gallery-images/02022.png", text: "2022" },
+        { image: "circular-gallery-images/12022.jpg", text: "2022" },
+        { image: "circular-gallery-images/02023.jpg", text: "2023" },
+        { image: "circular-gallery-images/12023.jpg", text: "2023" },
+        { image: "circular-gallery-images/2024.jpg", text: "2024" },
+        { image: "circular-gallery-images/02024.jpg", text: "2024" },
+        { image: "circular-gallery-images/12024.jpg", text: "2024" },
+        { image: "circular-gallery-images/22024.jpg", text: "2024" },
+        { image: "circular-gallery-images/2025.jpg", text: "2025" },
+        { image: "circular-gallery-images/02025.jpg", text: "2025" },
+        { image: "circular-gallery-images/12025.jpg", text: "2025" },
+        { image: "circular-gallery-images/22025.jpg", text: "2025" },
+        { image: "circular-gallery-images/2026.jpg", text: "2026" },
+        { image: "circular-gallery-images/02026.jpg", text: "2026" },
+        { image: "circular-gallery-images/12026.jpg", text: "2026" },
+        { image: "circular-gallery-images/42026.jpg", text: "2026" },
+      ],
+      bend: 220,          // curvature strength in pixels (0 = flat line)
       textColor: "#ffffff",
-      borderRadius: 0.05,
-      font: "bold 30px Figtree",
-      // Optionally load a custom font for the labels.
-      // Accepts a stylesheet URL (e.g. Google Fonts) or a direct font file.
-      fontUrl: "https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap",
+      borderRadius: 16,   // px
+      font: "bold 22px Figtree, sans-serif",
+      fontUrl: "https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap",
       scrollSpeed: 2,
-      scrollEase: 0.02
+      scrollEase: 0.08,
+      itemWidthRatio: 0.28,   // Desktop base width ratio
+      itemAspect: 900 / 700   // height / width, matches original plane proportions
     };
 
-    /* ---------------------------------------------------------------------- */
-    /* Helpers                                                                */
-    /* ---------------------------------------------------------------------- */
-    function debounce(func, wait) {
-      let timeout;
-      return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
+    /* ------------------------------------------------------------------ */
+    /* Helpers                                                            */
+    /* ------------------------------------------------------------------ */
+    function debounce(fn, wait) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(null, args), wait);
       };
     }
 
-    function lerp(p1, p2, t) {
-      return p1 + (p2 - p1) * t;
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
     }
 
-    function autoBind(instance) {
-      const proto = Object.getPrototypeOf(instance);
-      Object.getOwnPropertyNames(proto).forEach(key => {
-        if (key !== "constructor" && typeof instance[key] === "function") {
-          instance[key] = instance[key].bind(instance);
-        }
+    function loadFontStylesheet(url) {
+      return new Promise(resolve => {
+        if (!url) return resolve();
+        const existing = document.querySelector(`link[href="${url}"]`);
+        if (existing) return resolve();
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+        link.onload = () => resolve();
+        link.onerror = () => resolve(); // don't block the gallery on a font failure
+        document.head.appendChild(link);
       });
     }
 
-    const DEFAULT_FONT = "bold 30px Figtree";
-    // Figtree is not guaranteed to be available on the host page, so the component
-    // loads it on demand whenever the default font is used.
-    const DEFAULT_FONT_URL = "https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap";
+    // A neutral placeholder shown if a local image path can't be found,
+    // so the gallery still renders correctly before real images are added.
+    const PLACEHOLDER_SVG =
+      "data:image/svg+xml;utf8," +
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="700" height="900">
+          <rect width="100%" height="100%" fill="#242424"/>
+          <text x="50%" y="50%" fill="#8a8a8a" font-family="sans-serif" font-size="28"
+                text-anchor="middle" dominant-baseline="middle">image not found</text>
+        </svg>
+      `);
 
-    function deriveFontFamilyFromUrl(url) {
-      const fileName = (url.split("/").pop() || "custom-font").split("?")[0];
-      const base = fileName.replace(/\.(woff2?|ttf|otf|eot)$/i, "");
-      return base.replace(/[^a-zA-Z0-9-_ ]/g, "").trim() || "CircularGalleryFont";
-    }
-
-    async function loadFontFromStylesheet(url) {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Failed to fetch font stylesheet (${response.status})`);
-      const cssText = await response.text();
-      const faceBlocks = cssText.match(/@font-face\s*{[^}]*}/g) || [];
-      let family = null;
-      const fontFaces = [];
-      for (const block of faceBlocks) {
-        const familyMatch = block.match(/font-family:\s*['"]?([^;'"]+)['"]?/);
-        const urlMatch = block.match(/url\(\s*['"]?([^'")]+)['"]?\s*\)/);
-        if (!familyMatch || !urlMatch) continue;
-        family = familyMatch[1].trim();
-        const descriptors = {};
-        const weightMatch = block.match(/font-weight:\s*([^;]+);/);
-        const styleMatch = block.match(/font-style:\s*([^;]+);/);
-        const rangeMatch = block.match(/unicode-range:\s*([^;]+);/);
-        if (weightMatch) descriptors.weight = weightMatch[1].trim();
-        if (styleMatch) descriptors.style = styleMatch[1].trim();
-        if (rangeMatch) descriptors.unicodeRange = rangeMatch[1].trim();
-        fontFaces.push(new FontFace(family, `url(${urlMatch[1]})`, descriptors));
-      }
-      if (!family) throw new Error("No @font-face rule found in the stylesheet");
-      await Promise.allSettled(
-        fontFaces.map(async face => {
-          await face.load();
-          document.fonts.add(face);
-        })
-      );
-      return family;
-    }
-
-    async function loadFontFromFile(url) {
-      const family = deriveFontFamilyFromUrl(url);
-      const fontFace = new FontFace(family, `url(${url})`);
-      await fontFace.load();
-      document.fonts.add(fontFace);
-      return family;
-    }
-
-    async function loadCustomFont(fontUrl) {
-      const isStylesheet = fontUrl.includes("fonts.googleapis.com") || /\.css(\?.*)?$/i.test(fontUrl);
-      return isStylesheet ? loadFontFromStylesheet(fontUrl) : loadFontFromFile(fontUrl);
-    }
-
-    // Loads `fontUrl` (a stylesheet such as a Google Fonts URL, or a direct font
-    // file) and returns a canvas-ready font string that keeps the size/weight from
-    // `font` but swaps in the freshly loaded family. Falls back to `font` on error.
-    async function resolveFont(font, fontUrl) {
-      const effectiveUrl = fontUrl || (font === DEFAULT_FONT ? DEFAULT_FONT_URL : null);
-      if (!effectiveUrl) {
-        if (document.fonts && document.fonts.load) {
-          try {
-            await document.fonts.load(font);
-            await document.fonts.ready;
-          } catch {
-            // Ignore – fall back to whatever the browser provides.
-          }
-        }
-        return font;
-      }
-      try {
-        const family = await loadCustomFont(effectiveUrl);
-        const sizeMatch = font.match(/^\s*(.*?\d+px)/);
-        const prefix = sizeMatch ? sizeMatch[1].trim() : "bold 30px";
-        const resolved = `${prefix} "${family}"`;
-        if (document.fonts && document.fonts.load) {
-          try {
-            await document.fonts.load(resolved);
-          } catch {
-            // Ignore – we still attempt to render with the requested font.
-          }
-        }
-        return resolved;
-      } catch (error) {
-        console.error("CircularGallery: unable to load font from", fontUrl, error);
-        return font;
-      }
-    }
-
-    function getFontSize(font) {
-      const match = font.match(/(\d+)px/);
-      return match ? parseInt(match[1], 10) : 30;
-    }
-
-    function createTextTexture(gl, text, font = "bold 30px monospace", color = "black") {
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      context.font = font;
-      const metrics = context.measureText(text);
-      const textWidth = Math.ceil(metrics.width);
-      const textHeight = Math.ceil(getFontSize(font) * 1.2);
-      canvas.width = textWidth + 20;
-      canvas.height = textHeight + 20;
-      context.font = font;
-      context.fillStyle = color;
-      context.textBaseline = "middle";
-      context.textAlign = "center";
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.fillText(text, canvas.width / 2, canvas.height / 2);
-      const texture = new Texture(gl, { generateMipmaps: false });
-      texture.image = canvas;
-      return { texture, width: canvas.width, height: canvas.height };
-    }
-
-    /* ---------------------------------------------------------------------- */
-    /* Title                                                                  */
-    /* ---------------------------------------------------------------------- */
-    class Title {
-      constructor({ gl, plane, renderer, text, textColor = "#545050", font = "30px sans-serif" }) {
-        autoBind(this);
-        this.gl = gl;
-        this.plane = plane;
-        this.renderer = renderer;
-        this.text = text;
-        this.textColor = textColor;
-        this.font = font;
-        this.createMesh();
-      }
-      createMesh() {
-        const { texture, width, height } = createTextTexture(this.gl, this.text, this.font, this.textColor);
-        const geometry = new Plane(this.gl);
-        const program = new Program(this.gl, {
-          vertex: `
-        attribute vec3 position;
-        attribute vec2 uv;
-        uniform mat4 modelViewMatrix;
-        uniform mat4 projectionMatrix;
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-          fragment: `
-        precision highp float;
-        uniform sampler2D tMap;
-        varying vec2 vUv;
-        void main() {
-          vec4 color = texture2D(tMap, vUv);
-          if (color.a < 0.1) discard;
-          gl_FragColor = color;
-        }
-      `,
-          uniforms: { tMap: { value: texture } },
-          transparent: true
-        });
-        this.mesh = new Mesh(this.gl, { geometry, program });
-        const aspect = width / height;
-        const textHeight = this.plane.scale.y * 0.15;
-        const textWidth = textHeight * aspect;
-        this.mesh.scale.set(textWidth, textHeight, 1);
-        this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
-        this.mesh.setParent(this.plane);
-      }
-    }
-
-    /* ---------------------------------------------------------------------- */
-    /* Media                                                                  */
-    /* ---------------------------------------------------------------------- */
-    class Media {
-      constructor({
-        geometry,
-        gl,
-        image,
-        index,
-        length,
-        renderer,
-        scene,
-        screen,
-        text,
-        viewport,
-        bend,
-        textColor,
-        borderRadius = 0,
-        font
-      }) {
-        this.extra = 0;
-        this.geometry = geometry;
-        this.gl = gl;
-        this.image = image;
+    /* ------------------------------------------------------------------ */
+    /* Gallery item — one <img> + label, positioned with CSS transforms   */
+    /* ------------------------------------------------------------------ */
+    class GalleryItem {
+      constructor({ container, image, text, index, length, bend, textColor, borderRadius, font }) {
+        this.container = container;
         this.index = index;
         this.length = length;
-        this.renderer = renderer;
-        this.scene = scene;
-        this.screen = screen;
-        this.text = text;
-        this.viewport = viewport;
         this.bend = bend;
-        this.textColor = textColor;
-        this.borderRadius = borderRadius;
-        this.font = font;
-        this.createShader();
-        this.createMesh();
-        this.createTitle();
-        this.onResize();
-      }
-      createShader() {
-        const texture = new Texture(this.gl, {
-          generateMipmaps: true
-        });
-        this.program = new Program(this.gl, {
-          depthTest: false,
-          depthWrite: false,
-          vertex: `
-        precision highp float;
-        attribute vec3 position;
-        attribute vec2 uv;
-        uniform mat4 modelViewMatrix;
-        uniform mat4 projectionMatrix;
-        uniform float uTime;
-        uniform float uSpeed;
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          vec3 p = position;
-          p.z = (sin(p.x * 4.0 + uTime) * 1.5 + cos(p.y * 2.0 + uTime) * 1.5) * (0.1 + uSpeed * 0.5);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
-        }
-      `,
-          fragment: `
-        precision highp float;
-        uniform vec2 uImageSizes;
-        uniform vec2 uPlaneSizes;
-        uniform sampler2D tMap;
-        uniform float uBorderRadius;
-        varying vec2 vUv;
+        this.extra = 0;
 
-        float roundedBoxSDF(vec2 p, vec2 b, float r) {
-          vec2 d = abs(p) - b;
-          return length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0) - r;
-        }
+        this.el = document.createElement("div");
+        this.el.className = "gallery-item";
 
-        void main() {
-          vec2 ratio = vec2(
-            min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
-            min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
-          );
-          vec2 uv = vec2(
-            vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
-            vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
-          );
-          vec4 color = texture2D(tMap, uv);
+        this.inner = document.createElement("div");
+        this.inner.className = "gallery-item-inner";
+        this.inner.style.setProperty("--gallery-border-radius", `${borderRadius}px`);
 
-          float d = roundedBoxSDF(vUv - 0.5, vec2(0.5 - uBorderRadius), uBorderRadius);
-
-          float edgeSmooth = 0.002;
-          float alpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, d);
-
-          gl_FragColor = vec4(color.rgb, alpha);
-        }
-      `,
-          uniforms: {
-            tMap: { value: texture },
-            uPlaneSizes: { value: [0, 0] },
-            uImageSizes: { value: [0, 0] },
-            uSpeed: { value: 0 },
-            uTime: { value: 100 * Math.random() },
-            uBorderRadius: { value: this.borderRadius }
-          },
-          transparent: true
-        });
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = this.image;
-        img.onload = () => {
-          texture.image = img;
-          this.program.uniforms.uImageSizes.value = [img.naturalWidth, img.naturalHeight];
+        this.img = document.createElement("img");
+        this.img.src = image;
+        this.img.alt = text || "";
+        this.img.draggable = false;
+        this.img.onerror = () => {
+          console.warn(`CircularGallery: failed to load local image "${image}"`);
+          this.img.src = PLACEHOLDER_SVG;
         };
+
+        this.inner.appendChild(this.img);
+        this.el.appendChild(this.inner);
+
+        if (text) {
+          this.titleEl = document.createElement("div");
+          this.titleEl.className = "gallery-title";
+          this.titleEl.textContent = text;
+          this.titleEl.style.setProperty("--gallery-text-color", textColor);
+          this.titleEl.style.setProperty("--gallery-font", font);
+          this.el.appendChild(this.titleEl);
+        }
+
+        this.container.appendChild(this.el);
       }
-      createMesh() {
-        this.plane = new Mesh(this.gl, {
-          geometry: this.geometry,
-          program: this.program
-        });
-        this.plane.setParent(this.scene);
+
+      onResize({ screen, itemWidthRatio, itemAspect, padding }) {
+        this.screen = screen;
+        this.width = screen.width * itemWidthRatio;
+        this.height = this.width * itemAspect;
+        this.el.style.width = `${this.width}px`;
+        this.el.style.height = `${this.height}px`;
+
+        this.padding = padding;
+        this.step = this.width + this.padding;
+        this.widthTotal = this.step * this.length;
+        this.x = this.step * this.index;
       }
-      createTitle() {
-        this.title = new Title({
-          gl: this.gl,
-          plane: this.plane,
-          renderer: this.renderer,
-          text: this.text,
-          textColor: this.textColor,
-          font: this.font
-        });
-      }
+
       update(scroll, direction) {
-        this.plane.position.x = this.x - scroll.current - this.extra;
+        const posX = this.x - scroll.current - this.extra;
+        const H = this.screen.width / 2;
 
-        const x = this.plane.position.x;
-        const H = this.viewport.width / 2;
+        let posY = 0;
+        let rotationDeg = 0;
 
-        if (this.bend === 0) {
-          this.plane.position.y = 0;
-          this.plane.rotation.z = 0;
-        } else {
-          const B_abs = Math.abs(this.bend);
-          const R = (H * H + B_abs * B_abs) / (2 * B_abs);
-          const effectiveX = Math.min(Math.abs(x), H);
+        if (this.bend !== 0) {
+          const B = Math.abs(this.bend);
+          const R = (H * H + B * B) / (2 * B);
+          const effectiveX = Math.min(Math.abs(posX), H);
+          const arc = R - Math.sqrt(Math.max(R * R - effectiveX * effectiveX, 0));
+          const angle = Math.asin(effectiveX / R);
 
-          const arc = R - Math.sqrt(R * R - effectiveX * effectiveX);
           if (this.bend > 0) {
-            this.plane.position.y = -arc;
-            this.plane.rotation.z = -Math.sign(x) * Math.asin(effectiveX / R);
+            posY = -arc;
+            rotationDeg = (-Math.sign(posX) * angle * 180) / Math.PI;
           } else {
-            this.plane.position.y = arc;
-            this.plane.rotation.z = Math.sign(x) * Math.asin(effectiveX / R);
+            posY = arc;
+            rotationDeg = (Math.sign(posX) * angle * 180) / Math.PI;
           }
         }
 
-        this.speed = scroll.current - scroll.last;
-        this.program.uniforms.uTime.value += 0.04;
-        this.program.uniforms.uSpeed.value = this.speed;
+        this.el.style.transform =
+          `translate3d(${posX - this.width / 2}px, ${posY - this.height / 2}px, 0) rotate(${rotationDeg}deg)`;
 
-        const planeOffset = this.plane.scale.x / 2;
-        const viewportOffset = this.viewport.width / 2;
-        this.isBefore = this.plane.position.x + planeOffset < -viewportOffset;
-        this.isAfter = this.plane.position.x - planeOffset > viewportOffset;
+        const halfWidth = this.width / 2;
+        const halfScreen = this.screen.width / 2;
+        this.isBefore = posX + halfWidth < -halfScreen;
+        this.isAfter = posX - halfWidth > halfScreen;
+
         if (direction === "right" && this.isBefore) {
           this.extra -= this.widthTotal;
           this.isBefore = this.isAfter = false;
@@ -426,194 +280,129 @@
           this.isBefore = this.isAfter = false;
         }
       }
-      onResize({ screen, viewport } = {}) {
-        if (screen) this.screen = screen;
-        if (viewport) {
-          this.viewport = viewport;
-          if (this.plane.program.uniforms.uViewportSizes) {
-            this.plane.program.uniforms.uViewportSizes.value = [this.viewport.width, this.viewport.height];
-          }
-        }
-        this.scale = this.screen.height / 1500;
-        this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
-        this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
-        this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
-        this.padding = 2;
-        this.width = this.plane.scale.x + this.padding;
-        this.widthTotal = this.width * this.length;
-        this.x = this.width * this.index;
-      }
     }
 
-    /* ---------------------------------------------------------------------- */
-    /* App                                                                    */
-    /* ---------------------------------------------------------------------- */
+    /* ------------------------------------------------------------------ */
+    /* App                                                                */
+    /* ------------------------------------------------------------------ */
     class App {
-      constructor(
-        container,
-        {
-          items,
-          bend,
-          textColor = "#ffffff",
-          borderRadius = 0,
-          font = "bold 30px Figtree",
-          scrollSpeed = 2,
-          scrollEase = 0.05
-        } = {}
-      ) {
-        document.documentElement.classList.remove("no-js");
+      constructor(container, track, opts) {
         this.container = container;
-        this.scrollSpeed = scrollSpeed;
-        this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
-        this.onCheckDebounce = debounce(this.onCheck, 200);
-        this.createRenderer();
-        this.createCamera();
-        this.createScene();
+        this.track = track;
+        this.opts = opts;
+        this.scroll = { ease: opts.scrollEase, current: 0, target: 0, last: 0 };
+        this.onCheckDebounce = debounce(this.onCheck.bind(this), 200);
+
+        this.createMedias();
         this.onResize();
-        this.createGeometry();
-        this.createMedias(items, bend, textColor, borderRadius, font);
-        this.update();
         this.addEventListeners();
+        this.update();
       }
-      createRenderer() {
-        this.renderer = new Renderer({
-          alpha: true,
-          antialias: true,
-          dpr: Math.min(window.devicePixelRatio || 1, 2)
-        });
-        this.gl = this.renderer.gl;
-        this.gl.clearColor(0, 0, 0, 0);
-        this.container.appendChild(this.gl.canvas);
-      }
-      createCamera() {
-        this.camera = new Camera(this.gl);
-        this.camera.fov = 45;
-        this.camera.position.z = 20;
-      }
-      createScene() {
-        this.scene = new Transform();
-      }
-      createGeometry() {
-        this.planeGeometry = new Plane(this.gl, {
-          heightSegments: 50,
-          widthSegments: 100
-        });
-      }
-      createMedias(items, bend = 1, textColor, borderRadius, font) {
-        const defaultItems = [
-          { image: `https://picsum.photos/seed/1/800/600?grayscale`, text: "Bridge" },
-          { image: `https://picsum.photos/seed/2/800/600?grayscale`, text: "Desk Setup" },
-          { image: `https://picsum.photos/seed/3/800/600?grayscale`, text: "Waterfall" },
-          { image: `https://picsum.photos/seed/4/800/600?grayscale`, text: "Strawberries" },
-          { image: `https://picsum.photos/seed/5/800/600?grayscale`, text: "Deep Diving" },
-          { image: `https://picsum.photos/seed/16/800/600?grayscale`, text: "Train Track" },
-          { image: `https://picsum.photos/seed/17/800/600?grayscale`, text: "Santorini" },
-          { image: `https://picsum.photos/seed/8/800/600?grayscale`, text: "Blurry Lights" },
-          { image: `https://picsum.photos/seed/9/800/600?grayscale`, text: "New York" },
-          { image: `https://picsum.photos/seed/10/800/600?grayscale`, text: "Good Boy" },
-          { image: `https://picsum.photos/seed/21/800/600?grayscale`, text: "Coastline" },
-          { image: `https://picsum.photos/seed/12/800/600?grayscale`, text: "Palm Trees" }
-        ];
-        const galleryItems = items && items.length ? items : defaultItems;
-        this.mediasImages = galleryItems.concat(galleryItems);
-        this.medias = this.mediasImages.map((data, index) => {
-          return new Media({
-            geometry: this.planeGeometry,
-            gl: this.gl,
+
+      createMedias() {
+        const items = this.opts.items && this.opts.items.length ? this.opts.items : [];
+        // duplicate the list, matching the original component's approach,
+        // so the wrap-around loop always has enough items on screen
+        this.itemsData = items.concat(items);
+        this.medias = this.itemsData.map((data, index) =>
+          new GalleryItem({
+            container: this.track,
             image: data.image,
-            index,
-            length: this.mediasImages.length,
-            renderer: this.renderer,
-            scene: this.scene,
-            screen: this.screen,
             text: data.text,
-            viewport: this.viewport,
-            bend,
-            textColor,
-            borderRadius,
-            font
-          });
-        });
+            index,
+            length: this.itemsData.length,
+            bend: this.opts.bend,
+            textColor: this.opts.textColor,
+            borderRadius: this.opts.borderRadius,
+            font: this.opts.font
+          })
+        );
       }
+
+      onResize() {
+        this.screen = {
+          width: this.container.clientWidth,
+          height: this.container.clientHeight
+        };
+
+        // Mobile screening adjustment for larger cards:
+        const isMobile = this.screen.width < 768;
+        const activeRatio = isMobile ? 0.65 : this.opts.itemWidthRatio; // Mobile par 65% width cover karega
+        const padding = isMobile ? this.screen.width * 0.08 : this.screen.width * 0.02;
+
+        this.medias.forEach(media =>
+          media.onResize({
+            screen: this.screen,
+            itemWidthRatio: activeRatio,
+            itemAspect: this.opts.itemAspect,
+            padding
+          })
+        );
+      }
+
       onTouchDown(e) {
         this.isDown = true;
         this.scroll.position = this.scroll.current;
         this.start = e.touches ? e.touches[0].clientX : e.clientX;
       }
+
       onTouchMove(e) {
         if (!this.isDown) return;
         const x = e.touches ? e.touches[0].clientX : e.clientX;
-        const distance = (this.start - x) * (this.scrollSpeed * 0.025);
+        const distance = (this.start - x) * (this.opts.scrollSpeed * 0.025) * 20;
         this.scroll.target = this.scroll.position + distance;
       }
+
       onTouchUp() {
         this.isDown = false;
         this.onCheck();
       }
+
       onWheel(e) {
         const delta = e.deltaY || e.wheelDelta || e.detail;
-        this.scroll.target += (delta > 0 ? this.scrollSpeed : -this.scrollSpeed) * 0.2;
+        this.scroll.target += (delta > 0 ? this.opts.scrollSpeed : -this.opts.scrollSpeed) * 20;
         this.onCheckDebounce();
       }
+
       onKeyDown(e) {
         switch (e.key) {
           case "ArrowRight":
             e.preventDefault();
-            this.scroll.target += this.scrollSpeed * 5;
+            this.scroll.target += this.opts.scrollSpeed * 100;
             this.onCheckDebounce();
             break;
-
           case "ArrowLeft":
             e.preventDefault();
-            this.scroll.target -= this.scrollSpeed * 5;
+            this.scroll.target -= this.opts.scrollSpeed * 100;
             this.onCheckDebounce();
             break;
-
           case "Home":
             e.preventDefault();
             this.scroll.target = 0;
             this.onCheckDebounce();
             break;
-
           default:
             break;
         }
       }
 
       onCheck() {
-        if (!this.medias || !this.medias[0]) return;
-        const width = this.medias[0].width;
-        const itemIndex = Math.round(Math.abs(this.scroll.target) / width);
-        const item = width * itemIndex;
-        this.scroll.target = this.scroll.target < 0 ? -item : item;
+        const first = this.medias[0];
+        if (!first || !first.step) return;
+        const step = first.step;
+        const itemIndex = Math.round(Math.abs(this.scroll.target) / step);
+        const snapped = step * itemIndex;
+        this.scroll.target = this.scroll.target < 0 ? -snapped : snapped;
       }
-      onResize() {
-        this.screen = {
-          width: this.container.clientWidth,
-          height: this.container.clientHeight
-        };
-        this.renderer.setSize(this.screen.width, this.screen.height);
-        this.camera.perspective({
-          aspect: this.screen.width / this.screen.height
-        });
-        const fov = (this.camera.fov * Math.PI) / 180;
-        const height = 2 * Math.tan(fov / 2) * this.camera.position.z;
-        const width = height * this.camera.aspect;
-        this.viewport = { width, height };
-        if (this.medias) {
-          this.medias.forEach(media => media.onResize({ screen: this.screen, viewport: this.viewport }));
-        }
-      }
+
       update() {
         this.scroll.current = lerp(this.scroll.current, this.scroll.target, this.scroll.ease);
         const direction = this.scroll.current > this.scroll.last ? "right" : "left";
-        if (this.medias) {
-          this.medias.forEach(media => media.update(this.scroll, direction));
-        }
-        this.renderer.render({ scene: this.scene, camera: this.camera });
+        this.medias.forEach(media => media.update(this.scroll, direction));
         this.scroll.last = this.scroll.current;
         this.raf = window.requestAnimationFrame(this.update.bind(this));
       }
+
       addEventListeners() {
         this.boundOnResize = this.onResize.bind(this);
         this.boundOnWheel = this.onWheel.bind(this);
@@ -623,72 +412,42 @@
         this.boundOnKeyDown = this.onKeyDown.bind(this);
 
         window.addEventListener("resize", this.boundOnResize);
-        window.addEventListener("mousewheel", this.boundOnWheel);
-        window.addEventListener("wheel", this.boundOnWheel);
-        window.addEventListener("mousedown", this.boundOnTouchDown);
+        this.container.addEventListener("wheel", this.boundOnWheel, { passive: true });
+        this.container.addEventListener("mousedown", this.boundOnTouchDown);
         window.addEventListener("mousemove", this.boundOnTouchMove);
         window.addEventListener("mouseup", this.boundOnTouchUp);
-        window.addEventListener("touchstart", this.boundOnTouchDown);
-        window.addEventListener("touchmove", this.boundOnTouchMove);
+        this.container.addEventListener("touchstart", this.boundOnTouchDown, { passive: true });
+        window.addEventListener("touchmove", this.boundOnTouchMove, { passive: true });
         window.addEventListener("touchend", this.boundOnTouchUp);
-
-        this.container?.addEventListener("keydown", this.boundOnKeyDown);
+        this.container.addEventListener("keydown", this.boundOnKeyDown);
       }
+
       destroy() {
         window.cancelAnimationFrame(this.raf);
         window.removeEventListener("resize", this.boundOnResize);
-        window.removeEventListener("mousewheel", this.boundOnWheel);
-        window.removeEventListener("wheel", this.boundOnWheel);
-        window.removeEventListener("mousedown", this.boundOnTouchDown);
+        this.container.removeEventListener("wheel", this.boundOnWheel);
+        this.container.removeEventListener("mousedown", this.boundOnTouchDown);
         window.removeEventListener("mousemove", this.boundOnTouchMove);
         window.removeEventListener("mouseup", this.boundOnTouchUp);
-        window.removeEventListener("touchstart", this.boundOnTouchDown);
-        window.removeEventListener("touchmove", this.boundOnTouchMove);
-        window.removeEventListener("touchend", this.boundOnTouchUp);
-        if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
-          this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
-        }
-
-        if (this.container) {
-          this.container.removeEventListener("keydown", this.boundOnKeyDown);
-        }
+        this.container.removeEventListener("touchstart", this.boundOnTouchDown);
+        this.container.removeEventListener("touchmove", this.boundOnTouchMove);
+        this.container.removeEventListener("touchend", this.boundOnTouchUp);
+        this.container.removeEventListener("keydown", this.boundOnKeyDown);
+        this.track.innerHTML = "";
       }
     }
 
-    /* ---------------------------------------------------------------------- */
-    /* Bootstrap — replaces the React wrapper component                      */
-    /* ---------------------------------------------------------------------- */
-    async function initCircularGallery(container, {
-      items,
-      bend = 3,
-      textColor = "#ffffff",
-      borderRadius = 0.05,
-      font = "bold 30px Figtree",
-      fontUrl,
-      scrollSpeed = 2,
-      scrollEase = 0.05
-    } = {}) {
-      const resolvedFont = await resolveFont(font, fontUrl);
-      const app = new App(container, {
-        items,
-        bend,
-        textColor,
-        borderRadius,
-        font: resolvedFont,
-        scrollSpeed,
-        scrollEase
-      });
-      return app;
-    }
-
+    /* ------------------------------------------------------------------ */
+    /* Bootstrap                                                          */
+    /* ------------------------------------------------------------------ */
     const container = document.getElementById("gallery-container");
+    const track = document.getElementById("gallery-track");
     let currentApp = null;
 
-    initCircularGallery(container, CONFIG).then(app => {
-      currentApp = app;
+    loadFontStylesheet(CONFIG.fontUrl).then(() => {
+      currentApp = new App(container, track, CONFIG);
     });
 
-    // Clean up on page unload (mirrors the React effect cleanup)
     window.addEventListener("beforeunload", () => {
       if (currentApp) currentApp.destroy();
     });

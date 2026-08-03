@@ -9,7 +9,7 @@ const lockBtn = document.getElementById('lockBtn');
 const btnLabel = document.getElementById('btnLabel');
 const statusNote = document.getElementById('statusNote');
 const navItems = document.querySelectorAll('.nav-item');
-const progressPercentage = 65;
+const progressPercentage = 75;
 const gaugeValue = document.getElementById('gaugeValue');
 const gaugeFill = document.querySelector('.gauge-fill');
 const gaugeRefresh = document.getElementById('gaugeRefresh');
@@ -628,6 +628,70 @@ const worklogData = [
       { title: 'Text Animation Par Kaam Kiya ✨🔤', detail: 'Page ko aur behtar banane ke liye text animation par kaam kiya, jis se content dekhne mein aur bhi attractive aur lively lagega.' },
       { title: 'Naya Pictures Section Add Kiya 🖼️➕', detail: 'Ek naya pictures section bana kar website mein add kiya gaya hai, jahan pictures ko behtar tareeqe se show kiya ja sakega.' },
       { title: 'Video Section Ka Aghaz Hua 🎥⏳', detail: 'Ek video section bhi banana shuru kiya hai, abhi is par zyada kaam nahi hua lekin bahut jald is par kaam shuru ho jayega aur ye bhi jald mukammal ho jayega. 😊' }
+    ]
+  },
+  {
+    date: '01-Aug-26',
+    hours: '08:30',
+    title: 'Aaj Font, Design Aur Code Checking Par Kaam Hua! 🔍🎨',
+    subtitle: 'Aaj pages ke font aur design par kaam kiya aur sabhi codes ko dobara check kiya...',
+    points: [
+      { title: 'Font Aur Design Par Kaam Kiya 🎨🔤', detail: 'Aaj website ke pages ke font aur design par kaam kiya, taake sab kuch aur behtar aur polished lage.' },
+      { title: 'Sabhi Codes Ko Dobara Check Kiya ✅🔍', detail: 'Aaj sab codes ko ghor se dekha aur check kiya taake aap ke birthday wale din par deploy karte waqt koi masla na aaye. Har cheez ko carefully verify kiya gaya.' },
+      { title: 'Kaafi Sara Kaam Mukammal Hua 💪✅', detail: 'Aaj kaafi sara kaam mukammal kar liya gaya, halanke is dauran kaafi thakaan bhi ho gayi. Phir bhi zaroori kaam poora karne ki koshish jaari rakhi.' },
+      { title: 'Baaki Font Style Aur Design Par Kaam Jaari Rahega 🖌️⏳', detail: 'Kuch font style aur design ka kaam abhi baaki hai jo aane wale din mein continue kiya jayega. 😊' }
+    ]
+  },
+  {
+    date: '02-Aug-26',
+    hours: '10:00',
+    title: 'Aaj Birthday Se Pehle Aakhri Bhaag Daud! 🎂💚',
+    subtitle: 'Aaj kal se bhi zyada mehnat ki — kyunke bas kuch hi ghante reh gaye hain ap ke khaas din mein...',
+    points: [
+      {
+        title: 'Sara Data Dobara Download Kiya 📥🔄',
+        detail: 'Pichle data mein kuch error aa rahe the, is liye aaj sara data dobara download kiya. Isi dauran ap ki bohot si achi pictures aur videos nikali gayi.'
+      },
+      {
+        title: 'Kuch Nayi Videos Aur Pictures Set Ki 🎥📸',
+        detail: 'Aaj kuch nayi videos banayi gayi aur kuch pictures ko set kiya gaya, taake sab kuch birthday ke din tak taiyar ho.'
+      },
+      {
+        title: 'Haath Mein Dard Ke Bawajood Kaam Jaari Rakha ✋💪',
+        detail: 'Haath mein kaafi zyada dard tha lekin phir bhi typing continue ki, kyunke rukna ap ke liye sadness ki wajah ban sakta tha — is liye har mushkil ke bawajood kaam nahi roka.'
+      },
+      {
+        title: 'Pages, Codes Aur Pictures Ko Fix Kiya 🛠️✅',
+        detail: 'Aaj pages aur codes par kaam kiya aur pictures ko fix kiya taake sab kuch acha lage. Code ko bhi accurate aur error-free banaya gaya. 😊'
+      },
+      {
+        title: 'Pages Ko Ek Dusre Se Link Kiya 🔗📄',
+        detail: 'Pages ko aapas mein smoothly link kiya taake navigation aasan ho sake. Is ke sath naye creative ideas par bhi kaam kiya gaya.'
+      },
+      {
+        title: 'Text Animation Par Kaam Kiya ✨🔤',
+        detail: 'Text ko aur zyada attractive aur lively banane ke liye animations ko refine aur accurate kiya gaya.'
+      },
+      {
+        title: 'Naya Pictures Section Add Kiya 🖼️➕',
+        detail: 'Pichle data mein error aane par saara data dobara download kiya, best pictures select karke ek naya picture section design kiya.'
+      },
+      {
+        title: 'Video Section Ka Aghaz & Media Setup 🎥⏳',
+        detail: 'Nayi videos banayi aur video section par kaam shuru kar diya hai. Bohot jald yeh section bhi poori tarah ready ho jayega! 😊'
+      }
+    ]
+  },
+  {
+    date: '03-Aug-26',
+    hours: '12:30',
+    title: 'Aaj Sabhi Pictures Add Aur Mukhtalif Issues Fix Kiye! 📸🛠️',
+    subtitle: 'Aaj poora din pictures, data aur responsive design par mehnat ki — birthday se pehle aakhri koshish...',
+    points: [
+      { title: 'Sabhi Pictures Add Ki Aur Data Manage Kiya 📸📂', detail: 'Aaj sab pictures ko website mein add kiya aur sara data theek tareeqe se manage kiya, taake har cheez apni sahi jagah par nazar aaye.' },
+      { title: 'Kuch Pages Ko Dobara Responsive Banaya 📱✅', detail: 'Kuch pages ke steps ko dobara se responsive banaya taake wo mobile aur different screens par bhi behtareen dikhein.' },
+      { title: 'Mixed Issues Ko Theek Kiya 🔧✨', detail: 'Kaafi cheezein aisi thi jo mix ho gayi thi ya masla kar rahi thi — un sabko dhoond kar sahi kiya gaya.' },
+      { title: 'Poora Din Isi Kaam Mein Guzra ⏳💪', detail: 'Aaj sara din ismein guzar gaya. Abhi bhi kuch cheezein baaki hain jo umeed hai birthday khatam hone se pehle add kar di jayengi.' }
     ]
   }
 ];

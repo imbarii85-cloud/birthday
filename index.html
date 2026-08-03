@@ -26,8 +26,8 @@
             <rect x="5" y="11" width="14" height="9" rx="2" />
             <path d="M8 11V7a4 4 0 0 1 8 0v4" />
           </svg>
-          <!-- <a href="D:/Birthday/birthday/story/storybook.html"> -->
-          Story
+          <a href="D:/Birthday/birthday/story/storybook.html">
+            Story
           </a>
           <span class="tip">4 Aug ko unlock ho ga</span>
         </div>
@@ -36,8 +36,8 @@
             <rect x="5" y="11" width="14" height="9" rx="2" />
             <path d="M8 11V7a4 4 0 0 1 8 0v4" />
           </svg>
-          <!-- <a href="/Birthday/birthday/Gallery/gallery.html"> -->
-          Gallery
+          <a href="./Gallery/ga-img/gallery.html">
+            Gallery
           </a>
           <span class="tip">4 Aug ko unlock ho ga</span>
         </div>
@@ -46,7 +46,7 @@
             <rect x="5" y="11" width="14" height="9" rx="2" />
             <path d="M8 11V7a4 4 0 0 1 8 0v4" />
           </svg>
-          Video Gallery
+          <a href="./Vidoes/dome-video-gallery-demo.html">Video Gallery</a>
           <span class="tip">4 Aug ko unlock ho ga</span>
         </div>
         <div class="nav-item" data-tip="Locked">
@@ -54,7 +54,7 @@
             <rect x="5" y="11" width="14" height="9" rx="2" />
             <path d="M8 11V7a4 4 0 0 1 8 0v4" />
           </svg>
-          Surprise
+          <a href="./Main-lock-Page/Happy-BirthDay-Ai/index.html">Message</a>
           <span class="tip">4 Aug ko unlock ho ga</span>
         </div>
       </nav>
@@ -92,8 +92,8 @@
           <rect x="5" y="11" width="14" height="9" rx="2" />
           <path d="M8 11V7a4 4 0 0 1 8 0v4" />
         </svg>
-        <!-- <a href="/Birthday/birthday/story/pic.html"> -->
-        <span id="btnLabel">Locked</span>
+        <a href="./Wish/happy-birthday.html">
+          <span id="btnLabel">Locked</span>
 
         </a>
       </button>
@@ -232,7 +232,7 @@
 
   <!-- Floating Aesthetic Quiz Button -->
   <div class="quiz-floating-container">
-    <a class="quiz-floating-btn" href="" target="_blank">
+    <a class="quiz-floating-btn" href="/Birthday/birthday/quiz/quiz.html" target="_blank">
       <!-- <a class="quiz-floating-btn" href="/Birthday/birthday/quiz/quiz.html" target="_blank"> -->
       <span class="quiz-btn-glow"></span>
       <span class="quiz-btn-shine"></span>
@@ -244,6 +244,25 @@
       <span class="quiz-btn-badge">Active</span>
     </a>
   </div>
+  <script src="auth.js"></script>
+  <script>
+    // ── Protect this page ──────────────────────────
+    // This single line redirects to login.html if not authenticated.
+    Auth.requireLogin();
+
+    // ── Populate UI with session data ──────────────
+    const user = Auth.getUser();
+    if (user) {
+      document.getElementById('user-name').textContent = user.name;
+      document.getElementById('nav-name').textContent = user.name;
+      document.getElementById('user-role').textContent = user.role;
+      document.getElementById('nav-initials').textContent = user.name.charAt(0).toUpperCase();
+      document.getElementById('info-email').textContent = user.email;
+      document.getElementById('info-name').textContent = user.name;
+      document.getElementById('info-role').textContent = user.role;
+      document.getElementById('info-loggedin').textContent = new Date(user.loggedInAt).toLocaleString();
+    }
+  </script>
 </body>
 
 </html>

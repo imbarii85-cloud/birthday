@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ur">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sehroo's Birthday Portal 🔐</title>
+
+  <!-- Modern Clean Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top left, #1a102f, #0d0914, #050308);
+      color: #ffffff;
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Glowing Background Effect */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(147, 51, 234, 0.35) 0%, rgba(0, 0, 0, 0) 70%);
+      top: 10%;
+      left: 20%;
+      z-index: 0;
+      filter: blur(50px);
+      animation: floatGlow 8s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+      bottom: 10%;
+      right: 20%;
+      z-index: 0;
+      filter: blur(50px);
+      animation: floatGlow 6s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translateY(0) scale(1);
+      }
+
+      100% {
+        transform: translateY(-30px) scale(1.1);
+      }
+    }
+
+    /* Floating Particles Background */
+    .particle {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.6;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+
+      20% {
+        opacity: 0.8;
+      }
+
+      80% {
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: translateY(-10vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Login Box Container */
+    .login-card {
+      position: relative;
+      z-index: 10;
+      background: rgba(22, 16, 38, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(147, 51, 234, 0.15);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 30px;
+      text-align: center;
+      animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardEntrance {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Shake Animation for Invalid Auth */
+    .shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20%,
+      60% {
+        transform: translateX(-10px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(10px);
+      }
+    }
+
+    /* Badge Label */
+    .portal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(147, 51, 234, 0.2);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #d8b4fe;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      animation: pulseBadge 2s infinite alternate;
+    }
+
+    @keyframes pulseBadge {
+      0% {
+        box-shadow: 0 0 5px rgba(168, 85, 247, 0.2);
+      }
+
+      100% {
+        box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+      }
+    }
+
+    /* Heading Text */
+    .login-card h2 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 0%, #e9d5ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .login-card p.subtitle {
+      font-size: 13.5px;
+      color: #a78bfa;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* Error / Alert Message */
+    .error-msg {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      font-size: 12.5px;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Input Groups */
+    .input-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .input-field {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-field i.icon-left {
+      position: absolute;
+      left: 16px;
+      color: #7e22ce;
+      font-size: 15px;
+      transition: color 0.3s ease;
+    }
+
+    .input-field input {
+      width: 100%;
+      padding: 13px 16px 13px 44px;
+      background: rgba(15, 11, 26, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-field input::placeholder {
+      color: #64748b;
+    }
+
+    .input-field input:focus {
+      border-color: #a855f7;
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+      background: rgba(20, 14, 36, 0.9);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 16px;
+      cursor: pointer;
+      color: #64748b;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .toggle-pass:hover {
+      color: #c084fc;
+    }
+
+    /* Sign In Button */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #c084fc 100%);
+      border: none;
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(147, 51, 234, 0.6);
+    }
+
+    /* Footer Note / Funny Text */
+    .footer-text {
+      margin-top: 24px;
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .footer-text span.highlight {
+      color: #c084fc;
+      font-weight: 500;
+    }
+
+    .footer-text a {
+      color: #f472b6;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .footer-text a:hover {
+      color: #fb7185;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background Dynamic Particles -->
+  <div id="particles-container"></div>
+
+  <div class="login-card" id="card">
+    <!-- Header Badge -->
+    <div class="portal-badge">
+      <i class="fa-solid fa-lock"></i> Sehroo's Secret Portal ✨
+    </div>
+
+    <!-- Main Title -->
+    <h2>Happy Birthday Sehroo G 🎂</h2>
+    <p class="subtitle">Apne ais birthday surprises unlocked dekhne ke liye sign in karein! 💖</p>
+
+    <!-- Error Alert Box -->
+    <div class="error-msg" id="errorBox">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span id="errorText">Invalid Email or Password!</span>
+    </div>
+
+    <!-- Form Section -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+
+      <!-- Email Field -->
+      <div class="input-group">
+        <label for="email">EMAIL ADDRESS</label>
+        <div class="input-field">
+          <i class="fa-regular fa-envelope icon-left"></i>
+          <input type="email" id="email" placeholder="..........@.........com" required>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="input-group">
+        <label for="password">PASSWORD</label>
+        <div class="input-field">
+          <i class="fa-solid fa-key icon-left"></i>
+          <input type="password" id="password" placeholder="•••••••" required>
+          <i class="fa-regular fa-eye toggle-pass" id="toggleIcon" onclick="togglePassword()"></i>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn-submit" id="btnSubmit">
+        <span>Sign In & Unfold Surprises</span> ✨
+      </button>
+
+    </form>
+
+    <!-- Funny Footer Note -->
+    <p class="footer-text">
+      Password bhool gayi hain? 🙈 Apne banday se rabta karein!
+      <br>
+      <span class="highlight">Contact support</span> use karne ke liye ek <a href="#">riswaat lagay gi! 😉</a>
+    </p>
+  </div>
+
+  <!-- External Auth Script Link -->
+  <script src="auth.js"></script>
+
+  <!-- Page Logic Script -->
+  <script>
+    // Password Eye Toggle
+    function togglePassword() {
+      const passInput = document.getElementById('password');
+      const icon = document.getElementById('toggleIcon');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Login Form Submission Handler using auth.js
+    function handleLogin(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const card = document.getElementById('card');
+      const errorBox = document.getElementById('errorBox');
+      const errorText = document.getElementById('errorText');
+      const btn = document.getElementById('btnSubmit');
+
+      const result = Auth.login(email, password);
+
+      if (result.success) {
+        errorBox.style.display = 'none';
+        btn.innerHTML = `<span>Welcome Shona! ❤️</span> <i class="fa-solid fa-spinner fa-spin"></i>`;
+        btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+        setTimeout(() => {
+          window.location.href = result.redirect;
+        }, 1200);
+      } else {
+        // Show Shake & Error Message
+        errorText.innerText = result.message;
+        errorBox.style.display = 'flex';
+        card.classList.remove('shake');
+        void card.offsetWidth; // Trigger reflow
+        card.classList.add('shake');
+      }
+    }
+
+    // Generate Floating Particles Effect
+    function createParticles() {
+      const container = document.getElementById('particles-container');
+      const icons = ['💖', '✨', '🎂', '🌸', '🎈'];
+
+      for (let i = 0; i < 18; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.innerText = icons[Math.floor(Math.random() * icons.length)];
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.fontSize = (Math.random() * 14 + 12) + 'px';
+        particle.style.animationDuration = (Math.random() * 6 + 6) + 's';
+        particle.style.animationDelay = (Math.random() * 5) + 's';
+        container.appendChild(particle);
+      }
+    }
+
+    window.onload = createParticles;
+  </script>
+
+</body>
+
+</html>
