@@ -6,6 +6,7 @@ const hEl = document.getElementById('d-hours');
 const mEl = document.getElementById('d-mins');
 const sEl = document.getElementById('d-secs');
 const lockBtn = document.getElementById('lockBtn');
+const lockBtnWrap = document.getElementById('lockBtnWrap');
 const btnLabel = document.getElementById('btnLabel');
 const statusNote = document.getElementById('statusNote');
 const navItems = document.querySelectorAll('.nav-item');
@@ -47,6 +48,9 @@ function unlockEverything() {
   btnLabel.textContent = 'Enter the Party';
   lockBtn.querySelector('svg').innerHTML = '<path d="M5 13l4 4L19 7"/>';
   statusNote.textContent = 'Unlocked! Ab menu aur login active hain.';
+
+  // Activate the link wrapper so clicking navigates to the party page
+  if (lockBtnWrap) lockBtnWrap.classList.add('active');
 
   navItems.forEach(item => {
     item.style.cursor = 'pointer';

@@ -21,44 +21,47 @@
     <header>
       <div class="logo">Sehar<span>'s Birthday</span></div>
       <nav id="navMenu">
-        <div class="nav-item" data-tip="Locked">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="11" width="14" height="9" rx="2" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-          </svg>
-          <a href="">
-            <!-- <a href="D:/Birthday/birthday/story/storybook.html"></a> -->
+        <a href="" class="nav-link-wrap">
+          <div class="nav-item" data-tip="Locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
             Story
-          </a>
-          <span class="tip">4 Aug ko unlock ho ga</span>
-        </div>
-        <div class="nav-item" data-tip="Locked">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="11" width="14" height="9" rx="2" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-          </svg>
-          <a href="./Gallery/ga-img/gallery.html">
+            <span class="tip">4 Aug ko unlock ho ga</span>
+          </div>
+        </a>
+        <a href="./Gallery/ga-img/gallery.html" class="nav-link-wrap">
+          <div class="nav-item" data-tip="Locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
             Gallery
-          </a>
-          <span class="tip">4 Aug ko unlock ho ga</span>
-        </div>
-        <div class="nav-item" data-tip="Locked">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="11" width="14" height="9" rx="2" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-          </svg>
-          <a href="">Video Gallery</a>
-          <!-- <a href="./Vidoes/dome-video-gallery-demo.html">Video Gallery</a> -->
-          <span class="tip">4 Aug ko unlock ho ga</span>
-        </div>
-        <div class="nav-item" data-tip="Locked">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="5" y="11" width="14" height="9" rx="2" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-          </svg>
-          <a href="./Main-lock-Page/Happy-BirthDay-Ai/index.html">Message</a>
-          <span class="tip">4 Aug ko unlock ho ga</span>
-        </div>
+            <span class="tip">4 Aug ko unlock ho ga</span>
+          </div>
+        </a>
+        <a href="" class="nav-link-wrap">
+          <!-- <a href="./Vidoes/dome-video-gallery-demo.html" class="nav-link-wrap"> -->
+          <div class="nav-item" data-tip="Locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            Video Gallery
+            <span class="tip">4 Aug ko unlock ho ga</span>
+          </div>
+        </a>
+        <a href="./Main-lock-Page/Happy-BirthDay-Ai/index.html" class="nav-link-wrap">
+          <div class="nav-item" data-tip="Locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            Message
+            <span class="tip">4 Aug ko unlock ho ga</span>
+          </div>
+        </a>
       </nav>
     </header>
 
@@ -89,16 +92,15 @@
 
       <div class="target-date">Unlocks on <b>4 August, 12:00:01 AM</b></div>
 
-      <button class="lock-btn" id="lockBtn" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="5" y="11" width="14" height="9" rx="2" />
-          <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-        </svg>
-        <a href="./Wish/happy-birthday.html">
+      <a href="./Wish/happy-birthday.html" class="lock-btn-wrap" id="lockBtnWrap">
+        <button class="lock-btn" id="lockBtn" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="11" width="14" height="9" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
           <span id="btnLabel">Locked</span>
-
-        </a>
-      </button>
+        </button>
+      </a>
 
       <div class="status-note" id="statusNote">Menu aur login us waqt tak inactive rahenge.</div>
     </main>

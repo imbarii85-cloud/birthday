@@ -145,6 +145,26 @@ nav {
   gap: 6px;
 }
 
+/* ===== NAV LINK WRAP — anchor wrapping nav-item buttons ===== */
+.nav-link-wrap {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+}
+
+/* ===== LOCK BTN WRAP — anchor wrapping the main lock button ===== */
+.lock-btn-wrap {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  pointer-events: none; /* disabled by default, JS will enable it */
+}
+
+.lock-btn-wrap.active {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 .nav-item {
   display: flex;
   align-items: center;
