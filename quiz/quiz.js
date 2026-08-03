@@ -4,38 +4,38 @@ window.QUIZ_DATA = {
     "questions": [
         {
             "id": 1,
-            "question": "What is the most popular birthday song in the world?",
-            "options": ["Happy Birthday to You", "For He's a Jolly Good Fellow", "Birthday by The Beatles", "Celebration by Kool & the Gang"],
+            "question": "Humari dosti 27 March 2019, 10:15 PM ko shuru hui thi. Aaj tak ismein kitne din ho chuke hain?",
+            "options": ["2667 din", "2542 din", "2701 din", "2589 din"],
             "correct": 0,
-            "explanation": "\"Happy Birthday to You\" is recognized as the most popular song in the English language!"
+            "explanation": "Humari dosti ko 27 March 2019 se lekar aaj tak 2667 din ho chuke hain — ek lambe aur khoobsurat safar ka number!"
         },
         {
             "id": 2,
-            "question": "In which country did the tradition of birthday cakes originate?",
-            "options": ["United States", "France", "Germany", "England"],
-            "correct": 2,
-            "explanation": "The tradition of birthday cakes originated in Germany during the Middle Ages, known as Kinderfeste."
+            "question": "Humari dosti 27 March 2019, 10:15 PM ko shuru hui thi. Aaj tak ismein kitne ghante (hours) ho chuke hain?",
+            "options": ["64021 ghante", "63450 ghante", "64890 ghante", "62105 ghante"],
+            "correct": 0,
+            "explanation": "27 March 2019, 10:15 PM se lekar ab tak humari dosti ko taqreeban 64021 ghante ho chuke hain!"
         },
         {
             "id": 3,
-            "question": "What does blowing out birthday candles symbolize?",
-            "options": ["Making a wish come true", "Sending wishes to the gods via smoke", "Celebrating another year of life", "Warding off evil spirits"],
+            "question": "Dekhte hain aap meri cheezon ko kitna note karte hain! Last time jab hum mile the, mera laptop bag kis color ka tha?",
+            "options": ["Black", "Green", "Grey", "Brown"],
             "correct": 1,
-            "explanation": "Ancient Greeks believed smoke carried wishes up to their gods on Mount Olympus!"
+            "explanation": "Sahi jawab hai Green — dekha, kitni acchi tarah yaad rakha hai!"
         },
         {
             "id": 4,
-            "question": "How many candles are traditionally placed on a birthday cake?",
-            "options": ["Always exactly 10", "One for each year of the person's age", "Always an even number", "One for good luck"],
+            "question": "Meri birthday 3 August 2004 hai. Jab humari dosti 27 March 2019, 10:15 PM ko shuru hui, tab meri age kya thi?",
+            "options": ["13 saal", "14 saal", "15 saal", "16 saal"],
             "correct": 1,
-            "explanation": "Traditionally, one candle is placed for each year of the birthday person's age."
+            "explanation": "3 August 2004 ko paida hui, aur 27 March 2019 tak abhi August wali birthday nahi aayi thi, isliye us waqt meri age 14 saal thi!"
         },
         {
             "id": 5,
-            "question": "Which gemstone is associated with July birthdays?",
-            "options": ["Emerald", "Sapphire", "Ruby", "Diamond"],
-            "correct": 2,
-            "explanation": "Ruby is the birthstone for July — symbolizing passion, love, and courage!"
+            "question": "Mera mobile phone kis color ka hai?",
+            "options": ["Black", "Blue", "Golden", "Grey"],
+            "correct": 1,
+            "explanation": "Sahi jawab hai Blue — dekha, kitni acchi tarah yaad rakha hai!"
         },
         {
             "id": 6,
