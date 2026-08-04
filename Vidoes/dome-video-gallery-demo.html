@@ -366,14 +366,14 @@
     // Agar automatic thumbnail nahi chal raha toh 'poster' mein apni image ka path daal dein:
     // Example: { src: 'vid1.mp4', poster: 'pic1.jpg', title: 'Hamari Pehli Mulaqaat' }
     const videoItems = [
-      { src: 'vid1.mp4', poster: null, title: 'Hamari Pehli Mulaqaat' },
+      // { src: 'vid1.mp4', poster: null, title: 'Hamari Pehli Mulaqaat' },
+      { src: 'vid1.mp4', poster: null },
       { src: 'vid2.mp4', poster: null },
       { src: 'vid3.mp4', poster: null },
       { src: 'vid4.mp4', poster: null },
       { src: 'vid5.mp4', poster: null },
       { src: 'vid6.mp4', poster: null },
     ];
-
     function autoTitle(src, manualTitle) {
       if (manualTitle) return manualTitle;
       if (!src) return 'Untitled Video';
