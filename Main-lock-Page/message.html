@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="main.css" />
+  <link rel="stylesheet" href="2.css" />
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+
+  <!-- Modern Clean & Romantic Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap"
+    rel="stylesheet" />
+
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.2/browser/pixi.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <title>Happy Birthday</title>
+
+  <style>
+    /* Global Font & Layout Fixes */
+    body,
+    html,
+    main,
+    div,
+    p,
+    span,
+    button,
+    h1,
+    h2,
+    h3 {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important;
+    }
+
+    /* Top Area Clearance so elements don't stick to top */
+    .top-area {
+      padding-top: 25px !important;
+      margin-bottom: 20px !important;
+      z-index: 100;
+      position: relative;
+    }
+
+    .top-msg,
+    .tw.top,
+    .top-area span {
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 18px !important;
+      color: #ffffff !important;
+      text-shadow: 0 0 10px rgba(255, 134, 182, 0.7) !important;
+      letter-spacing: 0.5px !important;
+    }
+
+    /* Main "Lets Celebrate" Button Fix */
+    .btn,
+    #openBtn {
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 18px !important;
+      letter-spacing: 1px !important;
+      padding: 14px 35px !important;
+      border-radius: 30px !important;
+      background: linear-gradient(135deg, #ff6b8b, #ff86b6) !important;
+      color: #ffffff !important;
+      border: 2px solid #ffffff !important;
+      box-shadow: 0 0 20px rgba(255, 107, 139, 0.6) !important;
+    }
+
+    /* Modal Box Typography Fix */
+    .fancy-modal {
+      font-family: 'Poppins', sans-serif !important;
+      max-width: 600px !important;
+      width: 90% !important;
+      max-height: 82vh !important;
+      padding: 25px 20px !important;
+      border-radius: 20px !important;
+      background: rgba(18, 18, 28, 0.95) !important;
+      border: 1px solid rgba(255, 182, 193, 0.3) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+      color: #ffffff !important;
+      overflow-y: auto !important;
+      text-align: left !important;
+      box-sizing: border-box !important;
+      margin-top: 40px !important;
+    }
+
+    .fancy-modal h3 {
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 22px !important;
+      font-weight: 600 !important;
+      color: #ff86b6 !important;
+      margin-bottom: 12px !important;
+      text-align: center !important;
+    }
+
+    .fancy-modal .intro-p {
+      font-size: 15px !important;
+      color: #ffd1dc !important;
+      margin-bottom: 15px !important;
+      line-height: 1.6 !important;
+      text-align: center !important;
+    }
+
+    .fancy-modal .letter-body {
+      font-size: 14px !important;
+      line-height: 1.8 !important;
+      color: #e2e8f0 !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      padding: 15px !important;
+      border-radius: 12px !important;
+      border-left: 3px solid #ff86b6 !important;
+      margin-bottom: 20px !important;
+    }
+
+    .fancy-modal .letter-body p {
+      margin-bottom: 12px !important;
+    }
+
+    .fancy-modal .Gbtn {
+      display: block !important;
+      margin: 20px auto 0 auto !important;
+      padding: 12px 30px !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 15px !important;
+      font-weight: 600 !important;
+      color: #ffffff !important;
+      background: linear-gradient(135deg, #ff6b8b, #ff86b6) !important;
+      border: none !important;
+      border-radius: 30px !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 15px rgba(255, 107, 139, 0.4) !important;
+    }
+
+    /* LAST PAGE MODAL & RESPONSIVE SCROLL FIX */
+    .lastpage {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      background: rgba(10, 10, 18, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 60px 15px 20px 15px;
+      box-sizing: border-box;
+    }
+
+    .last-modal-card {
+      background: rgba(18, 18, 28, 0.95);
+      border: 1px solid rgba(255, 134, 182, 0.4);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 134, 182, 0.2);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 650px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 25px 20px;
+      text-align: center;
+      box-sizing: border-box;
+      animation: modalFloatIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes modalFloatIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Stylish Animated Photo Frame */
+    .photo-frame-wrapper {
+      position: relative;
+      display: inline-block;
+      margin: 15px auto 20px auto;
+      padding: 6px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ff6b8b, #ff86b6, #4facfe);
+      box-shadow: 0 8px 25px rgba(255, 107, 139, 0.5);
+      animation: pulseGlow 3s infinite alternate, floatImg 4s ease-in-out infinite;
+    }
+
+    .photo-frame-wrapper img {
+      display: block;
+      max-width: 220px;
+      width: 100%;
+      height: auto;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 2px solid #ffffff;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 15px rgba(255, 107, 139, 0.4);
+      }
+
+      100% {
+        box-shadow: 0 0 30px rgba(255, 134, 182, 0.8);
+      }
+    }
+
+    @keyframes floatImg {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .typewriter #text {
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 24px !important;
+      font-weight: 700 !important;
+      color: #ff86b6 !important;
+      text-shadow: 0 0 15px rgba(255, 134, 182, 0.6) !important;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    /* Scrollable Text inside Modal Card */
+    .bday-unique {
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      line-height: 1.8 !important;
+      color: #e2e8f0 !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border-radius: 16px !important;
+      padding: 18px !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      text-align: left !important;
+      word-wrap: break-word;
+      letter-spacing: 0.3px !important;
+    }
+
+    /* Custom Scrollbar */
+    .fancy-modal::-webkit-scrollbar,
+    .last-modal-card::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .fancy-modal::-webkit-scrollbar-thumb,
+    .last-modal-card::-webkit-scrollbar-thumb {
+      background: #ff86b6;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="gradient"></div>
+
+  <canvas id="c"></canvas>
+
+  <div id="start-btn-container" style="display:none;">
+    <button id="start-btn" aria-label="Enter your dream world">
+      <span class="btn-text"> Please click this button</span>
+    </button>
+  </div>
+
+  <audio id="bg-music" src="Shaidai.mp3" preload="auto"></audio>
+
+  <main id="main-content" class="main-content">
+
+    <div class="fireworks"></div>
+
+    <div class="top-area">
+      <div class="top-msg">
+        <span class="tw top"></span>
+      </div>
+    </div>
+
+    <div class="center">
+      <button class="btn" id="openBtn" onclick="openModalFancy()">
+        Lets Celebrate
+      </button>
+    </div>
+
+    <!-- HTML FIRST SURPRISE MODAL -->
+    <div id="fancyOverlay" class="fancy-overlay" aria-hidden="true">
+      <div id="fancyModal" class="fancy-modal" role="dialog" aria-modal="true">
+        <button id="fancyClose" class="fancy-close" aria-label="Close">×</button>
+
+        <h3>Ek Chota Surprise 🎁 Sehroo Ke Liye ❤️</h3>
+
+        <p class="intro-p">
+          Yeh shona sab kuch bas aap ke liye! Aap ko kuch special feel karwane ke liye yeh sab kiya hai... ✨
+        </p>
+
+        <div class="letter-body">
+          <p>Shona karna toh bohot kuch tha is mein, lekin shona ab main kya bataun aap ko yara... Yeh sab itna kam kyun
+            hua? Bas samjho ke yeh sab karne mein mujhe laga toh kafi time tha ⏳, lekin yara socha tha aur bhi kafi
+            cheezein is mein add karunga 💡.</p>
+
+          <p>Lekin meri jaan, mera kaka... I'm sorry 🥺, kafi cheezein abhi is mein add nahi ho paayein. Abhi kafi kuch
+            karna tha meri jaan, shona sorry na... Okay mera bacha? Plz is baat ka bura nahi manna 🥺❤️.</p>
+
+          <p>Agar yeh aap ko khas na lage toh bata dena, main kuch aur next behtar karne ki koshish karunga apni biwi ke
+            liye, okay shonay? 💍✨</p>
+
+          <p>Meri jaan, bas samjho start kiya tha kuch aur soch ke, lekin ho kuch aur gaya, is liye I'm sorry... I'm
+            sorry janu! 🙈 But yeh kaam is pe continuous rahega meri jaan. Main is ko apne mind aur aap ki khushi ke
+            mutabiq bana ke rahunga, don't worry shona okay! 🤗</p>
+
+          <p>Mujhe yeh complete karna hai jaisa main chahta tha, aur InshaAllah tab aap ko yeh bohot pasand bhi aayega
+            meri jaan, mera bacha! 💕</p>
+
+          <p><strong>Baki Happy Birthday Shonay! 🎉🎂 Mubaraz ki biwi, Mubaraz ka bacha, Mubaraz ki Sehroo... I love you
+              so much shona! ❤️🥰</strong></p>
+        </div>
+
+        <p id="fancyDesc" class="fancy-sub" style="text-align: center;">Made with endless love, just for you! ❤️</p>
+
+        <div class="fancy-body">
+          <span id="fancyType" class="tw-modal">
+            🎉 Happy Birthday! 🎂 Wishing you endless smiles & eternal happiness! 💖 May all your dreams come true! ✨✨
+          </span>
+        </div>
+
+        <button class="Gbtn" id="galleryBtn" onclick="openPhotoGallery()">
+          View Our Moments
+        </button>
+
+      </div>
+    </div>
+
+    <!-- CUBE GALLERY SECTION -->
+    <div id="photoGalleryWrap" class="gallery-wrap" aria-hidden="true" style="display:none;">
+      <div class="gallery-stage">
+        <div id="cube" class="cube">
+          <div class="face face1" style="background-image:url('images/photo1.jpg')"></div>
+          <div class="face face2" style="background-image:url('images/photo2.png')"></div>
+          <div class="face face3" style="background-image:url('images/photo3.jpg')"></div>
+          <div class="face face4" style="background-image:url('images/photo4.png')"></div>
+        </div>
+      </div>
+
+      <div class="gallery-ui">
+        <button id="prevImg" aria-label="Previous photo">◀</button>
+        <button id="nextImg" aria-label="Next photo">▶</button>
+      </div>
+
+      <button class="Lbtn" id="LastBtnFinal" onclick="openLastCake()" style="display:none;" aria-label="Final Message">
+        <span class="btn-inner">Final Message</span>
+      </button>
+
+    </div>
+
+    <!-- FINAL STEP PAGE (SCROLLABLE CARD & GESTURE FRAME) -->
+    <div class="lastpage" id="lastPage" style="display: none;">
+      <div class="last-modal-card">
+
+        <!-- Styled Picture Frame Effect -->
+        <div class="photo-frame-wrapper">
+          <img src="src/cake.png" alt="Cake / Memory" />
+        </div>
+
+        <div class="typewriter">
+          <span id="text">🎉 Special Birthday Message 🎂</span>
+        </div>
+
+        <div class="bday-unique">
+          <p>Aap waise aaj kya mera birthday day hai? 🥳🎉🎂✨ Aap mujhse aaj kya expect karte ho shona? 🥹👉👈 Aaj ke
+            din kuch batao ki chaho gi ki main aap ke liye aaj yeh karoon meri jaan? 🎁🎈👑 Haan ji mera bacha batao gi
+            mujhe aap? 🙈💖</p>
+
+          <p>Waise janu aap ki smile bahut pyari hai 🥺😍, seriously aap ki smile pe toh thora thora jhoot nahi bolo
+            fida ho! 🫠🖤💚 Aur haan bolo toh mujhe aho aho ho jaye shona! 🤩💥🖤💚 Waise meri jaan baatein karni hain
+            shona... 💬✨📲</p>
+
+          <p>Waise aaj main kaise din special bana sakta hoon? 🤔✨🥳 Waise aaj main apni birthday pe toh sara din off
+            raha hoon 😴🛋️, lekin shona aap ki birthday pe aisa nahi hone doon ga meri jaan! 💪⚡ Aap ki birthday pe
+            main sara din active rahoon ga apni janu ke paas! 🏃‍♂️💨🖤💚 Haan ji meri jaan! 🥳✨🖤💚</p>
+
+          <p>Waise abhi aap ne quiz ka section nahi open kiya hoga 🎮🎯, toh main bata doon wahan kuch questions kiye
+            hain 📝🧠 jo aap karne ke baad mujhe share karo gi, haan ji janu ji! 🧐📲 So is liye mera bacha dehyan se
+            khelna meri jaan ji 🤫👀, kyun ke wahan woh sab questions hain jo aap ko pata hain aur ek bhi galti nahi
+            honi chahiye! ❌⚠️ Galti ki maafi nahi hai 🙅‍♂️🏼, jitne wrong hon ge utni dafa saza mile gi aap ko mera
+            bacha! 😈🔥😜🖤💚</p>
+
+          <p>Chalo ab yahan se bahar jaate hain aur kuch karte hain shona ji! 🚀✨🎉 Baaki Happy Happy Happy Happy
+            Birthday mera bacha! 🎉🥳🎂🎁🎈✨ I love you shona, I love you! 💖👑🖤💚</p>
+
+          <p style="text-align: center; margin-top: 15px; font-weight: 600; color: #ff86b6;">
+            Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah!
+            Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! Umaah! 💋✨💖✨🖤💚
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Cube Gallery Logic
+    (function () {
+      let index = 0;
+      const total = 4;
+      const cube = document.getElementById('cube');
+      const wrap = document.getElementById('photoGalleryWrap');
+      const topArea = document.querySelector('.top-area');
+      const openBtn = document.getElementById('openBtn');
+      const startBtnContainer = document.getElementById('start-btn-container');
+      const prevBtn = document.getElementById('prevImg');
+      const nextBtn = document.getElementById('nextImg');
+
+      function showLastBtn() {
+        const btn = document.getElementById('LastBtnFinal');
+        if (btn) {
+          btn.style.display = "block";
+          btn.style.opacity = "1";
+        }
+      }
+
+      function updateCube() {
+        const angle = index * -90;
+        cube.style.transform = `rotateY(${angle}deg)`;
+      }
+
+      window.openPhotoGallery = function openPhotoGallery() {
+        const fancyOverlay = document.getElementById('fancyOverlay');
+        const fancyModal = document.getElementById('fancyModal');
+
+        showLastBtn();
+        if (fancyModal) fancyModal.classList.remove('show');
+        if (fancyOverlay) {
+          fancyOverlay.classList.remove('show');
+          fancyOverlay.setAttribute('aria-hidden', 'true');
+        }
+
+        setTimeout(() => {
+          if (fancyOverlay) fancyOverlay.style.display = 'none';
+          if (fancyModal) fancyModal.style.display = 'none';
+        }, 450);
+
+        if (topArea) {
+          topArea.style.transition = 'opacity .35s ease, transform .35s ease';
+          topArea.style.opacity = 0;
+          topArea.style.transform = 'translateY(-10px)';
+        }
+        if (openBtn) { openBtn.style.transition = 'opacity .25s ease'; openBtn.style.opacity = 0; }
+        if (startBtnContainer) startBtnContainer.style.opacity = 0;
+
+        wrap.style.display = 'flex';
+        requestAnimationFrame(() => { wrap.classList.add('show'); });
+
+        index = 0;
+        updateCube();
+        if (nextBtn) nextBtn.focus();
+      };
+
+      function next() { index = (index + 1) % total; updateCube(); }
+      function prev() { index = (index - 1 + total) % total; updateCube(); }
+
+      if (nextBtn) nextBtn.addEventListener('click', next);
+      if (prevBtn) prevBtn.addEventListener('click', prev);
+
+      if (cube) {
+        cube.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const delta = e.deltaY || e.deltaX;
+          if (delta > 0) next(); else prev();
+        }, { passive: false });
+      }
+    })();
+  </script>
+
+  <script>
+    // Floating Hearts Animation
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const MIN_DELAY = 900, MAX_DELAY = 2200;
+    const MIN_SIZE = 20, MAX_SIZE = 38;
+    let heartCount = 0, MAX_HEARTS = 7;
+
+    function spawnHeart() {
+      const heartNS = "http://www.w3.org/2000/svg";
+      const size = Math.random() * (MAX_SIZE - MIN_SIZE) + MIN_SIZE;
+      const startX = Math.random() * (width - size * 1.2);
+      const drift = (Math.random() - 0.5) * width * 0.48;
+      const endX = Math.min(Math.max(startX + drift, 0), width - size * 1.2);
+      const duration = 12 + Math.random() * 3;
+
+      const svg = document.createElementNS(heartNS, "svg");
+      svg.setAttribute("width", size);
+      svg.setAttribute("height", size);
+      svg.setAttribute("class", "heart-outline");
+      svg.style.left = `${startX}px`;
+      svg.style.top = `${height - size}px`;
+      svg.style.position = "fixed";
+      svg.style.pointerEvents = "none";
+      svg.style.zIndex = "1";
+
+      const path = document.createElementNS(heartNS, "path");
+      path.setAttribute("d",
+        `M${size / 2},${size * 0.85} ` +
+        `C${size * 0.1},${size * 0.6} ${size * 0.1},${size * 0.2} ${size / 2},${size * 0.35} ` +
+        `C${size - size * 0.1},${size * 0.2} ${size - size * 0.1},${size * 0.6} ${size / 2},${size * 0.85}`
+      );
+      path.setAttribute("stroke", "#ff86b6");
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke-width", "2.5");
+      path.setAttribute("filter", "drop-shadow(0 0 12px #ff86b6bb)");
+      svg.appendChild(path);
+
+      document.body.appendChild(svg);
+
+      let startTime = null;
+      function animate(now) {
+        if (!startTime) startTime = now;
+        let t = Math.min((now - startTime) / (duration * 1000), 1);
+        let currentX = startX + (endX - startX) * t;
+        let currentY = height - size - (height + 50) * t;
+        svg.style.transform = `translate(${currentX - startX}px, ${currentY - (height - size)}px) scale(${1 + 0.15 * t})`;
+        svg.style.opacity = 0.18 + 0.65 * (1 - Math.abs(t - 0.55));
+        if (t < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          svg.remove();
+          heartCount--;
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    function flowLoop() {
+      if (heartCount < MAX_HEARTS) {
+        spawnHeart();
+        heartCount++;
+      }
+      setTimeout(flowLoop, Math.random() * (MAX_DELAY - MIN_DELAY) + MIN_DELAY);
+    }
+    flowLoop();
+  </script>
+
+  <script src="main.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      confetti({ particleCount: 200, spread: 120, origin: { y: 0.17 } });
+    });
+
+    window.addEventListener("load", () => {
+      const DELAY = 5500;
+      const btnContainer = document.getElementById("start-btn-container");
+      const startBtn = document.getElementById("start-btn");
+      const canvas = document.getElementById("c");
+      const main = document.getElementById("main-content");
+      const bgMusic = document.getElementById("bg-music");
+
+      setTimeout(() => {
+        if (btnContainer) {
+          btnContainer.style.display = "flex";
+          btnContainer.style.opacity = 0;
+          btnContainer.style.transition = "opacity 0.6s ease";
+          requestAnimationFrame(() => btnContainer.style.opacity = 1);
+        }
+      }, DELAY);
+
+      if (startBtn) {
+        startBtn.addEventListener("click", () => {
+          if (bgMusic) bgMusic.play().catch(() => { });
+          btnContainer.style.opacity = 0;
+          setTimeout(() => {
+            btnContainer.style.display = "none";
+            if (canvas) canvas.style.display = "none";
+            main.classList.add("show");
+          }, 600);
+        });
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js"></script>
+  <script>
+    const container = document.querySelector('.fireworks');
+    if (container) {
+      const fireworks = new Fireworks.default(container, {
+        autoresize: true, opacity: 0.5, acceleration: 1.05, friction: 0.97,
+        gravity: 1.5, particles: 50, trace: 3, explosion: 5, intensity: 30,
+        flickering: 50, hue: { min: 0, max: 360 }, delay: { min: 250, max: 250 },
+        rocketsPoint: { min: 50, max: 50 },
+        lineWidth: { explosion: { min: 1, max: 3 }, trace: { min: 1, max: 2 } },
+        brightness: { min: 50, max: 80 }, decay: { min: 0.015, max: 0.03 }
+      });
+      fireworks.start();
+    }
+  </script>
+
+  <script>
+    function openLastCake() {
+      const galleryWrap = document.getElementById("photoGalleryWrap");
+      const lastBtn = document.getElementById("LastBtnFinal");
+      const fancyOverlay = document.getElementById("fancyOverlay");
+      const lastPage = document.getElementById("lastPage");
+
+      if (galleryWrap) galleryWrap.style.display = "none";
+      if (lastBtn) lastBtn.style.display = "none";
+      if (fancyOverlay) fancyOverlay.style.display = "none";
+
+      if (lastPage) {
+        lastPage.style.display = "flex";
+        lastPage.style.opacity = "0";
+        lastPage.style.transition = "opacity 0.8s ease";
+        requestAnimationFrame(() => { lastPage.style.opacity = "1"; });
+      }
+    }
+
+    // Modal Control Functions
+    const fancyOverlay = document.getElementById('fancyOverlay');
+    const fancyModal = document.getElementById('fancyModal');
+    const fancyClose = document.getElementById('fancyClose');
+
+    function openModalFancy() {
+      if (fancyOverlay && fancyModal) {
+        fancyOverlay.style.display = 'flex';
+        fancyModal.style.display = 'block';
+        requestAnimationFrame(() => {
+          fancyOverlay.classList.add('show');
+          fancyModal.classList.add('show');
+        });
+      }
+    }
+
+    function closeModalFancy() {
+      if (fancyOverlay && fancyModal) {
+        fancyModal.classList.remove('show');
+        fancyOverlay.classList.remove('show');
+        setTimeout(() => {
+          fancyOverlay.style.display = 'none';
+          fancyModal.style.display = 'none';
+        }, 400);
+      }
+    }
+
+    if (fancyClose) fancyClose.addEventListener('click', closeModalFancy);
+    if (fancyOverlay) {
+      fancyOverlay.addEventListener('click', (e) => {
+        if (e.target === fancyOverlay) closeModalFancy();
+      });
+    }
+
+    window.openModalFancy = openModalFancy;
+    window.closeModalFancy = closeModalFancy;
+  </script>
+
+  <script>
+    // Header Typing Banner
+    const textHeader = "🎉 Happy Birthday Janu G Shona G Payara Bacha Mera 🎂 Please tap this button! 💖";
+    const spanHeader = document.querySelector(".tw.top");
+    let hIndex = 0;
+    let isHeaderDeleting = false;
+
+    function typeEffectHeader() {
+      if (!spanHeader) return;
+      if (!isHeaderDeleting && hIndex <= textHeader.length) {
+        spanHeader.textContent = textHeader.slice(0, hIndex++);
+      } else if (isHeaderDeleting && hIndex >= 0) {
+        spanHeader.textContent = textHeader.slice(0, hIndex--);
+      }
+
+      if (hIndex === textHeader.length + 1) {
+        isHeaderDeleting = true;
+        setTimeout(typeEffectHeader, 1000);
+        return;
+      } else if (hIndex < 0) {
+        isHeaderDeleting = false;
+        hIndex = 0;
+      }
+
+      setTimeout(typeEffectHeader, isHeaderDeleting ? 50 : 100);
+    }
+    typeEffectHeader();
+  </script>
+
+  <script src="bg.js"></script>
+</body>
+
+</html>
