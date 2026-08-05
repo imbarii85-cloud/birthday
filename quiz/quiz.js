@@ -687,23 +687,23 @@ function retakeQuiz() {
     // TODO: Retake Quiz temporarily disabled — reactivate this logic when ready
 
     // Clear persisted state so next attempt starts fresh
-    clearState();
-    try { localStorage.removeItem('birthdayQuizCompletedState'); } catch (e) { }
+    // clearState();
+    // try { localStorage.removeItem('birthdayQuizCompletedState'); } catch (e) { }
 
-    answers = {};
-    submitted = {};
-    score = 0;
-    current = 0;
-    timeLeft = 60;
-    quizStarted = false;
+    // answers = {};
+    // submitted = {};
+    // score = 0;
+    // current = 0;
+    // timeLeft = 60;
+    // quizStarted = false;
 
-    document.getElementById('resultsScreen').classList.remove('show');
-    document.getElementById('quizContainer').style.display = '';
-    document.getElementById('progressWrap').style.display = 'none';
-    document.getElementById('timerDisplay').style.display = 'none';
+    // document.getElementById('resultsScreen').classList.remove('show');
+    // document.getElementById('quizContainer').style.display = '';
+    // document.getElementById('progressWrap').style.display = 'none';
+    // document.getElementById('timerDisplay').style.display = 'none';
 
-    updateScorePill();
-    showStartScreen();
+    // updateScorePill();
+    // showStartScreen();
 
 }
 
