@@ -274,6 +274,14 @@
       background: #000;
     }
 
+    .dome-drive-frame {
+      display: block;
+      width: min(92vw, 800px);
+      height: min(60vh, 450px);
+      border: none;
+      background: #000;
+    }
+
     .dome-video-header {
       width: 100%;
       padding: 10px 14px;
@@ -367,26 +375,38 @@
     // Example: { src: 'vid1.mp4', poster: 'pic1.jpg', title: 'Hamari Pehli Mulaqaat' }
     const videoItems = [
       // { src: 'vid1.mp4', poster: null, title: 'Hamari Pehli Mulaqaat' },
-      { src: 'vid1.mp4', poster: null },
-      { src: 'vid2.mp4', poster: null },
-      { src: 'vid3.mp4', poster: null },
-      { src: 'vid4.mp4', poster: null },
-      { src: 'vid5.mp4', poster: null },
-      { src: 'vid6.mp4', poster: null },
-      { src: 'vid7.mp4', poster: null },
-      { src: 'vid8.mp4', poster: null },
-      { src: 'vid9.mp4', poster: null },
-      { src: 'vid10.mp4', poster: null },
-      { src: 'vid11.mp4', poster: null },
-      { src: 'vid12.mp4', poster: null },
-      { src: 'vid13.mp4', poster: null },
-      { src: 'vid14.mp4', poster: null },
-      { src: 'vid15.mp4', poster: null },
-      { src: 'vid16.mp4', poster: null },
-      { src: 'vid17.mp4', poster: null },
-      { src: 'vid18.mp4', poster: null },
-      { src: 'vid19.mp4', poster: null },
-      { src: 'vid20.mp4', poster: null },
+      { src: 'vid1.mp4', poster: null, title: "vid 1" },
+      { src: 'vid2.mp4', poster: null, title: "vid 2" },
+      { src: 'vid3.mp4', poster: null, title: "vid 3" },
+      { src: 'vid4.mp4', poster: null, title: "vid 4" },
+      { src: 'vid5.mp4', poster: null, title: "vid 5" },
+      { src: 'vid6.mp4', poster: null, title: "vid 6" },
+      { src: 'vid7.mp4', poster: null, title: "vid 7" },
+      { src: 'vid8.mp4', poster: null, title: "vid 8" },
+      { src: 'vid9.mp4', poster: null, title: "vid 9" },
+      { src: 'vid10.mp4', poster: null, title: "vid 10" },
+      { src: 'vid11.mp4', poster: null, title: "vid 11" },
+      { src: 'vid12.mp4', poster: null, title: "vid 12" },
+      { src: 'vid13.mp4', poster: null, title: "vid 13" },
+      { src: 'vid14.mp4', poster: null, title: "vid 14" },
+      { src: 'vid15.mp4', poster: null, title: "vid 15" },
+      { src: 'vid16.mp4', poster: null, title: "vid 16" },
+      { src: 'vid17.mp4', poster: null, title: "vid 17" },
+      { src: 'vid18.mp4', poster: null, title: "vid 18" },
+      { src: 'vid19.mp4', poster: null, title: "vid 19" },
+      { src: 'https://drive.google.com/file/d/1feYkVlgQgs0RdeEI9NKqFMTIh6QdWohn/view?usp=drive_link', poster: null, title: "vid 21" },
+      { src: 'https://drive.google.com/file/d/1AKSARVvjNqm6Ehzt6jOx3iuwy4JGxKdx/view?usp=drive_link', poster: null, title: "vid 22" },
+      { src: 'https://drive.google.com/file/d/1H74XzU97CQWWJIuUet7o_BkbNYTAZO5M/view?usp=drive_link', poster: null, title: "vid 23" },
+      { src: 'https://drive.google.com/file/d/1EOt9pE1mVc9jS6VVDYSXIzsTEFEwuvS-/view?usp=drive_link', poster: null, title: "vid 24" },
+      { src: 'https://drive.google.com/file/d/1FJ1PMpYpfqh_c0WdZGWfTvtf5OyvYUbI/view?usp=drive_link', poster: null, title: "vid 25" },
+      { src: 'https://drive.google.com/file/d/1OrL5egRTgcBZR7cMtq4PCK-CphPsH7oy/view?usp=drive_link', poster: null, title: "vid 26" },
+      { src: 'https://drive.google.com/file/d/1pwo6Z_UzoZ4V15sJOqfdwVUFPsPJKrHs/view?usp=drive_link', poster: null, title: "vid 27" },
+      { src: 'https://drive.google.com/file/d/1Uq7n9UPNs9x5gw8wMZVFfiRzQJkDEH7o/view?usp=drive_link', poster: null, title: "vid 28" },
+      { src: 'https://drive.google.com/file/d/1Fd-XyX8RQ7EL4dPI2PTti4mgkJGerHL4/view?usp=drive_link', poster: null, title: "vid 29" },
+      { src: 'https://drive.google.com/file/d/1GasdJzVX8J6zdrccv83UW45qgbCLPj4p/view?usp=drive_link', poster: null, title: "vid 31" },
+      { src: 'https://drive.google.com/file/d/1h_MDYWIB-1Nd0tuzoa8LbjlZvqPuXE3V/view?usp=drive_link', poster: null, title: "vid 32" },
+      { src: 'https://drive.google.com/file/d/1vcT7IoxRIO3qprQYqMzUbgavfNTRiwOn/view?usp=drive_link', poster: null, title: "vid 33" },
+      { src: 'https://drive.google.com/file/d/1FOWcP-aFFbYQnwsYdWLpMfswbUckZI53/view?usp=drive_link', poster: null, title: "vid 34" },
     ];
     function autoTitle(src, manualTitle) {
       if (manualTitle) return manualTitle;
@@ -615,14 +635,45 @@
     const domeCaption = document.getElementById('domeCaption');
     const domeClose = document.getElementById('domeClose');
 
+    // Detect Google Drive share link and convert to embed URL
+    function getDriveEmbedUrl(src) {
+      const match = src && src.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) {
+        return `https://drive.google.com/file/d/${match[1]}/preview`;
+      }
+      return null;
+    }
+
+    // Remove any existing Drive iframe
+    function removeDriveFrame() {
+      const old = domeVideoFrame.querySelector('.dome-drive-frame');
+      if (old) old.remove();
+    }
+
     function openVideo(index) {
       const item = videoItems[index];
       domeCaption.textContent = autoTitle(item.src, item.title);
 
       const existingMsg = domeVideoFrame.querySelector('.no-src-msg');
       if (existingMsg) existingMsg.remove();
+      removeDriveFrame();
 
-      if (item.src) {
+      const driveEmbed = getDriveEmbedUrl(item.src);
+
+      if (driveEmbed) {
+        // Google Drive video — use iframe embed
+        domePlayer.style.display = 'none';
+        domePlayer.pause();
+        domePlayer.removeAttribute('src');
+
+        const iframe = document.createElement('iframe');
+        iframe.className = 'dome-drive-frame';
+        iframe.src = driveEmbed;
+        iframe.allow = 'autoplay';
+        iframe.allowFullscreen = true;
+        domeVideoFrame.appendChild(iframe);
+
+      } else if (item.src) {
         domePlayer.style.display = 'block';
         domePlayer.src = item.src;
         domePlayer.poster = item.poster || placeholderPoster(index);
@@ -643,6 +694,8 @@
     function closeVideo() {
       domeRoot.removeAttribute('data-open');
       domePlayer.pause();
+      domePlayer.removeAttribute('src');
+      removeDriveFrame();
     }
 
     domeClose.addEventListener('click', closeVideo);
