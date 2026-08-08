@@ -18,11 +18,31 @@ const Auth = (() => {
   const SESSION_KEY = 'auth_session';
 
   // 🕒 Yahan apna timeout time set karein (minutes mein)
-  const TIMEOUT_MINUTES = 1;
+  // Yeh "inactivity" timeout hai — matlab user 20 min tak kuch bhi
+  // (click/scroll/type/mouse move) na kare tabhi session expire hogi.
+  // Normal use / back-forward navigate karne se yeh timer reset ho jata hai.
+  const TIMEOUT_MINUTES = 20;
 
   // Default redirect paths
   const DEFAULT_REDIRECT_AFTER_LOGIN = 'index.html';
   const DEFAULT_REDIRECT_AFTER_LOGOUT = 'login.html';
+
+  /**
+   * USERS array ke email+password se ek chota sa fingerprint (hash) banata hai.
+   * Jab bhi USERS mein email ya password change hoga, yeh fingerprint bhi
+   * badal jayega — is se hum pehchan lete hain ke credentials change hue hain.
+   */
+  function _hash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+    }
+    return h.toString(36);
+  }
+
+  function _credentialsFingerprint(user) {
+    return _hash(`${user.email.toLowerCase().trim()}::${user.password}`);
+  }
 
   /** Save user session to localStorage with Expiry Time */
   function _saveSession(user) {
@@ -32,7 +52,9 @@ const Auth = (() => {
       role: user.role,
       loggedInAt: new Date().toISOString(),
       // Current time mein timeout minutes add kar ke expiry time set kar raha hai
-      expiresAt: Date.now() + (TIMEOUT_MINUTES * 60 * 1000)
+      expiresAt: Date.now() + (TIMEOUT_MINUTES * 60 * 1000),
+      // Login ke waqt jo email/password thay unka fingerprint save kar rahay hain
+      credFingerprint: _credentialsFingerprint(user),
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   }
@@ -40,6 +62,16 @@ const Auth = (() => {
   /** Clear stored session */
   function _clearSession() {
     localStorage.removeItem(SESSION_KEY);
+  }
+
+  /**
+   * Session ki expiry ko aage badha deta hai (sliding timeout).
+   * Har page load aur har user-activity par yeh call hota hai,
+   * taake active user kabhi beech mein logout na ho.
+   */
+  function _refreshSession(session) {
+    session.expiresAt = Date.now() + (TIMEOUT_MINUTES * 60 * 1000);
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   }
 
   /**
@@ -79,6 +111,7 @@ const Auth = (() => {
 
   /**
    * Returns true if user session is active AND not expired.
+   * Active session ko yahin par refresh (sliding) bhi kar deta hai.
    * @returns {boolean}
    */
   function isLoggedIn() {
@@ -95,9 +128,21 @@ const Auth = (() => {
         return false;
       }
 
-      // Agar aap chahte hain ke page refresh karne par time wapis 15 min ho jaye, toh neechay wali 2 lines uncomment karein:
-      // session.expiresAt = currentTime + (TIMEOUT_MINUTES * 60 * 1000);
-      // localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      // Ab check karte hain ke USERS array mein wahi email/password abhi bhi
+      // maujood hain jo login ke waqt thay. Agar aap ne email ya password
+      // change kar diya, toh purana session yahan invalid ho jayega aur
+      // user ko dobara login karna parega.
+      const currentUser = USERS.find(
+        u => u.email.toLowerCase().trim() === (session.email || '').toLowerCase().trim()
+      );
+      if (!currentUser || _credentialsFingerprint(currentUser) !== session.credFingerprint) {
+        _clearSession();
+        return false;
+      }
+
+      // Session valid hai — expiry ko aage badha do (sliding timeout),
+      // taake active user page change/back-forward karne par login na maange.
+      _refreshSession(session);
 
       return true;
     } catch {
@@ -129,7 +174,44 @@ const Auth = (() => {
   function requireLogin(loginPage) {
     if (!isLoggedIn()) {
       window.location.href = loginPage || DEFAULT_REDIRECT_AFTER_LOGOUT;
+      return;
     }
+    // User valid hai — ab activity-listeners laga do taake wo page pe
+    // active rahe (mouse move/click/scroll/type) toh session expire hi na ho.
+    _attachActivityListeners();
+  }
+
+  /**
+   * User activity par session ko refresh karta rehta hai.
+   * Multiple baar attach na ho isliye ek flag rakha hai.
+   */
+  let _listenersAttached = false;
+  function _attachActivityListeners() {
+    if (_listenersAttached) return;
+    _listenersAttached = true;
+
+    const events = ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+    // Thoda throttle kar dete hain taake mousemove baar baar localStorage
+    // ko na likhe (performance ke liye).
+    let lastRefresh = 0;
+    const THROTTLE_MS = 5000;
+
+    const onActivity = () => {
+      const now = Date.now();
+      if (now - lastRefresh < THROTTLE_MS) return;
+      lastRefresh = now;
+
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return;
+      try {
+        const session = JSON.parse(raw);
+        _refreshSession(session);
+      } catch {
+        // ignore
+      }
+    };
+
+    events.forEach(evt => document.addEventListener(evt, onActivity, { passive: true }));
   }
 
   // Expose public methods
