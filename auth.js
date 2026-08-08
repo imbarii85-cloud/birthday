@@ -17,17 +17,22 @@ const Auth = (() => {
   // Session key stored in localStorage
   const SESSION_KEY = 'auth_session';
 
+  // 🕒 Yahan apna timeout time set karein (minutes mein)
+  const TIMEOUT_MINUTES = 15;
+
   // Default redirect paths
   const DEFAULT_REDIRECT_AFTER_LOGIN = 'index.html';
   const DEFAULT_REDIRECT_AFTER_LOGOUT = 'login.html';
 
-  /** Save user session to localStorage */
+  /** Save user session to localStorage with Expiry Time */
   function _saveSession(user) {
     const session = {
       email: user.email,
       name: user.name,
       role: user.role,
       loggedInAt: new Date().toISOString(),
+      // Current time mein timeout minutes add kar ke expiry time set kar raha hai
+      expiresAt: Date.now() + (TIMEOUT_MINUTES * 60 * 1000)
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   }
@@ -73,11 +78,31 @@ const Auth = (() => {
   }
 
   /**
-   * Returns true if user session is active.
+   * Returns true if user session is active AND not expired.
    * @returns {boolean}
    */
   function isLoggedIn() {
-    return !!localStorage.getItem(SESSION_KEY);
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return false;
+
+    try {
+      const session = JSON.parse(raw);
+      const currentTime = Date.now();
+
+      // Check karega ke current time expiry time se aage nikal gaya hai ya nahi
+      if (currentTime > session.expiresAt) {
+        _clearSession(); // Agar time poora ho gaya, toh session delete kar do
+        return false;
+      }
+
+      // Agar aap chahte hain ke page refresh karne par time wapis 15 min ho jaye, toh neechay wali 2 lines uncomment karein:
+      // session.expiresAt = currentTime + (TIMEOUT_MINUTES * 60 * 1000);
+      // localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   /**
@@ -85,8 +110,10 @@ const Auth = (() => {
    * @returns {{ email: string, name: string, role: string, loggedInAt: string } | null}
    */
   function getUser() {
+    // Data get karne se pehle check karein ke session valid hai ya expire ho chuka hai
+    if (!isLoggedIn()) return null;
+
     const raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return null;
     try {
       return JSON.parse(raw);
     } catch {
@@ -96,7 +123,7 @@ const Auth = (() => {
 
   /**
    * Protect a private page (e.g., index.html).
-   * Redirects to login page if user is not logged in.
+   * Redirects to login page if user is not logged in or session expired.
    * @param {string} [loginPage] 
    */
   function requireLogin(loginPage) {
