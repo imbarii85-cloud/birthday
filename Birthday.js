@@ -232,113 +232,113 @@ for (let i = 0; i < pairCount; i++) {
 }
 
 // ===== Picture gallery section =====
-const galleryItems = [
-  { src: 'asest/Sorry%20Pictures/1.jpeg', caption: 'Sorry Yara. 🤝💚', heading: 'Yaad 1', description: 'Har pal apni jagah ek kahani ke saman hai. Yeh tasveer pehli shuruaat ka jashn hai.' },
-  { src: 'asest/Sorry%20Pictures/2.jpeg', caption: 'Sorry Janu. 🥰🔒', heading: 'Yaad 2', description: 'Is lamhe se juda har jazba bohot qeemti hai. Usey dil se mehsoos karein.' },
-  { src: 'asest/Sorry%20Pictures/3.jpeg', caption: 'Sorry Kojii. 🙈💚', heading: 'Yaad 3', description: 'Har muskurahat ka peecha koi khushi hoti hai. Is photo mein woh ghadi hai.' },
-  { src: 'asest/Sorry%20Pictures/4.jpeg', caption: 'Sorry Jana. ✨🌹💚', heading: 'Yaad 4', description: 'Jab naye manzilon par chalna hota hai, yaadein hamaare saath hoti hain.' },
-  { src: 'asest/Sorry%20Pictures/5.jpeg', caption: 'Sorry So Sorry. 🥺🙏💚', heading: 'Yaad 5', description: 'Woh din jab hasi, masti aur mushkilaat sab saath mil kar samjhe jaate thay.' },
-  { src: 'asest/Sorry%20Pictures/6.jpeg', caption: 'Sorry Meri Jan. 💚👑', heading: 'Yaad 6', description: 'Har tasveer apni kahani bayaan karti hai - yeh us kahani ka ek hissa hai.' },
-  { src: 'asest/Sorry%20Pictures/7.jpeg', caption: 'Sorry Sehroo. 🌸💚🌍', heading: 'Yaad 7', description: 'Yeh tasveer dosti aur pyar bhari wafa ko yaad dilati hai.' },
-  { src: 'asest/Sorry%20Pictures/8.jpeg', caption: 'I love you. 💚🖤', heading: 'Yaad 8', description: 'Safar mein chhote pal hi ne humein mazboot banaya hai.' },
-  { src: 'asest/Sorry%20Pictures/9.jpeg', caption: 'Sorry Shona. 🧸💚', heading: 'Yaad 9', description: 'Kabhi kabhi sabse khubsurat tasveer woh hoti hai jisme shakal se zyada ehsaas nazar aaye.' },
-  { src: 'asest/Sorry%20Pictures/10.jpeg', caption: 'Sorry Sweeto. 🍭🎈', heading: 'Yaad 10', description: 'Har muskurahat aur har pal ke sath ek nayi yaad ban gayi thi.' },
-  { src: 'asest/Sorry%20Pictures/11.jpeg', caption: 'I love you Shona. 😍🦋', heading: 'Yaad 11', description: 'Yaadein sirf dekhi nahi jaatiyaan, mehsoos bhi ki jaati hain.' },
-  { src: 'asest/Sorry%20Pictures/12.jpeg', caption: 'Sorry plz. ✨🎨', heading: 'Yaad 12', description: 'Is photo ka har rang hamein ek khubsurat pal yaad dilata hai.' },
-  { src: 'asest/Sorry%20Pictures/13.jpeg', caption: 'Sorry Bacha. 🥺💬', heading: 'Yaad 13', description: 'Yeh ek aisa pal hai jo dil se kabhi nahi nikalta.' },
-  { src: 'asest/Sorry%20Pictures/14.jpeg', caption: 'M Sorry. 🐣💗', heading: 'Yaad 14', description: 'Iss lamhe mein chhupi khushi har baar dhundhne layak hoti hai.' },
-  { src: 'asest/Sorry%20Pictures/15.jpeg', caption: 'Sorry miss u. 😔📜', heading: 'Yaad 15', description: 'Aaj ki khushiyan kal ki sab se khoobsurat yaadon mein badal jaati hain.' },
-  { src: 'asest/Sorry%20Pictures/16.jpeg', caption: 'Sorry Plz Maan Jao. 💔⏳', heading: 'Yaad 16', description: 'Har chhoti tasveer ke piche ek badi kahani hoti hai.' },
-  { src: 'asest/Sorry%20Pictures/17.jpeg', caption: 'I am so Sorry. 🥺💚', heading: 'Yaad 17', description: 'Is gallery ka aakhri pal ek haseen nateejah hai jo dil ko sukoon de.' }
-];
+// const galleryItems = [
+//   { src: 'asest/Sorry%20Pictures/1.jpeg', caption: 'Sorry Yara. 🤝💚', heading: 'Yaad 1', description: 'Har pal apni jagah ek kahani ke saman hai. Yeh tasveer pehli shuruaat ka jashn hai.' },
+//   { src: 'asest/Sorry%20Pictures/2.jpeg', caption: 'Sorry Janu. 🥰🔒', heading: 'Yaad 2', description: 'Is lamhe se juda har jazba bohot qeemti hai. Usey dil se mehsoos karein.' },
+//   { src: 'asest/Sorry%20Pictures/3.jpeg', caption: 'Sorry Kojii. 🙈💚', heading: 'Yaad 3', description: 'Har muskurahat ka peecha koi khushi hoti hai. Is photo mein woh ghadi hai.' },
+//   { src: 'asest/Sorry%20Pictures/4.jpeg', caption: 'Sorry Jana. ✨🌹💚', heading: 'Yaad 4', description: 'Jab naye manzilon par chalna hota hai, yaadein hamaare saath hoti hain.' },
+//   { src: 'asest/Sorry%20Pictures/5.jpeg', caption: 'Sorry So Sorry. 🥺🙏💚', heading: 'Yaad 5', description: 'Woh din jab hasi, masti aur mushkilaat sab saath mil kar samjhe jaate thay.' },
+//   { src: 'asest/Sorry%20Pictures/6.jpeg', caption: 'Sorry Meri Jan. 💚👑', heading: 'Yaad 6', description: 'Har tasveer apni kahani bayaan karti hai - yeh us kahani ka ek hissa hai.' },
+//   { src: 'asest/Sorry%20Pictures/7.jpeg', caption: 'Sorry Sehroo. 🌸💚🌍', heading: 'Yaad 7', description: 'Yeh tasveer dosti aur pyar bhari wafa ko yaad dilati hai.' },
+//   { src: 'asest/Sorry%20Pictures/8.jpeg', caption: 'I love you. 💚🖤', heading: 'Yaad 8', description: 'Safar mein chhote pal hi ne humein mazboot banaya hai.' },
+//   { src: 'asest/Sorry%20Pictures/9.jpeg', caption: 'Sorry Shona. 🧸💚', heading: 'Yaad 9', description: 'Kabhi kabhi sabse khubsurat tasveer woh hoti hai jisme shakal se zyada ehsaas nazar aaye.' },
+//   { src: 'asest/Sorry%20Pictures/10.jpeg', caption: 'Sorry Sweeto. 🍭🎈', heading: 'Yaad 10', description: 'Har muskurahat aur har pal ke sath ek nayi yaad ban gayi thi.' },
+//   { src: 'asest/Sorry%20Pictures/11.jpeg', caption: 'I love you Shona. 😍🦋', heading: 'Yaad 11', description: 'Yaadein sirf dekhi nahi jaatiyaan, mehsoos bhi ki jaati hain.' },
+//   { src: 'asest/Sorry%20Pictures/12.jpeg', caption: 'Sorry plz. ✨🎨', heading: 'Yaad 12', description: 'Is photo ka har rang hamein ek khubsurat pal yaad dilata hai.' },
+//   { src: 'asest/Sorry%20Pictures/13.jpeg', caption: 'Sorry Bacha. 🥺💬', heading: 'Yaad 13', description: 'Yeh ek aisa pal hai jo dil se kabhi nahi nikalta.' },
+//   { src: 'asest/Sorry%20Pictures/14.jpeg', caption: 'M Sorry. 🐣💗', heading: 'Yaad 14', description: 'Iss lamhe mein chhupi khushi har baar dhundhne layak hoti hai.' },
+//   { src: 'asest/Sorry%20Pictures/15.jpeg', caption: 'Sorry miss u. 😔📜', heading: 'Yaad 15', description: 'Aaj ki khushiyan kal ki sab se khoobsurat yaadon mein badal jaati hain.' },
+//   { src: 'asest/Sorry%20Pictures/16.jpeg', caption: 'Sorry Plz Maan Jao. 💔⏳', heading: 'Yaad 16', description: 'Har chhoti tasveer ke piche ek badi kahani hoti hai.' },
+//   { src: 'asest/Sorry%20Pictures/17.jpeg', caption: 'I am so Sorry. 🥺💚', heading: 'Yaad 17', description: 'Is gallery ka aakhri pal ek haseen nateejah hai jo dil ko sukoon de.' }
+// ];
 
-const galleryColors = ['#F4B942', '#FF6F61', '#8B9DC3', '#2E7D4F'];
+// const galleryColors = ['#F4B942', '#FF6F61', '#8B9DC3', '#2E7D4F'];
 
-function placeholderImage(index) {
-  const color = galleryColors[index % galleryColors.length];
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
-      <rect width="300" height="300" fill="${color}" opacity="0.25"/>
-      <circle cx="150" cy="130" r="38" fill="none" stroke="${color}" stroke-width="6"/>
-      <rect x="90" y="180" width="120" height="14" rx="7" fill="${color}"/>
-      <rect x="110" y="204" width="80" height="10" rx="5" fill="${color}" opacity="0.6"/>
-    </svg>
-  `;
-  return 'data:image/svg+xml,' + encodeURIComponent(svg);
-}
+// function placeholderImage(index) {
+//   const color = galleryColors[index % galleryColors.length];
+//   const svg = `
+//     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+//       <rect width="300" height="300" fill="${color}" opacity="0.25"/>
+//       <circle cx="150" cy="130" r="38" fill="none" stroke="${color}" stroke-width="6"/>
+//       <rect x="90" y="180" width="120" height="14" rx="7" fill="${color}"/>
+//       <rect x="110" y="204" width="80" height="10" rx="5" fill="${color}" opacity="0.6"/>
+//     </svg>
+//   `;
+//   return 'data:image/svg+xml,' + encodeURIComponent(svg);
+// }
 
-let galleryIndex = 0;
-const galleryPhoto = document.getElementById('galleryPhoto');
-const galleryCaption = document.getElementById('galleryCaption');
-const galleryCounter = document.getElementById('galleryCounter');
-const galleryHeading = document.getElementById('galleryHeading');
-const galleryDescription = document.getElementById('galleryDescription');
-const galleryFrame = document.getElementById('galleryFrame');
-const lightbox = document.getElementById('lightbox');
-const lightboxPhoto = document.getElementById('lightboxPhoto');
-const lightboxCaption = document.getElementById('lightboxCaption');
-const galleryLeft = document.getElementById('galleryLeft');
-const galleryRight = document.getElementById('galleryRight');
+// let galleryIndex = 0;
+// const galleryPhoto = document.getElementById('galleryPhoto');
+// const galleryCaption = document.getElementById('galleryCaption');
+// const galleryCounter = document.getElementById('galleryCounter');
+// const galleryHeading = document.getElementById('galleryHeading');
+// const galleryDescription = document.getElementById('galleryDescription');
+// const galleryFrame = document.getElementById('galleryFrame');
+// const lightbox = document.getElementById('lightbox');
+// const lightboxPhoto = document.getElementById('lightboxPhoto');
+// const lightboxCaption = document.getElementById('lightboxCaption');
+// const galleryLeft = document.getElementById('galleryLeft');
+// const galleryRight = document.getElementById('galleryRight');
 
-function renderGallery(direction) {
-  const item = galleryItems[galleryIndex];
-  galleryPhoto.src = item?.src || placeholderImage(galleryIndex);
-  galleryPhoto.alt = item?.heading || 'Gallery photo';
-  galleryCaption.textContent = item?.caption || '';
-  galleryCounter.textContent = String(galleryIndex + 1);
+// function renderGallery(direction) {
+//   const item = galleryItems[galleryIndex];
+//   galleryPhoto.src = item?.src || placeholderImage(galleryIndex);
+//   galleryPhoto.alt = item?.heading || 'Gallery photo';
+//   galleryCaption.textContent = item?.caption || '';
+//   galleryCounter.textContent = String(galleryIndex + 1);
 
-  galleryPhoto.classList.remove('slide-in-next', 'slide-in-prev');
-  void galleryPhoto.offsetWidth;
-  galleryPhoto.classList.add(direction === 'prev' ? 'slide-in-prev' : 'slide-in-next');
-}
+//   galleryPhoto.classList.remove('slide-in-next', 'slide-in-prev');
+//   void galleryPhoto.offsetWidth;
+//   galleryPhoto.classList.add(direction === 'prev' ? 'slide-in-prev' : 'slide-in-next');
+// }
 
-document.getElementById('galleryNext').addEventListener('click', () => {
-  galleryIndex = (galleryIndex + 1) % galleryItems.length;
-  renderGallery('next');
-});
+// document.getElementById('galleryNext').addEventListener('click', () => {
+//   galleryIndex = (galleryIndex + 1) % galleryItems.length;
+//   renderGallery('next');
+// });
 
-document.getElementById('galleryPrev').addEventListener('click', () => {
-  galleryIndex = (galleryIndex - 1 + galleryItems.length) % galleryItems.length;
-  renderGallery('prev');
-});
+// document.getElementById('galleryPrev').addEventListener('click', () => {
+//   galleryIndex = (galleryIndex - 1 + galleryItems.length) % galleryItems.length;
+//   renderGallery('prev');
+// });
 
-galleryFrame.addEventListener('click', () => {
-  const item = galleryItems[galleryIndex];
-  lightboxPhoto.src = item?.src || placeholderImage(galleryIndex);
-  lightboxPhoto.alt = item?.heading || 'Gallery photo';
-  lightboxCaption.textContent = item?.caption || '';
-  lightbox.classList.add('open');
-});
+// galleryFrame.addEventListener('click', () => {
+//   const item = galleryItems[galleryIndex];
+//   lightboxPhoto.src = item?.src || placeholderImage(galleryIndex);
+//   lightboxPhoto.alt = item?.heading || 'Gallery photo';
+//   lightboxCaption.textContent = item?.caption || '';
+//   lightbox.classList.add('open');
+// });
 
-document.getElementById('lightboxClose').addEventListener('click', () => {
-  lightbox.classList.remove('open');
-});
+// document.getElementById('lightboxClose').addEventListener('click', () => {
+//   lightbox.classList.remove('open');
+// });
 
-lightbox.addEventListener('click', (e) => {
-  if (e.target === lightbox) {
-    lightbox.classList.remove('open');
-  }
-});
+// lightbox.addEventListener('click', (e) => {
+//   if (e.target === lightbox) {
+//     lightbox.classList.remove('open');
+//   }
+// });
 
-if ('IntersectionObserver' in window && galleryLeft && galleryRight) {
-  const galleryObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-      } else {
-        entry.target.classList.remove('in-view');
-      }
-    });
-  }, { threshold: 0.2 });
+// if ('IntersectionObserver' in window && galleryLeft && galleryRight) {
+//   const galleryObserver = new IntersectionObserver((entries) => {
+//     entries.forEach(entry => {
+//       if (entry.isIntersecting) {
+//         entry.target.classList.add('in-view');
+//       } else {
+//         entry.target.classList.remove('in-view');
+//       }
+//     });
+//   }, { threshold: 0.2 });
 
-  galleryObserver.observe(galleryLeft);
-  galleryObserver.observe(galleryRight);
-} else {
-  galleryLeft?.classList.add('in-view');
-  galleryRight?.classList.add('in-view');
-}
+//   galleryObserver.observe(galleryLeft);
+//   galleryObserver.observe(galleryRight);
+// } else {
+//   galleryLeft?.classList.add('in-view');
+//   galleryRight?.classList.add('in-view');
+// }
 
-renderGallery('next');
+// renderGallery('next');
 
 // ===== Work log table section =====
 const worklogData = [

@@ -7,8 +7,8 @@ const Auth = (() => {
   // ✏️ CREDENTIALS CONFIGURATION
   const USERS = [
     {
-      email: 'seharoo@gmail.com',
-      password: '3420046',
+      email: 'sehroo@gmail.com',
+      password: 'sorry',
       name: 'Sehroo G',
       role: 'admin',
     },
