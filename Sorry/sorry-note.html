@@ -132,6 +132,9 @@
       position: absolute;
       user-select: none;
       line-height: 1;
+      /* GPU-composited transform, avoids CPU repaint work while it floats */
+      will-change: transform, opacity;
+      transform: translateZ(0);
     }
 
     .floating-heart {
@@ -202,6 +205,8 @@
       background: #120a1f;
       margin-bottom: 20px;
       position: relative;
+      /* isolates video into its own compositor layer, away from the card's animated box-shadow */
+      transform: translateZ(0);
     }
 
     .video-frame video {
@@ -450,6 +455,34 @@
     .message-scroll p:last-child {
       margin-bottom: 0;
     }
+
+    /* ---------- Mobile performance mode ----------
+       Blurred box-shadow / text-shadow animations force the browser to
+       repaint every frame (not GPU-composited like transform/opacity).
+       On phones that repaint work steals time from video decoding and
+       causes the stutter. Below ~768px we swap the "pulsing" glow
+       animations for a static glow, so the CPU/GPU stays free for the
+       video. Hearts are unaffected visually, just spawn less often. */
+    @media (max-width: 768px) {
+
+      .card,
+      .card.celebrating {
+        animation: none;
+        box-shadow: var(--glow), 0 20px 60px rgba(0, 0, 0, 0.45);
+      }
+
+      #yes-btn,
+      #no-btn {
+        animation: none;
+        box-shadow: 0 0 14px rgba(255, 107, 157, 0.55);
+      }
+
+      .success-badge {
+        animation: none;
+        text-shadow: 0 0 10px rgba(255, 107, 157, 0.85);
+        box-shadow: 0 0 20px rgba(255, 107, 157, 0.6), 0 0 40px rgba(199, 125, 255, 0.4);
+      }
+    }
   </style>
 </head>
 
@@ -473,7 +506,13 @@
 
     <div class="card" id="card">
       <div class="video-frame">
-        <video id="main-video" loop muted playsinline>
+        <!-- preload="auto": browser starts buffering as soon as the page
+             loads instead of waiting for the Start click, so there is
+             already data ready by the time play() is called on mobile.
+             webkit-playsinline / x5-playsinline cover older Android
+             WebViews (some in-app browsers ignore plain playsinline). -->
+        <video id="main-video" loop muted playsinline webkit-playsinline="true" x5-playsinline="true"
+          preload="auto">
           <source src="./3.mp4" type="video/mp4">
         </video>
       </div>
@@ -567,6 +606,9 @@
     // ---------------------------------------------
 
     (function () {
+      // Detect low-powered / small screens once, reuse everywhere below
+      const IS_MOBILE = window.matchMedia('(max-width: 768px)').matches;
+
       // --- UI Elements ---
       const startScreen = document.getElementById('start-screen');
       const startBtn = document.getElementById('start-btn');
@@ -605,7 +647,18 @@
           document.body.style.display = 'flex';
           mainContent.style.display = 'contents';
 
-          video.play().catch(e => console.log("Video play failed:", e));
+          // On mobile, give the video a beat to actually have buffered
+          // frames (it started preloading on page load) before calling
+          // play() — reduces the "freeze then catch up" stutter at start.
+          const playVideo = () => video.play().catch(e => console.log("Video play failed:", e));
+          if (video.readyState >= 2) {
+            playVideo();
+          } else {
+            video.addEventListener('canplay', playVideo, { once: true });
+            // Fallback in case canplay never fires on a slow connection
+            setTimeout(playVideo, 600);
+          }
+
           typeWriter();
         }, 800);
       });
@@ -665,9 +718,16 @@
       noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodgeNoButton(); }, { passive: false });
 
       // ---------- Background floating hearts (Black and Green Mixed) ----------
+      // On mobile these spawn less often / with a lower cap so the DOM
+      // stays light and the video keeps decoding smoothly.
       let heartsInterval = null;
+      const HEARTS_SPAWN_MS = IS_MOBILE ? 900 : 450;
+      const HEARTS_INITIAL_BURST = IS_MOBILE ? 3 : 6;
+      const HEARTS_MAX_ALIVE = IS_MOBILE ? 8 : 20;
 
       function spawnHeart() {
+        if (heartsLayer.childElementCount >= HEARTS_MAX_ALIVE) return;
+
         const heart = document.createElement('div');
         heart.className = 'heart-glyph floating-heart';
         heart.textContent = '♥';
@@ -700,15 +760,20 @@
 
       function startHearts() {
         if (heartsInterval) return;
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < HEARTS_INITIAL_BURST; i++) {
           setTimeout(spawnHeart, i * 200);
         }
-        heartsInterval = setInterval(spawnHeart, 450);
+        heartsInterval = setInterval(spawnHeart, HEARTS_SPAWN_MS);
       }
 
       let boxHeartsInterval = null;
+      const BOX_HEARTS_SPAWN_MS = IS_MOBILE ? 1200 : 700;
+      const BOX_HEARTS_INITIAL_BURST = IS_MOBILE ? 1 : 3;
+      const BOX_HEARTS_MAX_ALIVE = IS_MOBILE ? 4 : 10;
 
       function spawnBoxHeart() {
+        if (messageHearts.childElementCount >= BOX_HEARTS_MAX_ALIVE) return;
+
         const heart = document.createElement('div');
         heart.className = 'heart-glyph box-heart';
         heart.textContent = '♥';
@@ -730,10 +795,10 @@
 
       function startBoxHearts() {
         if (boxHeartsInterval) return;
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < BOX_HEARTS_INITIAL_BURST; i++) {
           setTimeout(spawnBoxHeart, i * 300);
         }
-        boxHeartsInterval = setInterval(spawnBoxHeart, 700);
+        boxHeartsInterval = setInterval(spawnBoxHeart, BOX_HEARTS_SPAWN_MS);
       }
 
       yesBtn.addEventListener('click', () => {
