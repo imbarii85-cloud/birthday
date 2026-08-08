@@ -18,7 +18,7 @@ const Auth = (() => {
   const SESSION_KEY = 'auth_session';
 
   // 🕒 Yahan apna timeout time set karein (minutes mein)
-  const TIMEOUT_MINUTES = 15;
+  const TIMEOUT_MINUTES = 1;
 
   // Default redirect paths
   const DEFAULT_REDIRECT_AFTER_LOGIN = 'index.html';
