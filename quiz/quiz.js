@@ -1,98 +1,108 @@
 window.QUIZ_DATA = {
-    "quizTitle": "🎂 Birthday Quiz Challenge",
-    "quizDescription": "Test your knowledge with these fun birthday-themed questions!",
+    "quizTitle": "🧬 Ovaries Anatomy Quiz Challenge",
+    "quizDescription": "Test your knowledge with these medium-level Ovaries & Reproductive System questions!",
     "questions": [
         {
             "id": 1,
-            "question": "Humari dosti 27 March 2019, 10:15 PM ko shuru hui thi. Aaj tak ismein kitne din ho chuke hain?",
-            "options": ["2667 din", "2542 din", "2701 din", "2589 din"],
-            "correct": 0,
-            "explanation": "Humari dosti ko 27 March 2019 se lekar aaj tak 2667 din ho chuke hain — ek lambe aur khoobsurat safar ka number!"
+            "question": "Ovaries female reproductive glands hain jinhein bhi kaha jata hai?",
+            "options": ["Ducts", "Gonads", "Follicles", "Ligaments"],
+            "correct": 1,
+            "explanation": "Ovaries ko gonads kaha jata hai — ye female reproductive glands hain."
         },
         {
             "id": 2,
-            "question": "Humari dosti 27 March 2019, 10:15 PM ko shuru hui thi. Aaj tak ismein kitne ghante (hours) ho chuke hain?",
-            "options": ["64021 ghante", "63450 ghante", "64890 ghante", "62105 ghante"],
-            "correct": 0,
-            "explanation": "27 March 2019, 10:15 PM se lekar ab tak humari dosti ko taqreeban 64021 ghante ho chuke hain!"
+            "question": "Ek reproductive-age woman mein ovary ka average size kitna hota hai?",
+            "options": ["5 x 3 x 2 cm", "1 x 1 x 1 cm", "3 x 2 x 1 cm", "6 x 4 x 3 cm"],
+            "correct": 2,
+            "explanation": "Reproductive-age women mein ovary ka average size approx. 3 x 2 x 1 cm hota hai."
         },
         {
             "id": 3,
-            "question": "Dekhte hain aap meri cheezon ko kitna note karte hain! Last time jab hum mile the, mera laptop bag kis color ka tha?",
-            "options": ["Black", "Green", "Grey", "Brown"],
-            "correct": 1,
-            "explanation": "Sahi jawab hai Green — dekha, kitni acchi tarah yaad rakha hai!"
+            "question": "Ovary uterus se kis ligament ke zariye attach hota hai?",
+            "options": ["Broad ligament", "Suspensory ligament", "Round ligament", "Ovarian ligament"],
+            "correct": 3,
+            "explanation": "Ovary uterus se Ovarian ligament ke zariye attach hota hai."
         },
         {
             "id": 4,
-            "question": "Meri birthday 3 August 2004 hai. Jab humari dosti 27 March 2019, 10:15 PM ko shuru hui, tab meri age kya thi?",
-            "options": ["13 saal", "14 saal", "15 saal", "16 saal"],
+            "question": "Ovary ka outer region (jisme follicles hote hain) kya kehlata hai?",
+            "options": ["Medulla", "Cortex", "Tunica albuginea", "Endometrium"],
             "correct": 1,
-            "explanation": "3 August 2004 ko paida hui, aur 27 March 2019 tak abhi August wali birthday nahi aayi thi, isliye us waqt meri age 14 saal thi!"
+            "explanation": "Cortex ovary ka outer region hai jisme ovarian follicles different stages mein maujood hote hain."
         },
         {
             "id": 5,
-            "question": "Mera mobile phone kis color ka hai?",
-            "options": ["Black", "Blue", "Golden", "Grey"],
-            "correct": 1,
-            "explanation": "Sahi jawab hai Blue — dekha, kitni acchi tarah yaad rakha hai!"
+            "question": "Ovary ka inner region jisme blood vessels, lymphatics aur nerves hote hain, wo kya kehlata hai?",
+            "options": ["Cortex", "Corpus luteum", "Medulla", "Fimbriae"],
+            "correct": 2,
+            "explanation": "Medulla ovary ka inner region hai jo blood vessels, lymphatic vessels aur nerves contain karta hai."
         },
         {
             "id": 6,
-            "question": "Khane mein mujhe sabse zyada kya pasand hai?",
-            "options": ["Pizza", "BBQ", "Biryani", "Karahi"],
-            "correct": 2,
-            "explanation": "Sahi jawab hai Biryani — mera sabse pasandeeda khana!"
+            "question": "Follicular development ki sahi order kya hai?",
+            "options": [
+                "Secondary → Primary → Primordial → Mature",
+                "Primordial → Primary → Secondary → Mature/Graafian",
+                "Mature → Secondary → Primary → Primordial",
+                "Primary → Mature → Secondary → Primordial"
+            ],
+            "correct": 1,
+            "explanation": "Sahi order hai: Primordial follicle → Primary follicle → Secondary follicle → Mature (Graafian) follicle."
         },
         {
             "id": 7,
-            "question": "Jab maine Matric (10th class) exam clear kiya tha, tab wo kis board se tha?",
-            "options": ["Lahore Board", "Sheikhupura Board", "Muridke Board", "Gujranwala Board"],
-            "correct": 3,
-            "explanation": "Sahi jawab hai Gujranwala Board — yahin se apna Matric exam clear kiya tha!"
+            "question": "Ovulation ke baad ruptured follicle kis mein tabdeel hota hai?",
+            "options": ["Corpus albicans", "Graafian follicle", "Corpus luteum", "Primordial follicle"],
+            "correct": 2,
+            "explanation": "Ovulation ke baad ruptured follicle Corpus luteum banata hai; agar pregnancy na ho toh ye baad mein Corpus albicans mein degenerate ho jata hai."
         },
         {
             "id": 8,
-            "question": "Mere sab numbers ke 6th aur 7th digits kya hain (order mein: number 1, 2, 3, 4)?",
-            "options": ["60, 39, 03, 92", "76, 93, 00, 49", "01, 99, 30, 22", "25, 27, 70, 09"],
-            "correct": 0,
-            "explanation": "Sahi jawab hai 60, 39, 03, 92 — sab numbers ke 6th-7th digits sahi order mein!"
+            "question": "Ovulation ko trigger karne wala main hormone konsa hai?",
+            "options": ["FSH surge", "Estrogen surge", "LH surge", "Progesterone surge"],
+            "correct": 2,
+            "explanation": "Ek sudden LH (Luteinizing Hormone) surge ovulation ka key trigger hota hai."
         },
         {
             "id": 9,
-            "question": "Jo hair rubber band aapne mere haath mein di thi (jo aapki ek nishani hai), wo maine kis date ko daali thi? Aur 4 August tak kitne din ho gaye hain?",
-            "options": ["20 June - 45 din", "15 June - 50 din", "25 June - 40 din", "1 July - 34 din"],
-            "correct": 0,
-            "explanation": "Maine ye rubber band 20 June ko daali thi, aur 4 August tak isko 45 din ho chuke hain — ek pyari si nishani!"
+            "question": "In mein se konsa Estrogen ka function NAHI hai?",
+            "options": [
+                "Bone strength maintain karna",
+                "Endometrium ki growth stimulate karna",
+                "Uterine contractions reduce karna",
+                "Female secondary sexual characteristics"
+            ],
+            "correct": 2,
+            "explanation": "Uterine contractions ko reduce karna Progesterone ka function hai, Estrogen ka nahi."
         },
         {
             "id": 10,
-            "question": "Ye webpage banane mein mujhe total kitna time laga (5 July se 3 August tak)?",
-            "options": ["120 ghante", "148 ghante", "134 ghante", "110 ghante"],
-            "correct": 2,
-            "explanation": "5 July se 3 August tak, is website ko banane mein total 134 ghante (30 din) lage!"
+            "question": "Progesterone endometrium ko kis cheez ke liye prepare karta hai?",
+            "options": ["Menstruation", "Implantation", "Ovulation", "Follicle development"],
+            "correct": 1,
+            "explanation": "Progesterone endometrium ko implantation ke liye prepare karta hai."
         },
         {
             "id": 11,
-            "question": "Maine kaunsa course study kiya hai?",
-            "options": ["ADIT", "DAIT", "CIT", "DIT"],
-            "correct": 3,
-            "explanation": "Sahi jawab hai DIT (Diploma in Information Technology) — yehi course maine study kiya hai, baaki sab milte julte naam hain jo confuse karne ke liye rakhe gaye!"
+            "question": "Hormonal regulation axis mein GnRH kahan se release hota hai?",
+            "options": ["Pituitary", "Ovaries", "Hypothalamus", "Adrenal gland"],
+            "correct": 2,
+            "explanation": "GnRH (Gonadotropin-releasing hormone) Hypothalamus se release hota hai, jo aage Pituitary ko FSH aur LH release karne ke liye stimulate karta hai."
         },
         {
             "id": 12,
-            "question": "Mera last blood test report mein HB (Hemoglobin) point kya tha?",
-            "options": ["12.1", "12.3", "12.4", "12.6"],
-            "correct": 2,
-            "explanation": "Sahi jawab hai 12.4 — yehi mera last report mein HB point tha!"
+            "question": "In mein se ovaries kaunsa hormone SECRETE NAHI karte?",
+            "options": ["Estrogen", "Progesterone", "Inhibin", "Insulin"],
+            "correct": 3,
+            "explanation": "Ovaries Estrogen, Progesterone, Inhibin aur thodi si androgens secrete karte hain — Insulin pancreas se aata hai, ovaries se nahi."
         }
     ]
 };
 /* ════════════════════════════════════════════════════════
    QUIZ ENGINE
 ════════════════════════════════════════════════════════ */
-const STORAGE_KEY = 'birthdayQuizResults';
-const SESSION_KEY = 'birthdayQuizState';
+const STORAGE_KEY = 'anatomyQuizResults';
+const SESSION_KEY = 'anatomyQuizState';
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 let quizData = null;
@@ -155,7 +165,7 @@ function loadQuiz() {
         // Check if there is a completed quiz state in localStorage
         let completedSaved = null;
         try {
-            const rawCompleted = localStorage.getItem('birthdayQuizCompletedState');
+            const rawCompleted = localStorage.getItem('anatomyQuizCompletedState');
             if (rawCompleted) {
                 completedSaved = JSON.parse(rawCompleted);
             }
@@ -207,8 +217,8 @@ function showStartScreen() {
     const card = document.createElement('div');
     card.className = 'start-screen-card slide-in';
     card.innerHTML = `
-                <div class="start-screen-icon">🎂</div>
-                <h2 class="start-screen-title">Kia Ap Tiyaar Han Ak Mazay Quiz Challenge Kay Liyh Dakhtay Han Ap Koh Kitna Patah Hai Ais Relationship Kay Baray May</h2>
+                <div class="start-screen-icon">🧬</div>
+                <h2 class="start-screen-title">Kia Ap Tiyaar Han Ak Anatomy Quiz Challenge Kay Liyh — Dakhtay Han Ap Koh Ovaries Kay Baray May Kitna Patah Hai</h2>
                 <div class="start-instructions">
                     <h3 class="start-instructions-heading">📋 How to Play</h3>
                     <ol class="start-instructions-list">
@@ -536,11 +546,11 @@ function showResults(isRestore = false) {
 
     // Grade
     let grade, msg;
-    if (pct === 100) { grade = '🏆 Perfect Score!'; msg = 'Incredible! You answered every single question correctly. You\'re a birthday trivia genius!'; }
-    else if (pct >= 80) { grade = '🌟 Outstanding!'; msg = 'Fantastic performance! You really know your birthday facts. Keep it up!'; }
-    else if (pct >= 60) { grade = '🎉 Well Done!'; msg = 'Good job! You got most of them right. A little more practice and you\'ll be perfect!'; }
-    else if (pct >= 40) { grade = '🎈 Not Bad!'; msg = 'A decent effort! There\'s room to grow — try retaking the quiz to improve your score.'; }
-    else { grade = '🎂 Keep Trying!'; msg = 'Don\'t give up! Every birthday genius starts somewhere. Retake the quiz and aim higher!'; }
+    if (pct === 100) { grade = '🏆 Perfect Score!'; msg = 'Incredible! You answered every single question correctly. You\'re an Anatomy expert!'; }
+    else if (pct >= 80) { grade = '🌟 Outstanding!'; msg = 'Fantastic performance! You really know your Ovaries anatomy facts. Keep it up!'; }
+    else if (pct >= 60) { grade = '🎉 Well Done!'; msg = 'Good job! You got most of them right. A little more revision and you\'ll be perfect!'; }
+    else if (pct >= 40) { grade = '🩺 Not Bad!'; msg = 'A decent effort! There\'s room to grow — try retaking the quiz to improve your score.'; }
+    else { grade = '🧬 Keep Trying!'; msg = 'Don\'t give up! Every anatomy expert starts somewhere. Retake the quiz and aim higher!'; }
 
     document.getElementById('resultGrade').textContent = grade;
     document.getElementById('resultMessage').textContent = msg;
@@ -554,7 +564,7 @@ function showResults(isRestore = false) {
 
         // Save completed state to localStorage so it survives page load/refresh
         const completedState = { answers, submitted, score, completed: true };
-        try { localStorage.setItem('birthdayQuizCompletedState', JSON.stringify(completedState)); } catch (e) { }
+        try { localStorage.setItem('anatomyQuizCompletedState', JSON.stringify(completedState)); } catch (e) { }
     }
 
     // Confetti if good score
@@ -644,7 +654,7 @@ function saveToPDF() {
 async function shareScore() {
     const total = questions.length;
     const pct = Math.round((score / total) * 100);
-    let text = `🎂 I scored ${score}/${total} (${pct}%) on the Birthday Quiz Challenge! 🏆 Try it yourself!\n\n📋 DETAILED REVIEW:\n`;
+    let text = `🧬 I scored ${score}/${total} (${pct}%) on the Ovaries Anatomy Quiz Challenge! 🏆 Try it yourself!\n\n📋 DETAILED REVIEW:\n`;
 
     questions.forEach((q, idx) => {
         const userAns = answers[idx];
@@ -668,11 +678,11 @@ async function shareScore() {
             text += `Correct Answer: ${q.options[q.correct]}\n`;
         }
 
-        text += `💡 Fun Fact: ${q.explanation}\n`;
+        text += `💡 Explanation: ${q.explanation}\n`;
     });
 
     if (navigator.share) {
-        try { await navigator.share({ title: 'Birthday Quiz', text }); } catch (e) { }
+        try { await navigator.share({ title: 'Ovaries Anatomy Quiz', text }); } catch (e) { }
     } else {
         navigator.clipboard.writeText(text).then(() => {
             const btn = document.getElementById('shareBtn');
@@ -688,7 +698,7 @@ function retakeQuiz() {
 
     // Clear persisted state so next attempt starts fresh
     clearState();
-    try { localStorage.removeItem('birthdayQuizCompletedState'); } catch (e) { }
+    try { localStorage.removeItem('anatomyQuizCompletedState'); } catch (e) { }
 
     answers = {};
     submitted = {};
